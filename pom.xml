@@ -1,0 +1,235 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.github.pmerienne</groupId>
+	<artifactId>stormy-pythian</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	<name>Stormy Pythian</name>
+
+	<modules>
+		<module>stormy-pythian-core</module>
+		<module>stormy-pythian-model</module>
+	</modules>
+
+	<properties>
+		<!-- Compiler properties -->
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.source>1.7</maven.compiler.source>
+		<maven.compiler.target>1.7</maven.compiler.target>
+
+		<!-- Version dependencies -->
+		<storm.version>0.8.2</storm.version>
+		<trident-extended-state.version>0.0.2</trident-extended-state.version>
+		<spring.version>3.2.4.RELEASE</spring.version>
+
+		<!-- Utils -->
+		<guava.version>14.0</guava.version>
+		<reflections.version>0.9.9-RC1</reflections.version>
+
+		<!-- Logs -->
+		<slf4j.version>1.5.8</slf4j.version>
+
+		<!-- Test -->
+		<junit.version>4.11</junit.version>
+		<mockito.version>1.9.5</mockito.version>
+		<fest-assert.version>1.4</fest-assert.version>
+	</properties>
+
+	<developers>
+		<developer>
+			<id>pmerienne</id>
+			<name>Pierre Merienne</name>
+			<email>pierre.merienne@gmail.com</email>
+		</developer>
+	</developers>
+
+	<repositories>
+		<!-- For storm and trident-extended-state -->
+		<repository>
+			<id>clojars.org</id>
+			<url>http://clojars.org/repo</url>
+		</repository>
+	</repositories>
+
+
+	<dependencyManagement>
+		<dependencies>
+
+			<!-- Stormy-Pythian -->
+			<dependency>
+				<groupId>com.github.pmerienne</groupId>
+				<artifactId>stormy-pythian-model</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.github.pmerienne</groupId>
+				<artifactId>stormy-pythian-core</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
+			<!-- Storm -->
+			<dependency>
+				<groupId>storm</groupId>
+				<artifactId>storm</artifactId>
+				<version>${storm.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.github.pmerienne</groupId>
+				<artifactId>trident-extended-state</artifactId>
+				<version>${trident-extended-state.version}</version>
+			</dependency>
+
+			<!-- Spring -->
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-core</artifactId>
+				<version>${spring.version}</version>
+				<exclusions>
+					<exclusion>
+						<artifactId>commons-logging</artifactId>
+						<groupId>commons-logging</groupId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-beans</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-context</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-context-support</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-web</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
+
+			<!-- Utils -->
+			<dependency>
+				<groupId>com.google.guava</groupId>
+				<artifactId>guava</artifactId>
+				<version>${guava.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.reflections</groupId>
+				<artifactId>reflections</artifactId>
+				<version>${reflections.version}</version>
+			</dependency>
+
+			<!-- Test -->
+			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>${junit.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.mockito</groupId>
+				<artifactId>mockito-all</artifactId>
+				<version>${mockito.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.easytesting</groupId>
+				<artifactId>fest-assert</artifactId>
+				<version>${fest-assert.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.1</version><!--$NO-MVN-MAN-VER$ -->
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3.2</version>
+				<configuration>
+					<source>${maven.compiler.source}</source>
+					<target>${maven.compiler.source}</target>
+					<encoding>${project.build.sourceEncoding}</encoding>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>com.mycila.maven-license-plugin</groupId>
+				<artifactId>maven-license-plugin</artifactId>
+				<version>1.10.b1</version>
+				<configuration>
+					<header>etc/header.txt</header>
+					<strictCheck>true</strictCheck>
+					<includes>
+						<include>src/main/java/**</include>
+						<include>src/test/java/**</include>
+					</includes>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>process-sources</phase>
+						<goals>
+							<goal>format</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+
+	<licenses>
+		<license>
+			<name>Apache 2</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<url>https://github.com/pmerienne/stormy-pythian</url>
+
+
+	<scm>
+		<connection>scm:git:git@github.com:pmerienne/stormy-pythian.git</connection>
+		<developerConnection>scm:git:git@github.com:pmerienne/stormy-pythian.git</developerConnection>
+		<url>scm:git:git@github.com:pmerienne/stormy-pythian.git</url>
+	</scm>
+
+</project>
