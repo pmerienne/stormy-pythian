@@ -16,14 +16,23 @@
 package stormy.pythian.core.description;
 
 import static com.google.common.base.Preconditions.checkArgument;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
 import stormy.pythian.model.annotation.Documentation;
 import stormy.pythian.model.component.Component;
 
+@org.springframework.stereotype.Component
 public class ComponentDescriptionFactory {
 
-	protected PropertyDescriptionFactory propertyDeclarationFactory = new PropertyDescriptionFactory();
-	protected InputStreamDescriptionFactory inputStreamDeclarationFactory = new InputStreamDescriptionFactory();
-	protected OutputStreamDescriptionFactory outputStreamDeclarationFactory = new OutputStreamDescriptionFactory();
+	@Autowired
+	private PropertyDescriptionFactory propertyDeclarationFactory;
+
+	@Autowired
+	private InputStreamDescriptionFactory inputStreamDeclarationFactory;
+
+	@Autowired
+	private OutputStreamDescriptionFactory outputStreamDeclarationFactory;
 
 	public ComponentDescription createDeclaration(Class<? extends Component> componentClass) {
 		checkArgument(componentClass != null, "Component class is mandatory");

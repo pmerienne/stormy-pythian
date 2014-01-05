@@ -18,10 +18,13 @@ package stormy.pythian.core.description;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.stereotype.Component;
+
 import stormy.pythian.model.annotation.ExpectedFeature;
 import stormy.pythian.model.annotation.InputStream;
 import stormy.pythian.model.annotation.OutputStream;
 
+@Component
 public class FeatureDescriptionFactory {
 
 	public FeatureDescription createDescription(ExpectedFeature feature) {

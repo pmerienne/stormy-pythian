@@ -24,14 +24,19 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import storm.trident.Stream;
 import stormy.pythian.model.annotation.InputStream;
 
 import com.google.common.collect.Lists;
 
+@Component
 public class InputStreamDescriptionFactory {
 
-	private FeatureDescriptionFactory featureDescriptorFactory = new FeatureDescriptionFactory();
+	@Autowired
+	private FeatureDescriptionFactory featureDescriptorFactory;
 
 	@SuppressWarnings("unchecked")
 	public List<InputStreamDescription> createInputStreamDeclarations(Class<?> componentClass) {

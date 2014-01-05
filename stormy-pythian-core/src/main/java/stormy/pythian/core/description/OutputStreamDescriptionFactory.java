@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import storm.trident.Stream;
 import stormy.pythian.model.annotation.OutputStream;
@@ -32,9 +34,11 @@ import stormy.pythian.model.annotation.OutputStream;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 
+@Component
 public class OutputStreamDescriptionFactory {
 
-	private FeatureDescriptionFactory featureDescriptorFactory = new FeatureDescriptionFactory();
+	@Autowired
+	private FeatureDescriptionFactory featureDescriptorFactory;
 
 	@SuppressWarnings("unchecked")
 	public List<OutputStreamDescription> createOutputStreamDeclarations(Class<?> componentClass) {

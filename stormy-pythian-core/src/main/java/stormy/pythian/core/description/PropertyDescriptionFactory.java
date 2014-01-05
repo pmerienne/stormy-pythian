@@ -24,10 +24,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.stereotype.Component;
+
 import stormy.pythian.model.annotation.Property;
 
 import com.google.common.collect.Lists;
 
+@Component
 public class PropertyDescriptionFactory {
 
 	@SuppressWarnings("unchecked")

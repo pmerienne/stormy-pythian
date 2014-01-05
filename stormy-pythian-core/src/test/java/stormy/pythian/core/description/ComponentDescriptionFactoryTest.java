@@ -21,6 +21,7 @@ import static stormy.pythian.model.annotation.ComponentType.STREAM_SOURCE;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import stormy.pythian.model.annotation.ComponentType;
@@ -34,6 +35,15 @@ public class ComponentDescriptionFactoryTest {
 	@InjectMocks
 	private ComponentDescriptionFactory factory;
 
+	@Mock
+	private PropertyDescriptionFactory propertyDeclarationFactory;
+
+	@Mock
+	private InputStreamDescriptionFactory inputStreamDeclarationFactory;
+
+	@Mock
+	private OutputStreamDescriptionFactory outputStreamDeclarationFactory;
+	
 	@Test(expected = IllegalArgumentException.class)
 	public void should_throw_illegal_argument_exception_when_no_component_class() {
 		// When
