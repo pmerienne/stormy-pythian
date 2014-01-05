@@ -9,6 +9,7 @@
 	<modules>
 		<module>stormy-pythian-core</module>
 		<module>stormy-pythian-model</module>
+		<module>stormy-pythian-service</module>
 	</modules>
 
 	<properties>
