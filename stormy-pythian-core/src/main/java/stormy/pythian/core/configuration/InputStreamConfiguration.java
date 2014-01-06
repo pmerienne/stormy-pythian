@@ -23,25 +23,25 @@ import stormy.pythian.model.annotation.MappingType;
 
 public class InputStreamConfiguration {
 
-	private final InputStreamDescription descriptor;
+	private final InputStreamDescription description;
 
 	private final Map<String, String> mappings;
 	private final List<String> selectedFeatures;
 
-	public InputStreamConfiguration(InputStreamDescription descriptor, List<String> selectedFeatures) {
-		this.descriptor = descriptor;
+	public InputStreamConfiguration(InputStreamDescription description, List<String> selectedFeatures) {
+		this.description = description;
 		this.selectedFeatures = selectedFeatures;
 		this.mappings = null;
 	}
 
-	public InputStreamConfiguration(InputStreamDescription descriptor, Map<String, String> mappings) {
-		this.descriptor = descriptor;
+	public InputStreamConfiguration(InputStreamDescription description, Map<String, String> mappings) {
+		this.description = description;
 		this.mappings = mappings;
 		this.selectedFeatures = null;
 	}
 
-	public InputStreamDescription getDescriptor() {
-		return descriptor;
+	public InputStreamDescription getDescription() {
+		return description;
 	}
 
 	public Map<String, String> getMappings() {
@@ -53,18 +53,18 @@ public class InputStreamConfiguration {
 	}
 
 	public String getStreamName() {
-		return descriptor.getName();
+		return description.getName();
 	}
 
 	public MappingType getMappingType() {
-		return descriptor.getType();
+		return description.getType();
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((descriptor == null) ? 0 : descriptor.hashCode());
+		result = prime * result + ((description == null) ? 0 : description.hashCode());
 		result = prime * result + ((mappings == null) ? 0 : mappings.hashCode());
 		result = prime * result + ((selectedFeatures == null) ? 0 : selectedFeatures.hashCode());
 		return result;
@@ -79,10 +79,10 @@ public class InputStreamConfiguration {
 		if (getClass() != obj.getClass())
 			return false;
 		InputStreamConfiguration other = (InputStreamConfiguration) obj;
-		if (descriptor == null) {
-			if (other.descriptor != null)
+		if (description == null) {
+			if (other.description != null)
 				return false;
-		} else if (!descriptor.equals(other.descriptor))
+		} else if (!description.equals(other.description))
 			return false;
 		if (mappings == null) {
 			if (other.mappings != null)
@@ -99,7 +99,7 @@ public class InputStreamConfiguration {
 
 	@Override
 	public String toString() {
-		return "InputStreamConfiguration [descriptor=" + descriptor + ", mappings=" + mappings + ", selectedFeatures=" + selectedFeatures + "]";
+		return "InputStreamConfiguration [description=" + description + ", mappings=" + mappings + ", selectedFeatures=" + selectedFeatures + "]";
 	}
 
 }
