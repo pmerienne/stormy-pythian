@@ -20,18 +20,12 @@ import static stormy.pythian.model.annotation.MappingType.FIXED_FEATURES;
 import static stormy.pythian.model.instance.FeatureType.INTEGER;
 import static stormy.pythian.model.instance.FeatureType.TEXT;
 import static stormy.pythian.model.instance.Instance.INSTANCE_FIELD;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import storm.trident.Stream;
 import storm.trident.TridentState;
 import storm.trident.operation.BaseFunction;
 import storm.trident.operation.TridentCollector;
 import storm.trident.operation.builtin.Count;
-import storm.trident.state.BaseQueryFunction;
-import storm.trident.state.map.MapState;
+import storm.trident.operation.builtin.MapGet;
 import storm.trident.testing.MemoryMapState;
 import storm.trident.tuple.TridentTuple;
 import stormy.pythian.model.annotation.Documentation;
@@ -70,63 +64,55 @@ public class WordCount implements Component {
 	@Override
 	public void init() {
 		TridentState wordCounts = in//
-				.each(new Fields(INSTANCE_FIELD), new WordExtractor(inputMapper), new Fields("word")) //
-				.groupBy(new Fields("word")) //
-				.persistentAggregate(new MemoryMapState.Factory(), new Fields("word"), new Count(), new Fields("count")); //
+				.each(new Fields(INSTANCE_FIELD), new ExtractFeature(WORD_FEATURE, inputMapper), new Fields(WORD_FEATURE)) //
+				.groupBy(new Fields(WORD_FEATURE)) //
+				.persistentAggregate(new MemoryMapState.Factory(), new Fields(WORD_FEATURE), new Count(), new Fields(COUNT_FEATURE)); //
 
 		out = in //
-		.stateQuery(wordCounts, new Fields(INSTANCE_FIELD), new GetCountFeature(inputMapper, outputMapper), new Fields());
+		.each(new Fields(INSTANCE_FIELD), new ExtractFeature(WORD_FEATURE, inputMapper), new Fields(WORD_FEATURE)) //
+				.stateQuery(wordCounts, new Fields(WORD_FEATURE), new MapGet(), new Fields(COUNT_FEATURE)) //
+				.each(new Fields(INSTANCE_FIELD, COUNT_FEATURE), new AddCountFeature(outputMapper), new Fields(Instance.NEW_INSTANCE_FIELD));
 
 	}
 
 	@SuppressWarnings("serial")
-	private static class WordExtractor extends BaseFunction {
+	private static class ExtractFeature extends BaseFunction {
 
+		private final String featureName;
 		private final FixedFeaturesMapper inputMapper;
 
-		public WordExtractor(FixedFeaturesMapper inputMapper) {
-			this.inputMapper = inputMapper;
+		public ExtractFeature(String featureName, FixedFeaturesMapper mapper) {
+			this.featureName = featureName;
+			this.inputMapper = mapper;
 		}
 
 		@Override
 		public void execute(TridentTuple tuple, TridentCollector collector) {
 			Instance instance = Instance.from(tuple);
-			Feature<String> word = inputMapper.getFeature(instance, WORD_FEATURE);
-			collector.emit(new Values(word.getValue()));
+			Feature<?> feature = inputMapper.getFeature(instance, featureName);
+			collector.emit(new Values(feature.getValue()));
 		}
+
 	}
 
-	@SuppressWarnings({ "serial", "rawtypes" })
-	private static class GetCountFeature extends BaseQueryFunction<MapState<Long>, Long> {
+	@SuppressWarnings("serial")
+	private static class AddCountFeature extends BaseFunction {
 
-		private final FixedFeaturesMapper inputMapper;
-		private final FixedFeaturesMapper outputMapper;
+		private final FixedFeaturesMapper outMapper;
 
-		public GetCountFeature(FixedFeaturesMapper inputMapper, FixedFeaturesMapper outputMapper) {
-			this.inputMapper = inputMapper;
-			this.outputMapper = outputMapper;
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public List<Long> batchRetrieve(MapState<Long> map, List<TridentTuple> tuples) {
-			List<List<String>> keys = new ArrayList<>(tuples.size());
-
-			for (TridentTuple tuple : tuples) {
-				Instance instance = Instance.from(tuple);
-				Feature<String> wordFeature = inputMapper.getFeature(instance, WORD_FEATURE);
-				keys.add(Arrays.asList(wordFeature.getValue()));
-			}
-
-			return map.multiGet((List) keys);
+		public AddCountFeature(FixedFeaturesMapper outMapper) {
+			this.outMapper = outMapper;
 		}
 
 		@Override
-		public void execute(TridentTuple tuple, Long count, TridentCollector collector) {
-			Instance instance = Instance.from(tuple);
-			outputMapper.setFeature(instance, COUNT_FEATURE, new LongFeature(count == null ? 0 : count));
+		public void execute(TridentTuple tuple, TridentCollector collector) {
+			Instance original = Instance.from(tuple);
+			Instance updated = new Instance(original);
 
-			collector.emit(new Values(instance));
+			Long count = tuple.getLongByField(COUNT_FEATURE);
+			outMapper.setFeature(updated, COUNT_FEATURE, new LongFeature(count));
+
+			collector.emit(new Values(updated));
 		}
 	}
 

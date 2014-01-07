@@ -17,7 +17,9 @@ package stormy.pythian.core.topology;
 
 import static java.util.Collections.EMPTY_MAP;
 import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static stormy.pythian.model.annotation.MappingType.USER_SELECTION;
 
 import java.util.Arrays;
@@ -65,7 +67,7 @@ public class ComponentFactoryTest {
 	private Config config;
 
 	@Test
-	public void should_create_and_init_stream_source() {
+	public void should_create_and_init_component() {
 		// Given
 		ComponentConfiguration configuration = new ComponentConfiguration();
 		configuration.descriptor = new ComponentDescription(TestComponent.class);
@@ -102,8 +104,11 @@ public class ComponentFactoryTest {
 		configuration.descriptor = new ComponentDescription(TestComponent.class);
 
 		Map<String, Stream> inputStreams = new HashMap<String, Stream>();
-		Stream expectedStream = mock(Stream.class);
-		inputStreams.put("in1", expectedStream);
+		Stream originalInputStream = mock(Stream.class);
+		inputStreams.put("in1", originalInputStream);
+
+		Stream switchedStream = mock(Stream.class);
+		when(originalInputStream.applyAssembly(isA(ReplaceInstanceField.class))).thenReturn(switchedStream);
 
 		// When
 		Component component = factory.createComponent(configuration, inputStreams);
@@ -112,7 +117,7 @@ public class ComponentFactoryTest {
 		assertThat(component).isInstanceOf(TestComponent.class);
 
 		TestComponent testComponent = (TestComponent) component;
-		assertThat(testComponent.in1).isEqualTo(expectedStream);
+		assertThat(testComponent.in1).isEqualTo(switchedStream);
 	}
 
 	@Test

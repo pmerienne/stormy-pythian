@@ -27,6 +27,7 @@ public class Instance implements Serializable {
 	private static final long serialVersionUID = 4970738933759230736L;
 
 	public final static String INSTANCE_FIELD = "INSTANCE_FIELD";
+	public final static String NEW_INSTANCE_FIELD = "NEW_INSTANCE_FIELD";
 
 	private final Map<String, Feature<?>> features;
 

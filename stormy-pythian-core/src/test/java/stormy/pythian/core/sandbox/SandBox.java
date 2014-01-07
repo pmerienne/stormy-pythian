@@ -21,6 +21,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
 import stormy.pythian.core.configuration.ComponentConfiguration;
 import stormy.pythian.core.configuration.ConnectionConfiguration;
 import stormy.pythian.core.configuration.InputStreamConfiguration;
@@ -28,6 +31,7 @@ import stormy.pythian.core.configuration.OutputStreamConfiguration;
 import stormy.pythian.core.configuration.PythianToplogyConfiguration;
 import stormy.pythian.core.description.ComponentDescription;
 import stormy.pythian.core.description.ComponentDescriptionFactory;
+import stormy.pythian.core.ioc.StormyPythianCoreConfig;
 import stormy.pythian.core.topology.PythianTopology;
 import backtype.storm.LocalCluster;
 import backtype.storm.utils.Utils;
@@ -35,7 +39,9 @@ import backtype.storm.utils.Utils;
 public class SandBox {
 
 	public static void main(String[] args) {
-		ComponentDescriptionFactory componentDescriptionFactory = new ComponentDescriptionFactory();
+		ApplicationContext context = new AnnotationConfigApplicationContext(StormyPythianCoreConfig.class);
+		
+		ComponentDescriptionFactory componentDescriptionFactory = context.getBean(ComponentDescriptionFactory.class);
 
 		ComponentDescription randomWordSource = componentDescriptionFactory.createDeclaration(RandomWordSource.class);
 		ComponentConfiguration randomWordSourceConfiguration = new ComponentConfiguration(randomAlphabetic(6), randomWordSource);

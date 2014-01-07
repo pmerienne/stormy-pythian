@@ -17,7 +17,6 @@ package stormy.pythian.core.sandbox;
 
 import static org.apache.commons.lang.RandomStringUtils.randomAlphabetic;
 import static stormy.pythian.model.annotation.ComponentType.STREAM_SOURCE;
-import static stormy.pythian.model.instance.Instance.INSTANCE_FIELD;
 import storm.trident.Stream;
 import storm.trident.TridentTopology;
 import storm.trident.testing.FixedBatchSpout;
@@ -53,12 +52,15 @@ public class RandomWordSource implements Component {
 	@Override
 	@SuppressWarnings("unchecked")
 	public void init() {
-		FixedBatchSpout spout = new FixedBatchSpout(new Fields(INSTANCE_FIELD), 3, //
+		FixedBatchSpout spout = new FixedBatchSpout(new Fields(Instance.NEW_INSTANCE_FIELD), 3, //
 				createValues("jackson"), //
 				createValues("nathan"), //
 				createValues("pierre"), //
+				createValues("nathan"), //
+				createValues("pierre"), //
+				createValues("jackson"), //
+				createValues("nathan"), //
 				createValues("julie"));
-		spout.setCycle(true);
 
 		out = topology.newStream(randomAlphabetic(6), spout);
 	}
