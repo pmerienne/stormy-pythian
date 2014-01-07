@@ -17,17 +17,19 @@ package stormy.pythian.core.topology;
 
 import static stormy.pythian.core.utils.ReflectionHelper.setConfiguration;
 import static stormy.pythian.core.utils.ReflectionHelper.setFeaturesMapper;
-import static stormy.pythian.core.utils.ReflectionHelper.setInputStreams;
 import static stormy.pythian.core.utils.ReflectionHelper.setProperties;
 import static stormy.pythian.core.utils.ReflectionHelper.setTopology;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import storm.trident.Stream;
 import storm.trident.TridentTopology;
 import stormy.pythian.core.configuration.ComponentConfiguration;
 import stormy.pythian.core.configuration.InputStreamConfiguration;
 import stormy.pythian.core.configuration.OutputStreamConfiguration;
+import stormy.pythian.core.utils.ReflectionHelper;
 import stormy.pythian.model.component.Component;
 import stormy.pythian.model.instance.FeaturesMapper;
 import stormy.pythian.model.instance.FixedFeaturesMapper;
@@ -63,6 +65,21 @@ public class ComponentFactory {
 			throw new IllegalArgumentException("Unable to add component " + configuration, e);
 		}
 	}
+	
+	private void setInputStreams(Component component, Map<String, Stream> inputStreams) {
+		Map<String, Stream> switchedStreams = new HashMap<>(inputStreams.size());
+
+		for(Entry<String, Stream> stream : inputStreams.entrySet()) {
+			switchedStreams.put(stream.getKey(), replaceInstanceField(stream.getValue()));
+		}
+		
+		ReflectionHelper.setInputStreams(component, switchedStreams);
+	}
+	
+	private Stream replaceInstanceField(Stream stream) {
+		return stream.applyAssembly(new ReplaceInstanceField());
+	}
+
 
 	private void setFeaturesMappers(Component component, ComponentConfiguration configuration) {
 		for (InputStreamConfiguration isConfiguration : configuration.inputStreams) {
