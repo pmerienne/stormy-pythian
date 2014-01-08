@@ -54,8 +54,8 @@ public class PythianTopology {
 	}
 
 	public void build(PythianToplogyConfiguration topologyConfiguration) {
-		componentPool.addConnections(topologyConfiguration.connections);
-		componentPool.addComponents(topologyConfiguration.components);
+		componentPool.addConnections(topologyConfiguration.getConnections());
+		componentPool.addComponents(topologyConfiguration.getComponents());
 
 		// Init components
 		while (!componentPool.isEmpty()) {

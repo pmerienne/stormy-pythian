@@ -59,12 +59,12 @@ public class SandBox {
 		LocalCluster cluster = new LocalCluster();
 
 		PythianToplogyConfiguration topologyConfiguration = new PythianToplogyConfiguration();
-		topologyConfiguration.components.add(randomWordSourceConfiguration);
-		topologyConfiguration.components.add(wordCountConfiguration);
-		topologyConfiguration.components.add(consoleOutputConfiguration);
+		topologyConfiguration.getComponents().add(randomWordSourceConfiguration);
+		topologyConfiguration.getComponents().add(wordCountConfiguration);
+		topologyConfiguration.getComponents().add(consoleOutputConfiguration);
 
-		topologyConfiguration.connections.add(new ConnectionConfiguration(randomWordSourceConfiguration.id, "out", wordCountConfiguration.id, "in"));
-		topologyConfiguration.connections.add(new ConnectionConfiguration(wordCountConfiguration.id, "out", consoleOutputConfiguration.id, "in"));
+		topologyConfiguration.getConnections().add(new ConnectionConfiguration(randomWordSourceConfiguration.id, "out", wordCountConfiguration.id, "in"));
+		topologyConfiguration.getConnections().add(new ConnectionConfiguration(wordCountConfiguration.id, "out", consoleOutputConfiguration.id, "in"));
 
 		try {
 			PythianTopology pythianTopology = new PythianTopology();

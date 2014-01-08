@@ -23,8 +23,8 @@ public class PythianToplogyConfiguration {
 
 	private String id;
 
-	public final List<ComponentConfiguration> components;
-	public final List<ConnectionConfiguration> connections;
+	private final List<ComponentConfiguration> components;
+	private final List<ConnectionConfiguration> connections;
 
 	public PythianToplogyConfiguration() {
 		this.id = UUID.randomUUID().toString();
@@ -32,9 +32,7 @@ public class PythianToplogyConfiguration {
 		this.connections = new ArrayList<>();
 	}
 
-	public PythianToplogyConfiguration(String id,
-			List<ComponentConfiguration> components,
-			List<ConnectionConfiguration> connections) {
+	public PythianToplogyConfiguration(String id, List<ComponentConfiguration> components, List<ConnectionConfiguration> connections) {
 		this.id = id;
 		this.components = components;
 		this.connections = connections;
@@ -60,14 +58,20 @@ public class PythianToplogyConfiguration {
 		return id;
 	}
 
+	public List<ComponentConfiguration> getComponents() {
+		return components;
+	}
+
+	public List<ConnectionConfiguration> getConnections() {
+		return connections;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result
-				+ ((components == null) ? 0 : components.hashCode());
-		result = prime * result
-				+ ((connections == null) ? 0 : connections.hashCode());
+		result = prime * result + ((components == null) ? 0 : components.hashCode());
+		result = prime * result + ((connections == null) ? 0 : connections.hashCode());
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		return result;
 	}
@@ -101,8 +105,7 @@ public class PythianToplogyConfiguration {
 
 	@Override
 	public String toString() {
-		return "PythianToplogyConfiguration [id=" + id + ", components="
-				+ components + ", connections=" + connections + "]";
+		return "PythianToplogyConfiguration [id=" + id + ", components=" + components + ", connections=" + connections + "]";
 	}
 
 }

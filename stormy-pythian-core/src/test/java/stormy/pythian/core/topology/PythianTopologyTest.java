@@ -54,7 +54,7 @@ public class PythianTopologyTest {
 		PythianToplogyConfiguration topologyConfiguration = new PythianToplogyConfiguration();
 
 		ComponentConfiguration componentConfiguration = new ComponentConfiguration();
-		topologyConfiguration.components.add(componentConfiguration);
+		topologyConfiguration.getComponents().add(componentConfiguration);
 
 		Component component = mock(Component.class);
 		Map<String, Stream> inputStreams = new HashMap<>();
