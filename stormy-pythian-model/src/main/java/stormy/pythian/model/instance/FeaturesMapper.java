@@ -16,7 +16,7 @@
 package stormy.pythian.model.instance;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.Map;
 
 import stormy.pythian.model.annotation.MappingType;
 
@@ -24,7 +24,7 @@ public interface FeaturesMapper extends Serializable {
 
 	<T> Feature<T> getFeature(Instance instance, String featureName);
 
-	List<Feature<?>> getFeatures(Instance instance);
+	Map<String, Feature<?>> getFeatures(Instance instance);
 
 	MappingType getType();
 }

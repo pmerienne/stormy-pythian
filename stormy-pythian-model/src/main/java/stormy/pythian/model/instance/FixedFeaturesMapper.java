@@ -17,8 +17,7 @@ package stormy.pythian.model.instance;
 
 import static stormy.pythian.model.annotation.MappingType.FIXED_FEATURES;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
 import stormy.pythian.model.annotation.MappingType;
@@ -42,19 +41,18 @@ public class FixedFeaturesMapper implements FeaturesMapper {
 		}
 	}
 
-	public <T> void setFeature(Instance instance, String featureName,
-			Feature<T> feature) {
+	public <T> void setFeature(Instance instance, String featureName, Feature<T> feature) {
 		String outsideName = mappings.get(featureName);
 		instance.add(outsideName, feature);
 	}
 
 	@Override
-	public List<Feature<?>> getFeatures(Instance instance) {
-		List<Feature<?>> features = new ArrayList<>(mappings.size());
+	public Map<String, Feature<?>> getFeatures(Instance instance) {
+		Map<String, Feature<?>> features = new HashMap<>(mappings.size());
 
 		for (String featureName : mappings.keySet()) {
 			String outsideName = mappings.get(featureName);
-			features.add(instance.get(outsideName));
+			features.put(outsideName, instance.get(outsideName));
 
 		}
 
@@ -74,8 +72,7 @@ public class FixedFeaturesMapper implements FeaturesMapper {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result
-				+ ((mappings == null) ? 0 : mappings.hashCode());
+		result = prime * result + ((mappings == null) ? 0 : mappings.hashCode());
 		return result;
 	}
 

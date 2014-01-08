@@ -19,7 +19,7 @@ import static com.google.common.collect.Sets.newHashSet;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
@@ -27,11 +27,6 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-
-import stormy.pythian.model.instance.Feature;
-import stormy.pythian.model.instance.FixedFeaturesMapper;
-import stormy.pythian.model.instance.Instance;
-import stormy.pythian.model.instance.IntegerFeature;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FixedFeaturesMapperTest {
@@ -97,10 +92,14 @@ public class FixedFeaturesMapperTest {
 		instance.add("user_all_time_views", 42);
 
 		// When
-		List<Feature<?>> actualFeatures = mapper.getFeatures(instance);
+		Map<String, Feature<?>> actualFeatures = mapper.getFeatures(instance);
 
 		// Then
-		assertThat(actualFeatures).containsOnly(new IntegerFeature(3), null, new IntegerFeature(42));
+		Map<String, Feature<?>> expectedFeatures = new HashMap<>();
+		expectedFeatures.put("user_daily_views", new IntegerFeature(3));
+		expectedFeatures.put("user_monthly_views", null);
+		expectedFeatures.put("user_all_time_views", new IntegerFeature(42));
+		assertThat(actualFeatures).isEqualTo(expectedFeatures);
 
 	}
 }

@@ -18,7 +18,9 @@ package stormy.pythian.model.instance;
 import static stormy.pythian.model.annotation.MappingType.USER_SELECTION;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import stormy.pythian.model.annotation.MappingType;
 
@@ -37,12 +39,12 @@ public class UserSelectionFeaturesMapper implements FeaturesMapper {
 	}
 
 	@Override
-	public List<Feature<?>> getFeatures(Instance instance) {
-		List<Feature<?>> features = new ArrayList<>(selectedFeatures.size());
+	public Map<String, Feature<?>> getFeatures(Instance instance) {
+		Map<String, Feature<?>> features = new HashMap<>(selectedFeatures.size());
 
 		for (String featureName : selectedFeatures) {
 			Feature<?> feature = instance.get(featureName);
-			features.add(feature);
+			features.put(featureName, feature);
 		}
 
 		return features;

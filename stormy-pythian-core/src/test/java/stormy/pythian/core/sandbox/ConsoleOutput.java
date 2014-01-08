@@ -17,7 +17,7 @@ package stormy.pythian.core.sandbox;
 
 import static stormy.pythian.model.instance.Instance.INSTANCE_FIELD;
 
-import java.util.List;
+import java.util.Map;
 
 import storm.trident.Stream;
 import storm.trident.operation.BaseFilter;
@@ -60,7 +60,7 @@ public class ConsoleOutput implements Component {
 		@Override
 		public boolean isKeep(TridentTuple tuple) {
 			Instance instance = Instance.from(tuple);
-			List<Feature<?>> features = mapper.getFeatures(instance);
+			Map<String, Feature<?>> features = mapper.getFeatures(instance);
 			System.out.println(features);
 
 			return true;

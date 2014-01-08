@@ -16,17 +16,15 @@
 package stormy.pythian.model.instance;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.fest.assertions.MapAssert.entry;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import stormy.pythian.model.instance.Feature;
-import stormy.pythian.model.instance.Instance;
-import stormy.pythian.model.instance.IntegerFeature;
-import stormy.pythian.model.instance.UserSelectionFeaturesMapper;
 
 public class UserSelectionFeaturesMapperTest {
 
@@ -46,10 +44,10 @@ public class UserSelectionFeaturesMapperTest {
 		instance.add("viewCount", 42);
 
 		// When
-		List<Feature<?>> actualsFeatures = mapper.getFeatures(instance);
+		Map<String, Feature<?>> actualsFeatures = mapper.getFeatures(instance);
 
 		// Then
-		assertThat(actualsFeatures).containsOnly(new IntegerFeature(32), new IntegerFeature(42));
+		assertThat(actualsFeatures).includes(entry("age", new IntegerFeature(32)), entry("viewCount", new IntegerFeature(42)));
 	}
 
 	@Test
@@ -59,10 +57,13 @@ public class UserSelectionFeaturesMapperTest {
 		instance.add("viewCount", 42);
 
 		// When
-		List<Feature<?>> actualsFeatures = mapper.getFeatures(instance);
+		Map<String, Feature<?>> actualsFeatures = mapper.getFeatures(instance);
 
 		// Then
-		assertThat(actualsFeatures).containsOnly(null, new IntegerFeature(42));
+		Map<String, Feature<?>> expectedFeatures = new HashMap<>();
+		expectedFeatures.put("age", null);
+		expectedFeatures.put("viewCount", new IntegerFeature(42));
+		assertThat(actualsFeatures).isEqualTo(expectedFeatures);
 	}
 
 	@Test
