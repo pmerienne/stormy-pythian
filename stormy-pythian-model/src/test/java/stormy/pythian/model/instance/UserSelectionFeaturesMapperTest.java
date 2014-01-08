@@ -40,8 +40,8 @@ public class UserSelectionFeaturesMapperTest {
 	public void should_retrieve_selected_feature() {
 		// Given
 		Instance instance = new Instance();
-		instance.add("age", 32);
-		instance.add("viewCount", 42);
+		instance.set("age", 32);
+		instance.set("viewCount", 42);
 
 		// When
 		Map<String, Feature<?>> actualsFeatures = mapper.getFeatures(instance);
@@ -54,7 +54,7 @@ public class UserSelectionFeaturesMapperTest {
 	public void should_retrieve_null_when_no_feature() {
 		// Given
 		Instance instance = new Instance();
-		instance.add("viewCount", 42);
+		instance.set("viewCount", 42);
 
 		// When
 		Map<String, Feature<?>> actualsFeatures = mapper.getFeatures(instance);
@@ -70,8 +70,8 @@ public class UserSelectionFeaturesMapperTest {
 	public void should_retrieve_feature_by_name() {
 		// Given
 		Instance instance = new Instance();
-		instance.add("age", 32);
-		instance.add("viewCount", 42);
+		instance.set("age", 32);
+		instance.set("viewCount", 42);
 
 		// When
 		Feature<Object> actualFeature = mapper.getFeature(instance, "viewCount");

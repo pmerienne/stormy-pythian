@@ -43,7 +43,7 @@ public class FixedFeaturesMapperTest {
 		when(mappings.get("value")).thenReturn("age");
 
 		Instance instance = new Instance();
-		instance.add("age", 32);
+		instance.set("age", 32);
 
 		// When
 		Feature<Integer> actualFeature = mapper.getFeature(instance, "value");
@@ -56,7 +56,7 @@ public class FixedFeaturesMapperTest {
 	public void should_retrieve_null_with_no_mapping() {
 		// Given
 		Instance instance = new Instance();
-		instance.add("age", 32);
+		instance.set("age", 32);
 
 		// When
 		Feature<Integer> actualFeature = mapper.getFeature(instance, "value");
@@ -88,8 +88,8 @@ public class FixedFeaturesMapperTest {
 		when(mappings.get("allTimeViews")).thenReturn("user_all_time_views");
 
 		Instance instance = new Instance();
-		instance.add("user_daily_views", 3);
-		instance.add("user_all_time_views", 42);
+		instance.set("user_daily_views", 3);
+		instance.set("user_all_time_views", 42);
 
 		// When
 		Map<String, Feature<?>> actualFeatures = mapper.getFeatures(instance);

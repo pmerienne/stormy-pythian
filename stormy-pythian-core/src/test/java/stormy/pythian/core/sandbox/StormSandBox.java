@@ -78,9 +78,9 @@ public class StormSandBox {
 
 	private static Values createValues(String firstname, Integer age) {
 		Instance instance = new Instance();
-		instance.add("uuid", UUID.randomUUID().toString());
-		instance.add("firstname", firstname);
-		instance.add("age", age);
+		instance.set("uuid", UUID.randomUUID().toString());
+		instance.set("firstname", firstname);
+		instance.set("age", age);
 		return new Values(instance);
 	}
 

@@ -39,19 +39,19 @@ public class Instance implements Serializable {
 		this.features = new HashMap<>(original.features);
 	}
 
-	public void add(String name, Feature<?> feature) {
+	public void set(String name, Feature<?> feature) {
 		this.features.put(name, feature);
 	}
 
-	public void add(String name, String value) {
+	public void set(String name, String value) {
 		this.features.put(name, new TextFeature(value));
 	}
 
-	public void add(String name, Integer value) {
+	public void set(String name, Integer value) {
 		this.features.put(name, new IntegerFeature(value));
 	}
 
-	public void add(String name, Double value) {
+	public void set(String name, Double value) {
 		this.features.put(name, new DoubleFeature(value));
 	}
 
@@ -143,7 +143,7 @@ public class Instance implements Serializable {
 		public Instance build() {
 			Instance instance = new Instance();
 			for (String featureName : features.keySet()) {
-				instance.add(featureName, features.get(featureName));
+				instance.set(featureName, features.get(featureName));
 			}
 			return instance;
 		}

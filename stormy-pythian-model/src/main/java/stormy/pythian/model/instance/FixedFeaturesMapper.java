@@ -43,7 +43,7 @@ public class FixedFeaturesMapper implements FeaturesMapper {
 
 	public <T> void setFeature(Instance instance, String featureName, Feature<T> feature) {
 		String outsideName = mappings.get(featureName);
-		instance.add(outsideName, feature);
+		instance.set(outsideName, feature);
 	}
 
 	@Override
