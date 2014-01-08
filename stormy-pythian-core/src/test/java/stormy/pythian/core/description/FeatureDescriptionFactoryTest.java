@@ -18,7 +18,7 @@ package stormy.pythian.core.description;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static stormy.pythian.model.instance.FeatureType.FLOAT;
+import static stormy.pythian.model.instance.FeatureType.DOUBLE;
 import static stormy.pythian.model.instance.FeatureType.INTEGER;
 
 import java.util.List;
@@ -43,13 +43,13 @@ public class FeatureDescriptionFactoryTest {
 		// Given
 		ExpectedFeature floatFeature = mock(ExpectedFeature.class);
 		when(floatFeature.name()).thenReturn("float");
-		when(floatFeature.type()).thenReturn(FLOAT);
+		when(floatFeature.type()).thenReturn(DOUBLE);
 
 		// When
 		FeatureDescription descriptor = factory.createDescription(floatFeature);
 
 		// Then
-		assertThat(descriptor).isEqualTo(new FeatureDescription("float", FLOAT));
+		assertThat(descriptor).isEqualTo(new FeatureDescription("float", DOUBLE));
 	}
 
 	@Test
@@ -57,7 +57,7 @@ public class FeatureDescriptionFactoryTest {
 		// Given
 		ExpectedFeature floatFeature = mock(ExpectedFeature.class);
 		when(floatFeature.name()).thenReturn("float");
-		when(floatFeature.type()).thenReturn(FLOAT);
+		when(floatFeature.type()).thenReturn(DOUBLE);
 
 		ExpectedFeature integerFeature = mock(ExpectedFeature.class);
 		when(integerFeature.name()).thenReturn("integer");
@@ -70,7 +70,7 @@ public class FeatureDescriptionFactoryTest {
 		List<FeatureDescription> descriptors = factory.createDescriptions(inputStream);
 
 		// Then
-		assertThat(descriptors).containsOnly(new FeatureDescription("float", FLOAT), new FeatureDescription("integer", INTEGER));
+		assertThat(descriptors).containsOnly(new FeatureDescription("float", DOUBLE), new FeatureDescription("integer", INTEGER));
 	}
 
 	@Test
@@ -78,7 +78,7 @@ public class FeatureDescriptionFactoryTest {
 		// Given
 		ExpectedFeature floatFeature = mock(ExpectedFeature.class);
 		when(floatFeature.name()).thenReturn("float");
-		when(floatFeature.type()).thenReturn(FLOAT);
+		when(floatFeature.type()).thenReturn(DOUBLE);
 
 		ExpectedFeature integerFeature = mock(ExpectedFeature.class);
 		when(integerFeature.name()).thenReturn("integer");
@@ -91,6 +91,6 @@ public class FeatureDescriptionFactoryTest {
 		List<FeatureDescription> descriptors = factory.createDescriptions(outputStream);
 
 		// Then
-		assertThat(descriptors).containsOnly(new FeatureDescription("float", FLOAT), new FeatureDescription("integer", INTEGER));
+		assertThat(descriptors).containsOnly(new FeatureDescription("float", DOUBLE), new FeatureDescription("integer", INTEGER));
 	}
 }

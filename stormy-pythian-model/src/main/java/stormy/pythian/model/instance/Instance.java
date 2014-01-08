@@ -51,8 +51,8 @@ public class Instance implements Serializable {
 		this.features.put(name, new IntegerFeature(value));
 	}
 
-	public void add(String name, Float value) {
-		this.features.put(name, new FloatFeature(value));
+	public void add(String name, Double value) {
+		this.features.put(name, new DoubleFeature(value));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -135,8 +135,8 @@ public class Instance implements Serializable {
 			return this;
 		}
 
-		public Builder with(String name, Float value) {
-			this.features.put(name, new FloatFeature(value));
+		public Builder with(String name, Double value) {
+			this.features.put(name, new DoubleFeature(value));
 			return this;
 		}
 

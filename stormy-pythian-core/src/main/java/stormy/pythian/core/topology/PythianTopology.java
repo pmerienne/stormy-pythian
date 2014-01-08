@@ -23,7 +23,7 @@ import stormy.pythian.core.configuration.ComponentConfiguration;
 import stormy.pythian.core.configuration.PythianToplogyConfiguration;
 import stormy.pythian.model.component.Component;
 import stormy.pythian.model.instance.Feature;
-import stormy.pythian.model.instance.FloatFeature;
+import stormy.pythian.model.instance.DoubleFeature;
 import stormy.pythian.model.instance.Instance;
 import stormy.pythian.model.instance.IntegerFeature;
 import stormy.pythian.model.instance.LongFeature;
@@ -46,7 +46,7 @@ public class PythianTopology {
 		config.registerSerialization(Feature.class);
 		config.registerSerialization(TextFeature.class);
 		config.registerSerialization(IntegerFeature.class);
-		config.registerSerialization(FloatFeature.class);
+		config.registerSerialization(DoubleFeature.class);
 		config.registerSerialization(LongFeature.class);
 
 		componentFactory = new ComponentFactory(tridentTopology, config);

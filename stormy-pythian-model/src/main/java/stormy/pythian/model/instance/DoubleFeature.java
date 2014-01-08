@@ -15,14 +15,14 @@
  */
 package stormy.pythian.model.instance;
 
-import static stormy.pythian.model.instance.FeatureType.FLOAT;
+import static stormy.pythian.model.instance.FeatureType.DOUBLE;
 
-public class FloatFeature extends Feature<Float> {
+public class DoubleFeature extends Feature<Double> {
 
 	private static final long serialVersionUID = -6104576013573308417L;
 
-	public FloatFeature(Float value) {
-		super(value, FLOAT);
+	public DoubleFeature(Double value) {
+		super(value, DOUBLE);
 	}
 
 }

@@ -16,5 +16,5 @@
 package stormy.pythian.model.instance;
 
 public enum FeatureType {
-	FLOAT, INTEGER, LONG, TEXT;
+	DOUBLE, INTEGER, LONG, TEXT;
 }
