@@ -43,7 +43,7 @@ import stormy.pythian.core.description.ComponentDescription;
 import stormy.pythian.core.description.InputStreamDescription;
 import stormy.pythian.core.description.OutputStreamDescription;
 import stormy.pythian.model.annotation.Configuration;
-import stormy.pythian.model.annotation.FeaturesMapper;
+import stormy.pythian.model.annotation.Mapper;
 import stormy.pythian.model.annotation.InputStream;
 import stormy.pythian.model.annotation.OutputStream;
 import stormy.pythian.model.annotation.Property;
@@ -209,10 +209,10 @@ public class ComponentFactoryTest {
 		@OutputStream(from = "in1", name = "out1")
 		public Stream outputStream;
 
-		@FeaturesMapper(stream = "in1")
+		@Mapper(stream = "in1")
 		public UserSelectionFeaturesMapper in1Mapper;
 
-		@FeaturesMapper(stream = "out1")
+		@Mapper(stream = "out1")
 		public FixedFeaturesMapper out1Mapper;
 
 		public boolean isReady = false;

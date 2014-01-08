@@ -30,7 +30,7 @@ import storm.trident.testing.MemoryMapState;
 import storm.trident.tuple.TridentTuple;
 import stormy.pythian.model.annotation.Documentation;
 import stormy.pythian.model.annotation.ExpectedFeature;
-import stormy.pythian.model.annotation.FeaturesMapper;
+import stormy.pythian.model.annotation.Mapper;
 import stormy.pythian.model.annotation.InputStream;
 import stormy.pythian.model.annotation.OutputStream;
 import stormy.pythian.model.component.Component;
@@ -55,10 +55,10 @@ public class WordCount implements Component {
 	@OutputStream(name = "out", from = "in", newFeatures = { @ExpectedFeature(name = COUNT_FEATURE, type = INTEGER) })
 	private Stream out;
 
-	@FeaturesMapper(stream = "in")
+	@Mapper(stream = "in")
 	private FixedFeaturesMapper inputMapper;
 
-	@FeaturesMapper(stream = "out")
+	@Mapper(stream = "out")
 	private FixedFeaturesMapper outputMapper;
 
 	@Override

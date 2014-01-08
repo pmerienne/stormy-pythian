@@ -35,7 +35,7 @@ import storm.trident.Stream;
 import storm.trident.TridentTopology;
 import stormy.pythian.core.configuration.PropertyConfiguration;
 import stormy.pythian.model.annotation.Configuration;
-import stormy.pythian.model.annotation.FeaturesMapper;
+import stormy.pythian.model.annotation.Mapper;
 import stormy.pythian.model.annotation.InputStream;
 import stormy.pythian.model.annotation.OutputStream;
 import stormy.pythian.model.annotation.Property;
@@ -207,11 +207,11 @@ public class ReflectionHelper {
 	private static <T extends AnnotatedElement> Predicate<T> withFeaturesMapper(final String streamName) {
 		return new Predicate<T>() {
 			public boolean apply(T input) {
-				if (input == null || !input.isAnnotationPresent(FeaturesMapper.class)) {
+				if (input == null || !input.isAnnotationPresent(Mapper.class)) {
 					return false;
 				}
 
-				return input.getAnnotation(FeaturesMapper.class).stream().equals(streamName);
+				return input.getAnnotation(Mapper.class).stream().equals(streamName);
 			}
 		};
 	}

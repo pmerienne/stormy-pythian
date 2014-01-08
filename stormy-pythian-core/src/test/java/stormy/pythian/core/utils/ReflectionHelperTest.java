@@ -29,7 +29,7 @@ import storm.trident.Stream;
 import storm.trident.TridentTopology;
 import stormy.pythian.core.configuration.PropertyConfiguration;
 import stormy.pythian.model.annotation.Configuration;
-import stormy.pythian.model.annotation.FeaturesMapper;
+import stormy.pythian.model.annotation.Mapper;
 import stormy.pythian.model.annotation.InputStream;
 import stormy.pythian.model.annotation.OutputStream;
 import stormy.pythian.model.annotation.Property;
@@ -208,7 +208,7 @@ public class ReflectionHelperTest {
 		// Given
 		class TestComponent implements Component {
 
-			@FeaturesMapper(stream = "in")
+			@Mapper(stream = "in")
 			public FixedFeaturesMapper mapper;
 
 			@Override

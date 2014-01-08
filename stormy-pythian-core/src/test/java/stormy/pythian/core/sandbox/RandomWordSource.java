@@ -22,7 +22,7 @@ import storm.trident.TridentTopology;
 import storm.trident.testing.FixedBatchSpout;
 import stormy.pythian.model.annotation.Documentation;
 import stormy.pythian.model.annotation.ExpectedFeature;
-import stormy.pythian.model.annotation.FeaturesMapper;
+import stormy.pythian.model.annotation.Mapper;
 import stormy.pythian.model.annotation.OutputStream;
 import stormy.pythian.model.annotation.Topology;
 import stormy.pythian.model.component.Component;
@@ -43,7 +43,7 @@ public class RandomWordSource implements Component {
 	@OutputStream(name = "out", newFeatures = { @ExpectedFeature(name = WORD_FEATURE, type = FeatureType.TEXT) })
 	private Stream out;
 
-	@FeaturesMapper(stream = "out")
+	@Mapper(stream = "out")
 	private FixedFeaturesMapper mapper;
 
 	@Topology

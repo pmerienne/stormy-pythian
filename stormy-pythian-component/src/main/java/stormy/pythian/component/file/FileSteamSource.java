@@ -37,7 +37,7 @@ import storm.trident.operation.TridentCollector;
 import storm.trident.spout.IBatchSpout;
 import stormy.pythian.model.annotation.Documentation;
 import stormy.pythian.model.annotation.ExpectedFeature;
-import stormy.pythian.model.annotation.FeaturesMapper;
+import stormy.pythian.model.annotation.Mapper;
 import stormy.pythian.model.annotation.OutputStream;
 import stormy.pythian.model.annotation.Property;
 import stormy.pythian.model.annotation.Topology;
@@ -62,7 +62,7 @@ public class FileSteamSource implements Component {
 	@OutputStream(name = "lines", newFeatures = { @ExpectedFeature(name = LINE_FEATURE, type = TEXT) })
 	private Stream out;
 
-	@FeaturesMapper(stream = "lines")
+	@Mapper(stream = "lines")
 	private FixedFeaturesMapper mapper;
 
 	@Property(name = "File", description = "The full path of the file to read", mandatory = true)

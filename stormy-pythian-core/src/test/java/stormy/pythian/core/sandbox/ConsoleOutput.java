@@ -23,7 +23,7 @@ import storm.trident.Stream;
 import storm.trident.operation.BaseFilter;
 import storm.trident.tuple.TridentTuple;
 import stormy.pythian.model.annotation.Documentation;
-import stormy.pythian.model.annotation.FeaturesMapper;
+import stormy.pythian.model.annotation.Mapper;
 import stormy.pythian.model.annotation.InputStream;
 import stormy.pythian.model.annotation.MappingType;
 import stormy.pythian.model.component.Component;
@@ -40,7 +40,7 @@ public class ConsoleOutput implements Component {
 	@InputStream(name = "in", type = MappingType.USER_SELECTION)
 	private Stream in;
 
-	@FeaturesMapper(stream = "in")
+	@Mapper(stream = "in")
 	private UserSelectionFeaturesMapper mapper;
 
 	@Override
