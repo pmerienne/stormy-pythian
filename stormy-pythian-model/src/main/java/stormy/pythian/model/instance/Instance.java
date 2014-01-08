@@ -86,8 +86,7 @@ public class Instance implements Serializable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result
-				+ ((features == null) ? 0 : features.hashCode());
+		result = prime * result + ((features == null) ? 0 : features.hashCode());
 		return result;
 	}
 
@@ -113,4 +112,40 @@ public class Instance implements Serializable {
 		return "Instance [features=" + features + "]";
 	}
 
+	public static class Builder {
+
+		private final Map<String, Feature<?>> features = new HashMap<>();
+
+		public static Builder instance() {
+			return new Builder();
+		}
+
+		public Builder with(String name, Feature<?> feature) {
+			this.features.put(name, feature);
+			return this;
+		}
+
+		public Builder with(String name, String value) {
+			this.features.put(name, new TextFeature(value));
+			return this;
+		}
+
+		public Builder with(String name, Integer value) {
+			this.features.put(name, new IntegerFeature(value));
+			return this;
+		}
+
+		public Builder with(String name, Float value) {
+			this.features.put(name, new FloatFeature(value));
+			return this;
+		}
+
+		public Instance build() {
+			Instance instance = new Instance();
+			for (String featureName : features.keySet()) {
+				instance.add(featureName, features.get(featureName));
+			}
+			return instance;
+		}
+	}
 }

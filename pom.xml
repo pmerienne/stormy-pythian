@@ -10,6 +10,8 @@
 		<module>stormy-pythian-core</module>
 		<module>stormy-pythian-model</module>
 		<module>stormy-pythian-service</module>
+		<module>stormy-pythian-component</module>
+		<module>stormy-pythian-test-utils</module>
 	</modules>
 
 	<properties>
@@ -66,6 +68,22 @@
 				<groupId>com.github.pmerienne</groupId>
 				<artifactId>stormy-pythian-core</artifactId>
 				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.github.pmerienne</groupId>
+				<artifactId>stormy-pythian-service</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.github.pmerienne</groupId>
+				<artifactId>stormy-pythian-component</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.github.pmerienne</groupId>
+				<artifactId>stormy-pythian-test-utils</artifactId>
+				<version>${project.version}</version>
+				<scope>test</scope>
 			</dependency>
 
 			<!-- Storm -->
