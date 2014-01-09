@@ -37,7 +37,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
 import storm.trident.Stream;
-import stormy.pythian.model.instance.FixedFeaturesMapper;
+import stormy.pythian.model.instance.OutputFeaturesMapper;
 import stormy.pythian.testing.InstanceCollector;
 import stormy.pythian.testing.TridentIntegrationTest;
 import backtype.storm.utils.Utils;
@@ -56,7 +56,7 @@ public class FileSteamSourceTest extends TridentIntegrationTest {
 
 		Map<String, String> mappings = new HashMap<>();
 		mappings.put(LINE_FEATURE, LINE_FEATURE);
-		FixedFeaturesMapper mapper = new FixedFeaturesMapper(mappings);
+		OutputFeaturesMapper mapper = new OutputFeaturesMapper(mappings);
 
 		FileSteamSource component = new FileSteamSource();
 		setField(component, "filename", tmpFile.getAbsolutePath());
@@ -92,7 +92,7 @@ public class FileSteamSourceTest extends TridentIntegrationTest {
 
 		Map<String, String> mappings = new HashMap<>();
 		mappings.put(LINE_FEATURE, LINE_FEATURE);
-		FixedFeaturesMapper mapper = new FixedFeaturesMapper(mappings);
+		OutputFeaturesMapper mapper = new OutputFeaturesMapper(mappings);
 
 		FileSteamSource component = new FileSteamSource();
 		setField(component, "filename", tmpFile.getAbsolutePath());

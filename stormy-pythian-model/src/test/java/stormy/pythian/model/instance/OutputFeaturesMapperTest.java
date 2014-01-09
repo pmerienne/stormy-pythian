@@ -15,7 +15,8 @@
  */
 package stormy.pythian.model.instance;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Map;
@@ -27,54 +28,26 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
-public class InputFixedFeaturesMapperTest {
+public class OutputFeaturesMapperTest {
 
 	@InjectMocks
-	private InputFixedFeaturesMapper mapper;
+	private OutputFeaturesMapper mapper;
 
 	@Mock
 	private Map<String, String> mappings;
 
 	@Test
-	public void should_retrieve_feature() {
+	public void should_set_feature() {
 		// Given
-		when(mappings.get("value")).thenReturn("age");
+		Feature<?> feature = mock(Feature.class);
+		Instance instance = mock(Instance.class);
 
-		Instance instance = new Instance();
-		instance.set("age", 32);
+		when(mappings.get("age")).thenReturn("user age");
 
 		// When
-		Feature<Integer> actualFeature = mapper.getFeature(instance, "value");
+		mapper.setFeature(instance, "age", feature);
 
 		// Then
-		assertThat(actualFeature.getValue()).isEqualTo(32);
+		verify(instance).set("user age", feature);
 	}
-
-	@Test
-	public void should_retrieve_null_with_no_mapping() {
-		// Given
-		Instance instance = new Instance();
-		instance.set("age", 32);
-
-		// When
-		Feature<Integer> actualFeature = mapper.getFeature(instance, "value");
-
-		// Then
-		assertThat(actualFeature).isNull();
-	}
-
-	@Test
-	public void should_retrieve_null_with_no_feature() {
-		// Given
-		when(mappings.get("value")).thenReturn("age");
-
-		Instance instance = new Instance();
-
-		// When
-		Feature<Integer> actualFeature = mapper.getFeature(instance, "value");
-
-		// Then
-		assertThat(actualFeature).isNull();
-	}
-
 }

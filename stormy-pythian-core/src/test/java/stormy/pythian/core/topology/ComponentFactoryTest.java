@@ -43,14 +43,14 @@ import stormy.pythian.core.description.ComponentDescription;
 import stormy.pythian.core.description.InputStreamDescription;
 import stormy.pythian.core.description.OutputStreamDescription;
 import stormy.pythian.model.annotation.Configuration;
-import stormy.pythian.model.annotation.Mapper;
 import stormy.pythian.model.annotation.InputStream;
+import stormy.pythian.model.annotation.Mapper;
 import stormy.pythian.model.annotation.OutputStream;
 import stormy.pythian.model.annotation.Property;
 import stormy.pythian.model.annotation.Topology;
 import stormy.pythian.model.component.Component;
-import stormy.pythian.model.instance.FixedFeaturesMapper;
-import stormy.pythian.model.instance.UserSelectionFeaturesMapper;
+import stormy.pythian.model.instance.InputUserSelectionFeaturesMapper;
+import stormy.pythian.model.instance.OutputFeaturesMapper;
 import backtype.storm.Config;
 
 @SuppressWarnings("serial")
@@ -170,7 +170,7 @@ public class ComponentFactoryTest {
 		TestComponent component = (TestComponent) factory.createComponent(configuration, EMPTY_MAP);
 
 		// Then
-		assertThat(component.in1Mapper).isEqualTo(new UserSelectionFeaturesMapper(selectedFeatures));
+		assertThat(component.in1Mapper).isEqualTo(new InputUserSelectionFeaturesMapper(selectedFeatures));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -189,7 +189,7 @@ public class ComponentFactoryTest {
 		TestComponent component = (TestComponent) factory.createComponent(configuration, EMPTY_MAP);
 
 		// Then
-		assertThat(component.out1Mapper).isEqualTo(new FixedFeaturesMapper(mappings));
+		assertThat(component.out1Mapper).isEqualTo(new OutputFeaturesMapper(mappings));
 	}
 
 	public static class TestComponent implements Component {
@@ -210,10 +210,10 @@ public class ComponentFactoryTest {
 		public Stream outputStream;
 
 		@Mapper(stream = "in1")
-		public UserSelectionFeaturesMapper in1Mapper;
+		public InputUserSelectionFeaturesMapper in1Mapper;
 
 		@Mapper(stream = "out1")
-		public FixedFeaturesMapper out1Mapper;
+		public OutputFeaturesMapper out1Mapper;
 
 		public boolean isReady = false;
 

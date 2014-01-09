@@ -29,7 +29,7 @@ import stormy.pythian.model.annotation.MappingType;
 import stormy.pythian.model.component.Component;
 import stormy.pythian.model.instance.Feature;
 import stormy.pythian.model.instance.Instance;
-import stormy.pythian.model.instance.UserSelectionFeaturesMapper;
+import stormy.pythian.model.instance.InputUserSelectionFeaturesMapper;
 import backtype.storm.tuple.Fields;
 
 @Documentation(name = "Console output")
@@ -41,7 +41,7 @@ public class ConsoleOutput implements Component {
 	private Stream in;
 
 	@Mapper(stream = "in")
-	private UserSelectionFeaturesMapper mapper;
+	private InputUserSelectionFeaturesMapper mapper;
 
 	@Override
 	public void init() {
@@ -51,9 +51,9 @@ public class ConsoleOutput implements Component {
 	@SuppressWarnings("serial")
 	private static class PrintToConsole extends BaseFilter {
 
-		private final UserSelectionFeaturesMapper mapper;
+		private final InputUserSelectionFeaturesMapper mapper;
 
-		public PrintToConsole(UserSelectionFeaturesMapper mapper) {
+		public PrintToConsole(InputUserSelectionFeaturesMapper mapper) {
 			this.mapper = mapper;
 		}
 

@@ -35,7 +35,7 @@ import stormy.pythian.model.annotation.OutputStream;
 import stormy.pythian.model.annotation.Property;
 import stormy.pythian.model.annotation.Topology;
 import stormy.pythian.model.component.Component;
-import stormy.pythian.model.instance.FixedFeaturesMapper;
+import stormy.pythian.model.instance.InputFixedFeaturesMapper;
 import backtype.storm.Config;
 
 @SuppressWarnings("serial")
@@ -209,7 +209,7 @@ public class ReflectionHelperTest {
 		class TestComponent implements Component {
 
 			@Mapper(stream = "in")
-			public FixedFeaturesMapper mapper;
+			public InputFixedFeaturesMapper mapper;
 
 			@Override
 			public void init() {
@@ -217,7 +217,7 @@ public class ReflectionHelperTest {
 		}
 
 		TestComponent testComponent = new TestComponent();
-		FixedFeaturesMapper mapper = mock(FixedFeaturesMapper.class);
+		InputFixedFeaturesMapper mapper = mock(InputFixedFeaturesMapper.class);
 
 		// When
 		ReflectionHelper.setFeaturesMapper(testComponent, "in", mapper);

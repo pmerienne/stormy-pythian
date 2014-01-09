@@ -26,14 +26,14 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
-public class UserSelectionFeaturesMapperTest {
+public class InputUserSelectionFeaturesMapperTest {
 
-	private UserSelectionFeaturesMapper mapper;
+	private InputUserSelectionFeaturesMapper mapper;
 
 	@Before
 	public void init() {
 		List<String> selectedFeatures = Arrays.asList("age", "viewCount");
-		mapper = new UserSelectionFeaturesMapper(selectedFeatures);
+		mapper = new InputUserSelectionFeaturesMapper(selectedFeatures);
 	}
 
 	@Test
@@ -64,20 +64,5 @@ public class UserSelectionFeaturesMapperTest {
 		expectedFeatures.put("age", null);
 		expectedFeatures.put("viewCount", new IntegerFeature(42));
 		assertThat(actualsFeatures).isEqualTo(expectedFeatures);
-	}
-
-	@Test
-	public void should_retrieve_feature_by_name() {
-		// Given
-		Instance instance = new Instance();
-		instance.set("age", 32);
-		instance.set("viewCount", 42);
-
-		// When
-		Feature<Object> actualFeature = mapper.getFeature(instance, "viewCount");
-
-		// Then
-		assertThat(actualFeature.getValue()).isEqualTo(42);
-
 	}
 }

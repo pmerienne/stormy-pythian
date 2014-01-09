@@ -30,14 +30,15 @@ import storm.trident.testing.MemoryMapState;
 import storm.trident.tuple.TridentTuple;
 import stormy.pythian.model.annotation.Documentation;
 import stormy.pythian.model.annotation.ExpectedFeature;
-import stormy.pythian.model.annotation.Mapper;
 import stormy.pythian.model.annotation.InputStream;
+import stormy.pythian.model.annotation.Mapper;
 import stormy.pythian.model.annotation.OutputStream;
 import stormy.pythian.model.component.Component;
 import stormy.pythian.model.instance.Feature;
-import stormy.pythian.model.instance.FixedFeaturesMapper;
+import stormy.pythian.model.instance.InputFixedFeaturesMapper;
 import stormy.pythian.model.instance.Instance;
 import stormy.pythian.model.instance.LongFeature;
+import stormy.pythian.model.instance.OutputFeaturesMapper;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Values;
 
@@ -56,10 +57,10 @@ public class WordCount implements Component {
 	private Stream out;
 
 	@Mapper(stream = "in")
-	private FixedFeaturesMapper inputMapper;
+	private InputFixedFeaturesMapper inputMapper;
 
 	@Mapper(stream = "out")
-	private FixedFeaturesMapper outputMapper;
+	private OutputFeaturesMapper outputMapper;
 
 	@Override
 	public void init() {
@@ -79,9 +80,9 @@ public class WordCount implements Component {
 	private static class ExtractFeature extends BaseFunction {
 
 		private final String featureName;
-		private final FixedFeaturesMapper inputMapper;
+		private final InputFixedFeaturesMapper inputMapper;
 
-		public ExtractFeature(String featureName, FixedFeaturesMapper mapper) {
+		public ExtractFeature(String featureName, InputFixedFeaturesMapper mapper) {
 			this.featureName = featureName;
 			this.inputMapper = mapper;
 		}
@@ -98,9 +99,9 @@ public class WordCount implements Component {
 	@SuppressWarnings("serial")
 	private static class AddCountFeature extends BaseFunction {
 
-		private final FixedFeaturesMapper outMapper;
+		private final OutputFeaturesMapper outMapper;
 
-		public AddCountFeature(FixedFeaturesMapper outMapper) {
+		public AddCountFeature(OutputFeaturesMapper outMapper) {
 			this.outMapper = outMapper;
 		}
 

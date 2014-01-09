@@ -27,8 +27,8 @@ import stormy.pythian.model.annotation.OutputStream;
 import stormy.pythian.model.annotation.Topology;
 import stormy.pythian.model.component.Component;
 import stormy.pythian.model.instance.FeatureType;
-import stormy.pythian.model.instance.FixedFeaturesMapper;
 import stormy.pythian.model.instance.Instance;
+import stormy.pythian.model.instance.OutputFeaturesMapper;
 import stormy.pythian.model.instance.TextFeature;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Values;
@@ -44,7 +44,7 @@ public class RandomWordSource implements Component {
 	private Stream out;
 
 	@Mapper(stream = "out")
-	private FixedFeaturesMapper mapper;
+	private OutputFeaturesMapper mapper;
 
 	@Topology
 	private TridentTopology topology;

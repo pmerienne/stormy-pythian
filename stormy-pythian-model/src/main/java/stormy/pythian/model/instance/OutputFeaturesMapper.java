@@ -18,27 +18,19 @@ package stormy.pythian.model.instance;
 import java.io.Serializable;
 import java.util.Map;
 
-public class InputFixedFeaturesMapper implements Serializable {
+public class OutputFeaturesMapper implements Serializable {
 
-	private static final long serialVersionUID = 5298891914881030970L;
+	private static final long serialVersionUID = -1845403070125797936L;
 
 	private final Map<String, String> mappings;
 
-	public InputFixedFeaturesMapper(Map<String, String> mappings) {
+	public OutputFeaturesMapper(Map<String, String> mappings) {
 		this.mappings = mappings;
 	}
 
-	public <T> Feature<T> getFeature(Instance instance, String featureName) {
+	public <T> void setFeature(Instance instance, String featureName, Feature<T> feature) {
 		String outsideName = mappings.get(featureName);
-		if (outsideName != null) {
-			return instance.get(outsideName);
-		} else {
-			return null;
-		}
-	}
-
-	public Map<String, String> getMappings() {
-		return mappings;
+		instance.set(outsideName, feature);
 	}
 
 	@Override
@@ -57,7 +49,7 @@ public class InputFixedFeaturesMapper implements Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		InputFixedFeaturesMapper other = (InputFixedFeaturesMapper) obj;
+		OutputFeaturesMapper other = (OutputFeaturesMapper) obj;
 		if (mappings == null) {
 			if (other.mappings != null)
 				return false;
@@ -68,7 +60,7 @@ public class InputFixedFeaturesMapper implements Serializable {
 
 	@Override
 	public String toString() {
-		return "InputFixedFeaturesMapper [mappings=" + mappings + "]";
+		return "OutputFeaturesMapper [mappings=" + mappings + "]";
 	}
 
 }

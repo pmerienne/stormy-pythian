@@ -15,30 +15,21 @@
  */
 package stormy.pythian.model.instance;
 
-import static stormy.pythian.model.annotation.MappingType.USER_SELECTION;
-
-import java.util.ArrayList;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import stormy.pythian.model.annotation.MappingType;
-
-public class UserSelectionFeaturesMapper implements FeaturesMapper {
+public class InputUserSelectionFeaturesMapper implements Serializable {
 
 	private static final long serialVersionUID = 3749997614862014103L;
 
 	private final List<String> selectedFeatures;
 
-	public UserSelectionFeaturesMapper() {
-		this.selectedFeatures = new ArrayList<>();
-	}
-
-	public UserSelectionFeaturesMapper(List<String> selectedFeatures) {
+	public InputUserSelectionFeaturesMapper(List<String> selectedFeatures) {
 		this.selectedFeatures = selectedFeatures;
 	}
 
-	@Override
 	public Map<String, Feature<?>> getFeatures(Instance instance) {
 		Map<String, Feature<?>> features = new HashMap<>(selectedFeatures.size());
 
@@ -48,17 +39,6 @@ public class UserSelectionFeaturesMapper implements FeaturesMapper {
 		}
 
 		return features;
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public <T> Feature<T> getFeature(Instance instance, String featureName) {
-		return (Feature<T>) (selectedFeatures.contains(featureName) ? instance.get(featureName) : null);
-	}
-
-	@Override
-	public MappingType getType() {
-		return USER_SELECTION;
 	}
 
 	@Override
@@ -77,7 +57,7 @@ public class UserSelectionFeaturesMapper implements FeaturesMapper {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		UserSelectionFeaturesMapper other = (UserSelectionFeaturesMapper) obj;
+		InputUserSelectionFeaturesMapper other = (InputUserSelectionFeaturesMapper) obj;
 		if (selectedFeatures == null) {
 			if (other.selectedFeatures != null)
 				return false;
@@ -88,7 +68,7 @@ public class UserSelectionFeaturesMapper implements FeaturesMapper {
 
 	@Override
 	public String toString() {
-		return "UserSelectionFeaturesMapper [selectedFeatures=" + selectedFeatures + "]";
+		return "InputUserSelectionFeaturesMapper [selectedFeatures=" + selectedFeatures + "]";
 	}
 
 }

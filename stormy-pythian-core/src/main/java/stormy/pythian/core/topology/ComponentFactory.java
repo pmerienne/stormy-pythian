@@ -31,9 +31,9 @@ import stormy.pythian.core.configuration.InputStreamConfiguration;
 import stormy.pythian.core.configuration.OutputStreamConfiguration;
 import stormy.pythian.core.utils.ReflectionHelper;
 import stormy.pythian.model.component.Component;
-import stormy.pythian.model.instance.FeaturesMapper;
-import stormy.pythian.model.instance.FixedFeaturesMapper;
-import stormy.pythian.model.instance.UserSelectionFeaturesMapper;
+import stormy.pythian.model.instance.InputFixedFeaturesMapper;
+import stormy.pythian.model.instance.InputUserSelectionFeaturesMapper;
+import stormy.pythian.model.instance.OutputFeaturesMapper;
 import backtype.storm.Config;
 
 public class ComponentFactory {
@@ -65,46 +65,41 @@ public class ComponentFactory {
 			throw new IllegalArgumentException("Unable to add component " + configuration, e);
 		}
 	}
-	
+
 	private void setInputStreams(Component component, Map<String, Stream> inputStreams) {
 		Map<String, Stream> switchedStreams = new HashMap<>(inputStreams.size());
 
-		for(Entry<String, Stream> stream : inputStreams.entrySet()) {
+		for (Entry<String, Stream> stream : inputStreams.entrySet()) {
 			switchedStreams.put(stream.getKey(), replaceInstanceField(stream.getValue()));
 		}
-		
+
 		ReflectionHelper.setInputStreams(component, switchedStreams);
 	}
-	
+
 	private Stream replaceInstanceField(Stream stream) {
 		return stream.applyAssembly(new ReplaceInstanceField());
 	}
 
-
+	// TODO : refactor !
 	private void setFeaturesMappers(Component component, ComponentConfiguration configuration) {
 		for (InputStreamConfiguration isConfiguration : configuration.inputStreams) {
-			FeaturesMapper mapper = createFeatureMapper(isConfiguration);
 			String streamName = isConfiguration.getStreamName();
-			setFeaturesMapper(component, streamName, mapper);
+
+			switch (isConfiguration.getMappingType()) {
+			case USER_SELECTION:
+				setFeaturesMapper(component, streamName, new InputUserSelectionFeaturesMapper(isConfiguration.getSelectedFeatures()));
+				break;
+			case FIXED_FEATURES:
+				setFeaturesMapper(component, streamName, new InputFixedFeaturesMapper(isConfiguration.getMappings()));
+				break;
+			}
+
 		}
 
 		for (OutputStreamConfiguration osConfiguration : configuration.outputStreams) {
-			FeaturesMapper mapper = new FixedFeaturesMapper(osConfiguration.mappings);
 			String streamName = osConfiguration.getStreamName();
+			OutputFeaturesMapper mapper = new OutputFeaturesMapper(osConfiguration.mappings);
 			setFeaturesMapper(component, streamName, mapper);
 		}
-	}
-
-	private FeaturesMapper createFeatureMapper(InputStreamConfiguration configuration) {
-		FeaturesMapper mapper = null;
-		switch (configuration.getMappingType()) {
-		case USER_SELECTION:
-			mapper = new UserSelectionFeaturesMapper(configuration.getSelectedFeatures());
-			break;
-		case FIXED_FEATURES:
-			mapper = new FixedFeaturesMapper(configuration.getMappings());
-			break;
-		}
-		return mapper;
 	}
 }
