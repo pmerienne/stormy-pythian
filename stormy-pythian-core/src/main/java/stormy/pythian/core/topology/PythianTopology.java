@@ -22,8 +22,9 @@ import storm.trident.TridentTopology;
 import stormy.pythian.core.configuration.ComponentConfiguration;
 import stormy.pythian.core.configuration.PythianToplogyConfiguration;
 import stormy.pythian.model.component.Component;
-import stormy.pythian.model.instance.Feature;
 import stormy.pythian.model.instance.DoubleFeature;
+import stormy.pythian.model.instance.Feature;
+import stormy.pythian.model.instance.FeaturesIndex;
 import stormy.pythian.model.instance.Instance;
 import stormy.pythian.model.instance.IntegerFeature;
 import stormy.pythian.model.instance.LongFeature;
@@ -35,6 +36,7 @@ public class PythianTopology {
 
 	private ComponentFactory componentFactory;
 	private AvailableComponentPool componentPool;
+	private FeaturesIndexFactory featuresIndexFactory;
 
 	private TridentTopology tridentTopology;
 	private Config config;
@@ -62,8 +64,12 @@ public class PythianTopology {
 			ComponentConfiguration configuration = componentPool.getAvailableComponent();
 			if (configuration != null) {
 				Map<String, Stream> inputStreams = componentPool.getAvailableInputStreams(configuration);
-				Component component = componentFactory.createComponent(configuration, inputStreams);
+				Map<String, FeaturesIndex> featuresIndexes = featuresIndexFactory.getFeaturesIndexes(configuration);
+				
+				Component component = componentFactory.createComponent(configuration, inputStreams, featuresIndexes);
+
 				componentPool.registerBuildedComponent(component, configuration);
+				featuresIndexFactory.registerBuildedComponent(configuration, topologyConfiguration.findConnectionsFrom(configuration.getId()));
 			} else {
 				throw new IllegalArgumentException("Unable to create topology, some connections are missing");
 			}

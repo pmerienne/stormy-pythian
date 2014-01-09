@@ -16,36 +16,39 @@
 package stormy.pythian.model.instance;
 
 import java.io.Serializable;
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 public class InputUserSelectionFeaturesMapper implements Serializable {
 
 	private static final long serialVersionUID = 3749997614862014103L;
 
-	private final List<String> selectedFeatures;
+	private final FeaturesIndex featuresIndex;
+	private final int[] selectedIndex;
 
-	public InputUserSelectionFeaturesMapper(List<String> selectedFeatures) {
-		this.selectedFeatures = selectedFeatures;
+	public InputUserSelectionFeaturesMapper(FeaturesIndex featuresIndex, List<String> selectedFeatures) {
+		this.featuresIndex = featuresIndex;
+		this.selectedIndex = new int[selectedFeatures.size()];
+
+		for (int i = 0; i < selectedFeatures.size(); i++) {
+			int selectedIndex = featuresIndex.getIndex(selectedFeatures.get(i));
+			this.selectedIndex[i] = selectedIndex;
+		}
 	}
 
-	public Map<String, Feature<?>> getFeatures(Instance instance) {
-		Map<String, Feature<?>> features = new HashMap<>(selectedFeatures.size());
-
-		for (String featureName : selectedFeatures) {
-			Feature<?> feature = instance.get(featureName);
-			features.put(featureName, feature);
+	public void forEachFeatures(Instance instance, FeatureProcedure procedure) {
+		Feature<?>[] features = instance.getFeatures();
+		for (int index : selectedIndex) {
+			procedure.process(features[index]);
 		}
-
-		return features;
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((selectedFeatures == null) ? 0 : selectedFeatures.hashCode());
+		result = prime * result + ((featuresIndex == null) ? 0 : featuresIndex.hashCode());
+		result = prime * result + Arrays.hashCode(selectedIndex);
 		return result;
 	}
 
@@ -58,17 +61,19 @@ public class InputUserSelectionFeaturesMapper implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		InputUserSelectionFeaturesMapper other = (InputUserSelectionFeaturesMapper) obj;
-		if (selectedFeatures == null) {
-			if (other.selectedFeatures != null)
+		if (featuresIndex == null) {
+			if (other.featuresIndex != null)
 				return false;
-		} else if (!selectedFeatures.equals(other.selectedFeatures))
+		} else if (!featuresIndex.equals(other.featuresIndex))
+			return false;
+		if (!Arrays.equals(selectedIndex, other.selectedIndex))
 			return false;
 		return true;
 	}
 
 	@Override
 	public String toString() {
-		return "InputUserSelectionFeaturesMapper [selectedFeatures=" + selectedFeatures + "]";
+		return "InputUserSelectionFeaturesMapper [featuresIndex=" + featuresIndex + ", selectedIndex=" + Arrays.toString(selectedIndex) + "]";
 	}
 
 }

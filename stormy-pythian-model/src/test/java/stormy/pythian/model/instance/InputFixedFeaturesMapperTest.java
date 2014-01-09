@@ -16,32 +16,32 @@
 package stormy.pythian.model.instance;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+
+import static stormy.pythian.model.instance.Instance.Builder.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class InputFixedFeaturesMapperTest {
 
-	@InjectMocks
-	private InputFixedFeaturesMapper mapper;
-
-	@Mock
-	private Map<String, String> mappings;
-
+	@SuppressWarnings("unchecked")
 	@Test
 	public void should_retrieve_feature() {
 		// Given
-		when(mappings.get("value")).thenReturn("age");
+		FeaturesIndex index = mock(FeaturesIndex.class);
+		Map<String, String> mappings = mock(Map.class);
+		Instance instance = instance().with(new IntegerFeature(32)).build();
 
-		Instance instance = new Instance();
-		instance.set("age", 32);
+		when(mappings.get("value")).thenReturn("age");
+		when(index.getIndex("age")).thenReturn(0);
+
+		InputFixedFeaturesMapper mapper = new InputFixedFeaturesMapper(index, mappings);
 
 		// When
 		Feature<Integer> actualFeature = mapper.getFeature(instance, "value");
@@ -50,11 +50,17 @@ public class InputFixedFeaturesMapperTest {
 		assertThat(actualFeature.getValue()).isEqualTo(32);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void should_retrieve_null_with_no_mapping() {
 		// Given
-		Instance instance = new Instance();
-		instance.set("age", 32);
+		FeaturesIndex index = mock(FeaturesIndex.class);
+		Map<String, String> mappings = mock(Map.class);
+		Instance instance = instance().with(new IntegerFeature(32)).build();
+
+		when(mappings.get("value")).thenReturn(null);
+
+		InputFixedFeaturesMapper mapper = new InputFixedFeaturesMapper(index, mappings);
 
 		// When
 		Feature<Integer> actualFeature = mapper.getFeature(instance, "value");
@@ -63,12 +69,18 @@ public class InputFixedFeaturesMapperTest {
 		assertThat(actualFeature).isNull();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void should_retrieve_null_with_no_feature() {
 		// Given
-		when(mappings.get("value")).thenReturn("age");
+		FeaturesIndex index = mock(FeaturesIndex.class);
+		Map<String, String> mappings = mock(Map.class);
+		Instance instance = instance().with(null).build();
 
-		Instance instance = new Instance();
+		when(mappings.get("value")).thenReturn("age");
+		when(index.getIndex("age")).thenReturn(0);
+
+		InputFixedFeaturesMapper mapper = new InputFixedFeaturesMapper(index, mappings);
 
 		// When
 		Feature<Integer> actualFeature = mapper.getFeature(instance, "value");

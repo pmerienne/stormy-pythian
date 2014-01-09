@@ -23,22 +23,26 @@ public class InputFixedFeaturesMapper implements Serializable {
 	private static final long serialVersionUID = 5298891914881030970L;
 
 	private final Map<String, String> mappings;
+	private final FeaturesIndex featuresIndex;
 
-	public InputFixedFeaturesMapper(Map<String, String> mappings) {
+	public InputFixedFeaturesMapper(FeaturesIndex featuresIndex, Map<String, String> mappings) {
+		this.featuresIndex = featuresIndex;
 		this.mappings = mappings;
 	}
 
+	@SuppressWarnings("unchecked")
 	public <T> Feature<T> getFeature(Instance instance, String featureName) {
 		String outsideName = mappings.get(featureName);
 		if (outsideName != null) {
-			return instance.get(outsideName);
+			int index = featuresIndex.getIndex(outsideName);
+			if (index >= 0) {
+				return (Feature<T>) instance.getFeatures()[index];
+			} else {
+				return null;
+			}
 		} else {
 			return null;
 		}
-	}
-
-	public Map<String, String> getMappings() {
-		return mappings;
 	}
 
 	@Override
@@ -68,7 +72,7 @@ public class InputFixedFeaturesMapper implements Serializable {
 
 	@Override
 	public String toString() {
-		return "InputFixedFeaturesMapper [mappings=" + mappings + "]";
+		return "InputFixedFeaturesMapper [mappings=" + mappings + ", featuresIndex=" + featuresIndex + "]";
 	}
 
 }

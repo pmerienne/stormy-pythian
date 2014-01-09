@@ -16,11 +16,8 @@
 package stormy.pythian.model.instance;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
-import storm.trident.tuple.TridentTuple;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Instance implements Serializable {
 
@@ -29,57 +26,30 @@ public class Instance implements Serializable {
 	public final static String INSTANCE_FIELD = "INSTANCE_FIELD";
 	public final static String NEW_INSTANCE_FIELD = "NEW_INSTANCE_FIELD";
 
-	private final Map<String, Feature<?>> features;
+	private final Feature<?>[] features;
 
-	public Instance() {
-		this.features = new HashMap<>();
+	Instance() {
+		this.features = new Feature<?>[0];
 	}
 
-	public Instance(Instance original) {
-		this.features = new HashMap<>(original.features);
+	Instance(int size) {
+		this.features = new Feature<?>[size];
 	}
 
-	public void set(String name, Feature<?> feature) {
-		this.features.put(name, feature);
+	public Feature<?>[] getFeatures() {
+		return features;
 	}
 
-	public void set(String name, String value) {
-		this.features.put(name, new TextFeature(value));
+	public Feature<?> get(int i) {
+		return this.features[i];
 	}
 
-	public void set(String name, Integer value) {
-		this.features.put(name, new IntegerFeature(value));
-	}
-
-	public void set(String name, Double value) {
-		this.features.put(name, new DoubleFeature(value));
-	}
-
-	@SuppressWarnings("unchecked")
-	public <T> Feature<T> get(String name) {
-		return (Feature<T>) this.features.get(name);
+	public void set(int i, Feature<?> feature) {
+		this.features[i] = feature;
 	}
 
 	public int size() {
-		return this.features.size();
-	}
-
-	public Set<String> featureNames() {
-		return this.features.keySet();
-	}
-
-	public static Instance from(TridentTuple tuple) {
-		Instance instance;
-		try {
-			instance = (Instance) tuple.getValueByField(INSTANCE_FIELD);
-		} catch (Exception ex) {
-			instance = null;
-		}
-		return instance;
-	}
-
-	public Map<String, Feature<?>> getFeatures() {
-		return features;
+		return this.features.length;
 	}
 
 	@Override
@@ -114,36 +84,23 @@ public class Instance implements Serializable {
 
 	public static class Builder {
 
-		private final Map<String, Feature<?>> features = new HashMap<>();
+		private final List<Feature<?>> features = new ArrayList<>();
 
 		public static Builder instance() {
 			return new Builder();
 		}
 
-		public Builder with(String name, Feature<?> feature) {
-			this.features.put(name, feature);
-			return this;
-		}
-
-		public Builder with(String name, String value) {
-			this.features.put(name, new TextFeature(value));
-			return this;
-		}
-
-		public Builder with(String name, Integer value) {
-			this.features.put(name, new IntegerFeature(value));
-			return this;
-		}
-
-		public Builder with(String name, Double value) {
-			this.features.put(name, new DoubleFeature(value));
+		public Builder with(Feature<?> feature) {
+			this.features.add(feature);
 			return this;
 		}
 
 		public Instance build() {
-			Instance instance = new Instance();
-			for (String featureName : features.keySet()) {
-				instance.set(featureName, features.get(featureName));
+			Instance instance = new Instance(features.size());
+			int i = 0;
+			for (Feature<?> feature : features) {
+				instance.set(i, feature);
+				i++;
 			}
 			return instance;
 		}

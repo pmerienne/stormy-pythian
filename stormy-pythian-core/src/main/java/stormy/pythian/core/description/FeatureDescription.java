@@ -15,9 +15,17 @@
  */
 package stormy.pythian.core.description;
 
+import com.google.common.base.Function;
+
 import stormy.pythian.model.instance.FeatureType;
 
 public class FeatureDescription {
+
+	public final static Function<FeatureDescription, String> EXTRACT_NAME = new Function<FeatureDescription, String>() {
+		public String apply(FeatureDescription input) {
+			return input.getName();
+		}
+	};
 
 	private final String name;
 	private final FeatureType type;

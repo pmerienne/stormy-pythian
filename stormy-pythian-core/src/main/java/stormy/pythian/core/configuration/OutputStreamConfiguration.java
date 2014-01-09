@@ -15,9 +15,13 @@
  */
 package stormy.pythian.core.configuration;
 
+import static com.google.common.collect.Iterables.transform;
+import static com.google.common.collect.Lists.newArrayList;
 import static org.apache.commons.lang.StringUtils.isEmpty;
+import static stormy.pythian.core.description.FeatureDescription.EXTRACT_NAME;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import stormy.pythian.core.description.OutputStreamDescription;
@@ -50,5 +54,9 @@ public class OutputStreamConfiguration {
 
 	public String getStreamName() {
 		return descriptor.getName();
+	}
+
+	public List<String> getNewFeatureNames() {
+		return newArrayList(transform(descriptor.getNewFeatures(), EXTRACT_NAME));
 	}
 }

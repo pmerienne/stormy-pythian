@@ -31,6 +31,7 @@ import stormy.pythian.core.configuration.InputStreamConfiguration;
 import stormy.pythian.core.configuration.OutputStreamConfiguration;
 import stormy.pythian.core.utils.ReflectionHelper;
 import stormy.pythian.model.component.Component;
+import stormy.pythian.model.instance.FeaturesIndex;
 import stormy.pythian.model.instance.InputFixedFeaturesMapper;
 import stormy.pythian.model.instance.InputUserSelectionFeaturesMapper;
 import stormy.pythian.model.instance.OutputFeaturesMapper;
@@ -49,7 +50,7 @@ public class ComponentFactory {
 		this.config = config;
 	}
 
-	public Component createComponent(ComponentConfiguration configuration, Map<String, Stream> inputStreams) {
+	public Component createComponent(ComponentConfiguration configuration, Map<String, Stream> inputStreams, Map<String, FeaturesIndex> featuresIndexes) {
 		try {
 			Component component = configuration.descriptor.clazz.newInstance();
 			setProperties(component, configuration.properties);

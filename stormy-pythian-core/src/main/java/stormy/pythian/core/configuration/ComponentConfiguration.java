@@ -15,10 +15,15 @@
  */
 package stormy.pythian.core.configuration;
 
+import static com.google.common.collect.Iterables.tryFind;
+import static org.apache.commons.lang.RandomStringUtils.randomAlphabetic;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import stormy.pythian.core.description.ComponentDescription;
+
+import com.google.common.base.Predicate;
 
 public class ComponentConfiguration {
 
@@ -51,4 +56,42 @@ public class ComponentConfiguration {
 		this.outputStreams = outputStreams;
 	}
 
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public OutputStreamConfiguration findOutputStreamByName(final String name) {
+		return tryFind(outputStreams, new Predicate<OutputStreamConfiguration>() {
+			public boolean apply(OutputStreamConfiguration candidate) {
+				return name.equals(candidate.getStreamName());
+			}
+		}).orNull();
+	}
+
+	public static class Builder {
+
+		public String id;
+		public ComponentDescription description;
+
+		public List<PropertyConfiguration> properties = new ArrayList<>();
+		public List<InputStreamConfiguration> inputStreams = new ArrayList<>();
+		public List<OutputStreamConfiguration> outputStreams = new ArrayList<>();
+
+		public static Builder componentConfiguration() {
+			return new Builder();
+		}
+
+		public Builder() {
+			this.id = randomAlphabetic(6);
+		}
+
+		public Builder of(ComponentDescription description) {
+			this.description = description;
+			return this;
+		}
+	}
 }
