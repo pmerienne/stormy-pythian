@@ -13,16 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package stormy.pythian.model.instance;
+package stormy.pythian.model.annotation;
 
-import static stormy.pythian.model.instance.FeatureType.INTEGER;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-public class IntegerFeature extends Feature<Integer> {
+@Target(ElementType.FIELD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Mapper {
 
-	private static final long serialVersionUID = -4914742414753408024L;
-
-	public IntegerFeature(Integer value) {
-		super(value, INTEGER);
-	}
-
+	String stream();
 }

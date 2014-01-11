@@ -13,16 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package stormy.pythian.model.instance;
+package stormy.pythian.component;
 
-import static stormy.pythian.model.instance.FeatureType.DOUBLE;
+import storm.trident.Stream;
+import storm.trident.TridentTopology;
+import stormy.pythian.model.annotation.Topology;
+import stormy.pythian.model.component.Component;
 
-public class DoubleFeature extends Feature<Double> {
+public abstract class InstanceProcessor implements Component {
 
-	private static final long serialVersionUID = -6104576013573308417L;
+	private static final long serialVersionUID = -538661487188973802L;
 
-	public DoubleFeature(Double value) {
-		super(value, DOUBLE);
+	@Topology
+	private TridentTopology topology;
+
+	@Override
+	public void init() {
 	}
 
+	protected abstract Stream setInputStream();
+
+	protected abstract void setOutputStream(Stream out);
 }

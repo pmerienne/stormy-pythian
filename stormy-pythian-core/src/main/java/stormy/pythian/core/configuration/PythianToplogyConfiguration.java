@@ -15,9 +15,15 @@
  */
 package stormy.pythian.core.configuration;
 
+import static com.google.common.collect.Iterables.filter;
+import static com.google.common.collect.Lists.newArrayList;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 
 public class PythianToplogyConfiguration {
 
@@ -64,6 +70,22 @@ public class PythianToplogyConfiguration {
 
 	public List<ConnectionConfiguration> getConnections() {
 		return connections;
+	}
+
+	public List<ConnectionConfiguration> findConnectionsFrom(final String componentId) {
+		return newArrayList(filter(connections, new Predicate<ConnectionConfiguration>() {
+			public boolean apply(ConnectionConfiguration input) {
+				return componentId.equals(input.from);
+			}
+		}));
+	}
+
+	public ConnectionConfiguration findConnectionTo(final String componentId, final String streamName) {
+		return Iterables.tryFind(connections, new Predicate<ConnectionConfiguration>() {
+			public boolean apply(ConnectionConfiguration input) {
+				return componentId.equals(input.to) && streamName.equals(input.toStreamName);
+			}
+		}).orNull();
 	}
 
 	@Override

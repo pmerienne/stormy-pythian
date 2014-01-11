@@ -17,6 +17,8 @@ package stormy.pythian.core.sandbox;
 
 import static stormy.pythian.model.instance.Instance.INSTANCE_FIELD;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import storm.trident.Stream;
@@ -30,7 +32,6 @@ import storm.trident.operation.builtin.MapGet;
 import storm.trident.testing.FixedBatchSpout;
 import storm.trident.testing.MemoryMapState;
 import storm.trident.tuple.TridentTuple;
-import stormy.pythian.model.instance.Feature;
 import stormy.pythian.model.instance.Instance;
 import backtype.storm.Config;
 import backtype.storm.LocalCluster;
@@ -44,26 +45,26 @@ public class StormSandBox {
 	public static void main(String[] args) {
 		LocalCluster cluster = new LocalCluster();
 		TridentTopology topology = new TridentTopology();
-		
+
 		try {
 			FixedBatchSpout spout = new FixedBatchSpout(new Fields(INSTANCE_FIELD), 4, //
-				createValues("pierre", 26), createValues("fabien", 25), createValues("meriem", 25), createValues("julie", 32), //
-				createValues("brice", 32), createValues("arnaud", 30), createValues("pierre L", 30), createValues("camille", 32)//
+					createValues("pierre", 26), createValues("fabien", 25), createValues("meriem", 25), createValues("julie", 32), //
+					createValues("brice", 32), createValues("arnaud", 30), createValues("pierre L", 30), createValues("camille", 32)//
 			);
-			
+
 			Stream instances = topology.newStream("test", spout);
-			
+
 			TridentState countByAge = instances //
 					.each(new Fields(Instance.INSTANCE_FIELD), new ExtractFeature("age"), new Fields("age")) //
-				.groupBy(new Fields("age")) //
-				.persistentAggregate(new MemoryMapState.Factory(), new Fields("age"), new Count(), new Fields("count"));
-			
+					.groupBy(new Fields("age")) //
+					.persistentAggregate(new MemoryMapState.Factory(), new Fields("age"), new Count(), new Fields("count"));
+
 			countByAge.newValuesStream().each(new Fields("age", "count"), new Debug());
-			
+
 			instances //
-			 .each(new Fields(Instance.INSTANCE_FIELD), new ExtractFeature("age"), new Fields("age")) //
-			 .stateQuery(countByAge, new Fields("age"), new MapGet(), new Fields("age_count")) //
-			 .each(new Fields(Instance.INSTANCE_FIELD, "age_count"), new Debug("final"));
+					.each(new Fields(Instance.INSTANCE_FIELD), new ExtractFeature("age"), new Fields("age")) //
+					.stateQuery(countByAge, new Fields("age"), new MapGet(), new Fields("age_count")) //
+					.each(new Fields(Instance.INSTANCE_FIELD, "age_count"), new Debug("final"));
 
 			cluster.submitTopology(StormSandBox.class.getSimpleName(), new Config(), topology.build());
 
@@ -77,10 +78,14 @@ public class StormSandBox {
 	}
 
 	private static Values createValues(String firstname, Integer age) {
-		Instance instance = new Instance();
-		instance.add("uuid", UUID.randomUUID().toString());
-		instance.add("firstname", firstname);
-		instance.add("age", age);
+		Map<String, Object> features = new HashMap<>();
+		features.put("uuid", UUID.randomUUID().toString());
+		features.put("uuid", UUID.randomUUID().toString());
+		features.put("firstname", firstname);
+		features.put("age", age);
+
+		// Instance instance = Instance.newInstance(mapper, features);
+		Instance instance = null;
 		return new Values(instance);
 	}
 
@@ -96,8 +101,8 @@ public class StormSandBox {
 		@Override
 		public void execute(TridentTuple tuple, TridentCollector collector) {
 			Instance instance = Instance.from(tuple);
-			Feature<?> feature = instance.get(featureName);
-			collector.emit(new Values(feature.getValue()));
+			// Feature<?> feature = instance.get(featureName);
+			collector.emit(new Values(null));
 		}
 
 	}

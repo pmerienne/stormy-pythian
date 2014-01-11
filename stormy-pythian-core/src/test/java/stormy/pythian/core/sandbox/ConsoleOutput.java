@@ -17,19 +17,18 @@ package stormy.pythian.core.sandbox;
 
 import static stormy.pythian.model.instance.Instance.INSTANCE_FIELD;
 
-import java.util.List;
+import java.util.Arrays;
 
 import storm.trident.Stream;
 import storm.trident.operation.BaseFilter;
 import storm.trident.tuple.TridentTuple;
 import stormy.pythian.model.annotation.Documentation;
-import stormy.pythian.model.annotation.FeaturesMapper;
 import stormy.pythian.model.annotation.InputStream;
+import stormy.pythian.model.annotation.Mapper;
 import stormy.pythian.model.annotation.MappingType;
 import stormy.pythian.model.component.Component;
-import stormy.pythian.model.instance.Feature;
+import stormy.pythian.model.instance.InputUserSelectionFeaturesMapper;
 import stormy.pythian.model.instance.Instance;
-import stormy.pythian.model.instance.UserSelectionFeaturesMapper;
 import backtype.storm.tuple.Fields;
 
 @Documentation(name = "Console output")
@@ -40,8 +39,8 @@ public class ConsoleOutput implements Component {
 	@InputStream(name = "in", type = MappingType.USER_SELECTION)
 	private Stream in;
 
-	@FeaturesMapper(stream = "in")
-	private UserSelectionFeaturesMapper mapper;
+	@Mapper(stream = "in")
+	private InputUserSelectionFeaturesMapper mapper;
 
 	@Override
 	public void init() {
@@ -51,20 +50,20 @@ public class ConsoleOutput implements Component {
 	@SuppressWarnings("serial")
 	private static class PrintToConsole extends BaseFilter {
 
-		private final UserSelectionFeaturesMapper mapper;
+		private final InputUserSelectionFeaturesMapper mapper;
 
-		public PrintToConsole(UserSelectionFeaturesMapper mapper) {
+		public PrintToConsole(InputUserSelectionFeaturesMapper mapper) {
 			this.mapper = mapper;
 		}
 
 		@Override
 		public boolean isKeep(TridentTuple tuple) {
 			Instance instance = Instance.from(tuple);
-			List<Feature<?>> features = mapper.getFeatures(instance);
-			System.out.println(features);
+
+			Object[] selectedFeatures = instance.getSelectedFeatures(mapper);
+			System.out.println("Features : " + Arrays.toString(selectedFeatures));
 
 			return true;
 		}
-
 	}
 }

@@ -16,37 +16,38 @@
 package stormy.pythian.model.instance;
 
 import java.io.Serializable;
+import java.util.Map;
 
-public abstract class Feature<T> implements Serializable {
+public class InputFixedFeaturesMapper implements Serializable {
 
-	private static final long serialVersionUID = 2901966256679600906L;
+	private static final long serialVersionUID = 5298891914881030970L;
 
-	private final T value;
-	private final FeatureType type;
+	private Map<String, String> mappings;
+	private FeaturesIndex featuresIndex;
 
-	public Feature(T value, FeatureType type) {
-		this.value = value;
-		this.type = type;
+	public InputFixedFeaturesMapper(FeaturesIndex featuresIndex, Map<String, String> mappings) {
+		this.featuresIndex = featuresIndex;
+		this.mappings = mappings;
 	}
 
-	public T getValue() {
-		return value;
-	}
-
-	public FeatureType getType() {
-		return type;
+	public int getFeatureIndex(String featureName) {
+		String outsideName = mappings.get(featureName);
+		if (outsideName != null) {
+			int index = featuresIndex.getIndex(outsideName);
+			return index;
+		} else {
+			return -1;
+		}
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((type == null) ? 0 : type.hashCode());
-		result = prime * result + ((value == null) ? 0 : value.hashCode());
+		result = prime * result + ((mappings == null) ? 0 : mappings.hashCode());
 		return result;
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -55,20 +56,18 @@ public abstract class Feature<T> implements Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Feature other = (Feature) obj;
-		if (type != other.type)
-			return false;
-		if (value == null) {
-			if (other.value != null)
+		InputFixedFeaturesMapper other = (InputFixedFeaturesMapper) obj;
+		if (mappings == null) {
+			if (other.mappings != null)
 				return false;
-		} else if (!value.equals(other.value))
+		} else if (!mappings.equals(other.mappings))
 			return false;
 		return true;
 	}
 
 	@Override
 	public String toString() {
-		return "Feature [value=" + value + ", type=" + type + "]";
+		return "InputFixedFeaturesMapper [mappings=" + mappings + ", featuresIndex=" + featuresIndex + "]";
 	}
 
 }

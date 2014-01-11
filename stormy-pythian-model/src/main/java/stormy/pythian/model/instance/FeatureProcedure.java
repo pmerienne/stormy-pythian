@@ -15,12 +15,9 @@
  */
 package stormy.pythian.model.instance;
 
-public class LongFeature extends Feature<Long> {
+import java.io.Serializable;
 
-	private static final long serialVersionUID = -8520881785230070100L;
+public interface FeatureProcedure<T> extends Serializable {
 
-	public LongFeature(Long value) {
-		super(value, FeatureType.LONG);
-	}
-
+	void process(T feature);
 }

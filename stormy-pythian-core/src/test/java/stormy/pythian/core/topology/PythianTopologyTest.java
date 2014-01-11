@@ -15,6 +15,8 @@
  */
 package stormy.pythian.core.topology;
 
+import static java.util.Arrays.asList;
+import static org.apache.commons.lang.RandomStringUtils.randomAlphabetic;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -31,16 +33,14 @@ import org.mockito.runners.MockitoJUnitRunner;
 import storm.trident.Stream;
 import stormy.pythian.core.configuration.ComponentConfiguration;
 import stormy.pythian.core.configuration.PythianToplogyConfiguration;
-import stormy.pythian.core.topology.AvailableComponentPool;
-import stormy.pythian.core.topology.ComponentFactory;
-import stormy.pythian.core.topology.PythianTopology;
 import stormy.pythian.model.component.Component;
+import stormy.pythian.model.instance.FeaturesIndex;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PythianTopologyTest {
 
 	@InjectMocks
-	PythianTopology launcher;
+	PythianTopology topology;
 
 	@Mock
 	ComponentFactory componentFactory;
@@ -48,24 +48,36 @@ public class PythianTopologyTest {
 	@Mock
 	AvailableComponentPool componentPool;
 
+	@Mock
+	private FeaturesIndexFactory featuresIndexFactory;
+
+	@SuppressWarnings("unchecked")
 	@Test
 	public void should_create_components() {
 		// Given
-		PythianToplogyConfiguration topologyConfiguration = new PythianToplogyConfiguration();
+		String componentId = randomAlphabetic(6);
 
-		ComponentConfiguration componentConfiguration = new ComponentConfiguration();
-		topologyConfiguration.getComponents().add(componentConfiguration);
+		PythianToplogyConfiguration topologyConfiguration = mock(PythianToplogyConfiguration.class);
+
+		ComponentConfiguration componentConfiguration = mock(ComponentConfiguration.class);
+		when(topologyConfiguration.getComponents()).thenReturn(asList(componentConfiguration));
+		when(componentConfiguration.getId()).thenReturn(componentId);
 
 		Component component = mock(Component.class);
 		Map<String, Stream> inputStreams = new HashMap<>();
 
+		Map<String, FeaturesIndex> inputFeaturesIndexes = mock(Map.class);
+		Map<String, FeaturesIndex> outputFeaturesIndexes = mock(Map.class);
+
 		when(componentPool.isEmpty()).thenReturn(false, true);
 		when(componentPool.getAvailableComponent()).thenReturn(componentConfiguration);
 		when(componentPool.getAvailableInputStreams(componentConfiguration)).thenReturn(inputStreams);
-		when(componentFactory.createComponent(componentConfiguration, inputStreams)).thenReturn(component);
+		when(featuresIndexFactory.createInputFeaturesIndexes(componentConfiguration)).thenReturn(inputFeaturesIndexes);
+		when(featuresIndexFactory.createOutputFeaturesIndexes(componentConfiguration)).thenReturn(outputFeaturesIndexes);
+		when(componentFactory.createComponent(componentConfiguration, inputStreams, inputFeaturesIndexes, outputFeaturesIndexes)).thenReturn(component);
 
 		// Then
-		launcher.build(topologyConfiguration);
+		topology.build(topologyConfiguration);
 
 		// Then
 		verify(componentPool).registerBuildedComponent(component, componentConfiguration);

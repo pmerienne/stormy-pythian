@@ -15,67 +15,41 @@
  */
 package stormy.pythian.model.instance;
 
-import static stormy.pythian.model.annotation.MappingType.FIXED_FEATURES;
-
-import java.util.ArrayList;
-import java.util.List;
+import java.io.Serializable;
 import java.util.Map;
 
-import stormy.pythian.model.annotation.MappingType;
-
-public class FixedFeaturesMapper implements FeaturesMapper {
+public class OutputFeaturesMapper implements Serializable {
 
 	private static final long serialVersionUID = -1845403070125797936L;
 
-	private final Map<String, String> mappings;
+	private Map<String, String> mappings;
+	private FeaturesIndex featuresIndex;
 
-	public FixedFeaturesMapper(Map<String, String> mappings) {
+	public OutputFeaturesMapper(FeaturesIndex featuresIndex, Map<String, String> mappings) {
+		this.featuresIndex = featuresIndex;
 		this.mappings = mappings;
 	}
 
-	public <T> Feature<T> getFeature(Instance instance, String featureName) {
+	public int getFeatureIndex(String featureName) {
 		String outsideName = mappings.get(featureName);
 		if (outsideName != null) {
-			return instance.get(outsideName);
+			int index = featuresIndex.getIndex(outsideName);
+			return index;
 		} else {
-			return null;
+			return -1;
 		}
 	}
 
-	public <T> void setFeature(Instance instance, String featureName,
-			Feature<T> feature) {
-		String outsideName = mappings.get(featureName);
-		instance.add(outsideName, feature);
-	}
-
-	@Override
-	public List<Feature<?>> getFeatures(Instance instance) {
-		List<Feature<?>> features = new ArrayList<>(mappings.size());
-
-		for (String featureName : mappings.keySet()) {
-			String outsideName = mappings.get(featureName);
-			features.add(instance.get(outsideName));
-
-		}
-
-		return features;
-	}
-
-	@Override
-	public MappingType getType() {
-		return FIXED_FEATURES;
-	}
-
-	public Map<String, String> getMappings() {
-		return mappings;
+	public int size() {
+		return featuresIndex.size();
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result
-				+ ((mappings == null) ? 0 : mappings.hashCode());
+		result = prime * result + ((featuresIndex == null) ? 0 : featuresIndex.hashCode());
+		result = prime * result + ((mappings == null) ? 0 : mappings.hashCode());
 		return result;
 	}
 
@@ -87,7 +61,12 @@ public class FixedFeaturesMapper implements FeaturesMapper {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		FixedFeaturesMapper other = (FixedFeaturesMapper) obj;
+		OutputFeaturesMapper other = (OutputFeaturesMapper) obj;
+		if (featuresIndex == null) {
+			if (other.featuresIndex != null)
+				return false;
+		} else if (!featuresIndex.equals(other.featuresIndex))
+			return false;
 		if (mappings == null) {
 			if (other.mappings != null)
 				return false;
@@ -98,7 +77,7 @@ public class FixedFeaturesMapper implements FeaturesMapper {
 
 	@Override
 	public String toString() {
-		return "FixedFeaturesMapper [mappings=" + mappings + "]";
+		return "OutputFeaturesMapper [mappings=" + mappings + ", featuresIndex=" + featuresIndex + "]";
 	}
 
 }

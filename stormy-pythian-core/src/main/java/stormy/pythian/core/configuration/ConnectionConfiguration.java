@@ -17,7 +17,6 @@ package stormy.pythian.core.configuration;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
 
 public class ConnectionConfiguration {
 
@@ -60,6 +59,7 @@ public class ConnectionConfiguration {
 
 	@Override
 	public String toString() {
-		return new ToStringBuilder(this).append(from).append(fromStreamName).append(to).append(toStreamName).toString();
+		return "ConnectionConfiguration [from=" + from + ", fromStreamName=" + fromStreamName + ", to=" + to + ", toStreamName=" + toStreamName + "]";
 	}
+
 }

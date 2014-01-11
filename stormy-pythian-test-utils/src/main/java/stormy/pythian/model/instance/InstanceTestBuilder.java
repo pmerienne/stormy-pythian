@@ -15,6 +15,23 @@
  */
 package stormy.pythian.model.instance;
 
-public enum FeatureType {
-	DOUBLE, INTEGER, LONG, TEXT;
+import java.util.ArrayList;
+import java.util.List;
+
+public class InstanceTestBuilder {
+
+	private final List<Object> features = new ArrayList<>();
+
+	public static InstanceTestBuilder instance() {
+		return new InstanceTestBuilder();
+	}
+
+	public InstanceTestBuilder with(Object feature) {
+		features.add(feature);
+		return this;
+	}
+
+	public Instance build() {
+		return new Instance(features.toArray());
+	}
 }
