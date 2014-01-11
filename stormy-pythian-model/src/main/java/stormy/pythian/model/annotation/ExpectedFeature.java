@@ -20,13 +20,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import stormy.pythian.model.instance.FeatureType;
-
 @Target(ElementType.ANNOTATION_TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ExpectedFeature {
 
-	FeatureType type();
+	@SuppressWarnings("rawtypes")
+	Class type();
 
 	String name();
 }

@@ -16,6 +16,9 @@
 package stormy.pythian.core.sandbox;
 
 import static stormy.pythian.model.instance.Instance.INSTANCE_FIELD;
+
+import java.util.Arrays;
+
 import storm.trident.Stream;
 import storm.trident.operation.BaseFilter;
 import storm.trident.tuple.TridentTuple;
@@ -24,8 +27,6 @@ import stormy.pythian.model.annotation.InputStream;
 import stormy.pythian.model.annotation.Mapper;
 import stormy.pythian.model.annotation.MappingType;
 import stormy.pythian.model.component.Component;
-import stormy.pythian.model.instance.Feature;
-import stormy.pythian.model.instance.FeatureProcedure;
 import stormy.pythian.model.instance.InputUserSelectionFeaturesMapper;
 import stormy.pythian.model.instance.Instance;
 import backtype.storm.tuple.Fields;
@@ -57,13 +58,10 @@ public class ConsoleOutput implements Component {
 
 		@Override
 		public boolean isKeep(TridentTuple tuple) {
-			mapper.forEachFeatures(Instance.from(tuple), new FeatureProcedure() {
-				@Override
-				public void process(Feature<?> feature) {
-					System.out.print(feature);
-				}
-			});
-			System.out.println("");
+			Instance instance = Instance.from(tuple);
+
+			Object[] selectedFeatures = instance.getSelectedFeatures(mapper);
+			System.out.println("Features : " + Arrays.toString(selectedFeatures));
 
 			return true;
 		}

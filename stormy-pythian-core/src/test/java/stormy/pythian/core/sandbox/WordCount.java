@@ -17,8 +17,6 @@ package stormy.pythian.core.sandbox;
 
 import static stormy.pythian.model.annotation.ComponentType.ANALYTICS;
 import static stormy.pythian.model.annotation.MappingType.FIXED_FEATURES;
-import static stormy.pythian.model.instance.FeatureType.INTEGER;
-import static stormy.pythian.model.instance.FeatureType.TEXT;
 import static stormy.pythian.model.instance.Instance.INSTANCE_FIELD;
 import storm.trident.Stream;
 import storm.trident.TridentState;
@@ -34,10 +32,8 @@ import stormy.pythian.model.annotation.InputStream;
 import stormy.pythian.model.annotation.Mapper;
 import stormy.pythian.model.annotation.OutputStream;
 import stormy.pythian.model.component.Component;
-import stormy.pythian.model.instance.Feature;
 import stormy.pythian.model.instance.InputFixedFeaturesMapper;
 import stormy.pythian.model.instance.Instance;
-import stormy.pythian.model.instance.LongFeature;
 import stormy.pythian.model.instance.OutputFeaturesMapper;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Values;
@@ -50,10 +46,10 @@ public class WordCount implements Component {
 	public static final String WORD_FEATURE = "word";
 	public static final String COUNT_FEATURE = "count";
 
-	@InputStream(name = "in", type = FIXED_FEATURES, expectedFeatures = { @ExpectedFeature(name = WORD_FEATURE, type = TEXT) })
+	@InputStream(name = "in", type = FIXED_FEATURES, expectedFeatures = { @ExpectedFeature(name = WORD_FEATURE, type = String.class) })
 	private Stream in;
 
-	@OutputStream(name = "out", from = "in", newFeatures = { @ExpectedFeature(name = COUNT_FEATURE, type = INTEGER) })
+	@OutputStream(name = "out", from = "in", newFeatures = { @ExpectedFeature(name = COUNT_FEATURE, type = Integer.class) })
 	private Stream out;
 
 	@Mapper(stream = "in")
@@ -90,8 +86,8 @@ public class WordCount implements Component {
 		@Override
 		public void execute(TridentTuple tuple, TridentCollector collector) {
 			Instance instance = Instance.from(tuple);
-			Feature<?> feature = inputMapper.getFeature(instance, featureName);
-			collector.emit(new Values(feature.getValue()));
+			Object feature = instance.getFeature(inputMapper, featureName);
+			collector.emit(new Values(feature));
 		}
 
 	}
@@ -107,10 +103,10 @@ public class WordCount implements Component {
 
 		@Override
 		public void execute(TridentTuple tuple, TridentCollector collector) {
-			Long count = tuple.getLongByField(COUNT_FEATURE);
-
 			Instance original = Instance.from(tuple);
-			Instance updated = outMapper.from(original).add(COUNT_FEATURE, new LongFeature(count)).build();
+
+			Long count = tuple.getLongByField(COUNT_FEATURE);
+			Instance updated = original.setFeature(outMapper, COUNT_FEATURE, count);
 
 			collector.emit(new Values(updated));
 		}

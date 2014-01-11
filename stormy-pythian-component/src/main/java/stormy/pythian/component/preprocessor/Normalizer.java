@@ -15,15 +15,8 @@
  */
 package stormy.pythian.component.preprocessor;
 
-import static java.lang.Math.pow;
-import static java.lang.Math.sqrt;
 import static stormy.pythian.model.annotation.MappingType.USER_SELECTION;
 import static stormy.pythian.model.instance.Instance.INSTANCE_FIELD;
-import static stormy.pythian.model.instance.Instance.from;
-
-import java.util.Collection;
-import java.util.Map;
-
 import storm.trident.Stream;
 import storm.trident.operation.BaseFunction;
 import storm.trident.operation.TridentCollector;
@@ -32,13 +25,14 @@ import stormy.pythian.model.annotation.InputStream;
 import stormy.pythian.model.annotation.Mapper;
 import stormy.pythian.model.annotation.OutputStream;
 import stormy.pythian.model.component.Component;
-import stormy.pythian.model.instance.DoubleFeature;
-import stormy.pythian.model.instance.Feature;
+import stormy.pythian.model.instance.FeatureFunction;
 import stormy.pythian.model.instance.FeatureProcedure;
-import stormy.pythian.model.instance.Instance;
 import stormy.pythian.model.instance.InputUserSelectionFeaturesMapper;
+import stormy.pythian.model.instance.Instance;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Values;
+
+import com.google.common.util.concurrent.AtomicDouble;
 
 public class Normalizer implements Component {
 
@@ -72,42 +66,24 @@ public class Normalizer implements Component {
 		@Override
 		public void execute(TridentTuple tuple, TridentCollector collector) {
 			Instance original = Instance.from(tuple);
-			
-			final double magnitude = 0.0;
-			mapper.forEachFeatures(original, new FeatureProcedure() {
+
+			final AtomicDouble atomicMagnitude = new AtomicDouble(0.0);
+			original.process(mapper, new FeatureProcedure<Double>() {
 				@Override
-				public void process(Feature<?> feature) {
-//					magnitude += pow(((DoubleFeature) feature).getValue(), 2);
+				public void process(Double feature) {
+					atomicMagnitude.getAndAdd(feature * feature);
 				}
 			});
-//			
-//
-//			mapper.
-//			
-//			Map<String, Feature<?>> features = mapper.getFeatures(instance);
-//			double magnitude = magnitude(features.values());
-//
-//			for (String featureName : features.keySet()) {
-//				Feature<?> feature = features.get(featureName);
-//				if (feature instanceof DoubleFeature) {
-//					DoubleFeature doubleFeature = (DoubleFeature) feature;
-//					instance.set(featureName, doubleFeature.getValue() / magnitude);
-//				}
-//			}
+			final double magnitude = Math.sqrt(atomicMagnitude.get());
 
-			collector.emit(new Values(null));
-		}
-
-		private double magnitude(Collection<Feature<?>> features) {
-			double magnitude = 0.0;
-
-			for (Feature<?> feature : features) {
-				if (feature instanceof DoubleFeature) {
-					magnitude += pow(((DoubleFeature) feature).getValue(), 2);
+			Instance newInstance = original.transform(mapper, new FeatureFunction<Double>() {
+				@Override
+				public Double transform(Double feature) {
+					return feature / magnitude;
 				}
-			}
+			});
 
-			return sqrt(magnitude);
+			collector.emit(new Values(newInstance));
 		}
 
 	}

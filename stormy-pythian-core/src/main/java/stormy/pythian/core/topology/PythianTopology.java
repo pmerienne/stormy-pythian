@@ -22,13 +22,8 @@ import storm.trident.TridentTopology;
 import stormy.pythian.core.configuration.ComponentConfiguration;
 import stormy.pythian.core.configuration.PythianToplogyConfiguration;
 import stormy.pythian.model.component.Component;
-import stormy.pythian.model.instance.DoubleFeature;
-import stormy.pythian.model.instance.Feature;
 import stormy.pythian.model.instance.FeaturesIndex;
 import stormy.pythian.model.instance.Instance;
-import stormy.pythian.model.instance.IntegerFeature;
-import stormy.pythian.model.instance.LongFeature;
-import stormy.pythian.model.instance.TextFeature;
 import backtype.storm.Config;
 import backtype.storm.generated.StormTopology;
 
@@ -45,11 +40,6 @@ public class PythianTopology {
 		tridentTopology = new TridentTopology();
 		config = new Config();
 		config.registerSerialization(Instance.class);
-		config.registerSerialization(Feature.class);
-		config.registerSerialization(TextFeature.class);
-		config.registerSerialization(IntegerFeature.class);
-		config.registerSerialization(DoubleFeature.class);
-		config.registerSerialization(LongFeature.class);
 
 		componentFactory = new ComponentFactory(tridentTopology, config);
 		componentPool = new AvailableComponentPool();
@@ -68,7 +58,7 @@ public class PythianTopology {
 				Map<String, Stream> inputStreams = componentPool.getAvailableInputStreams(configuration);
 				Map<String, FeaturesIndex> inputFeaturesIndexes = featuresIndexFactory.createInputFeaturesIndexes(configuration);
 				Map<String, FeaturesIndex> outputFeaturesIndexes = featuresIndexFactory.createOutputFeaturesIndexes(configuration);
-				
+
 				Component component = componentFactory.createComponent(configuration, inputStreams, inputFeaturesIndexes, outputFeaturesIndexes);
 
 				componentPool.registerBuildedComponent(component, configuration);

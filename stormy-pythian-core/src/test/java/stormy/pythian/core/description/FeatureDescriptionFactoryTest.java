@@ -18,8 +18,6 @@ package stormy.pythian.core.description;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static stormy.pythian.model.instance.FeatureType.DOUBLE;
-import static stormy.pythian.model.instance.FeatureType.INTEGER;
 
 import java.util.List;
 
@@ -41,56 +39,56 @@ public class FeatureDescriptionFactoryTest {
 	@Test
 	public void should_create_descriptor() {
 		// Given
-		ExpectedFeature floatFeature = mock(ExpectedFeature.class);
-		when(floatFeature.name()).thenReturn("float");
-		when(floatFeature.type()).thenReturn(DOUBLE);
+		ExpectedFeature doubleFeature = mock(ExpectedFeature.class);
+		when(doubleFeature.name()).thenReturn("double");
+		when(doubleFeature.type()).thenReturn(Double.class);
 
 		// When
-		FeatureDescription descriptor = factory.createDescription(floatFeature);
+		FeatureDescription descriptor = factory.createDescription(doubleFeature);
 
 		// Then
-		assertThat(descriptor).isEqualTo(new FeatureDescription("float", DOUBLE));
+		assertThat(descriptor).isEqualTo(new FeatureDescription("double", Double.class));
 	}
 
 	@Test
 	public void should_create_descriptors_from_inputstream() {
 		// Given
-		ExpectedFeature floatFeature = mock(ExpectedFeature.class);
-		when(floatFeature.name()).thenReturn("float");
-		when(floatFeature.type()).thenReturn(DOUBLE);
+		ExpectedFeature doubleFeature = mock(ExpectedFeature.class);
+		when(doubleFeature.name()).thenReturn("double");
+		when(doubleFeature.type()).thenReturn(Double.class);
 
 		ExpectedFeature integerFeature = mock(ExpectedFeature.class);
 		when(integerFeature.name()).thenReturn("integer");
-		when(integerFeature.type()).thenReturn(INTEGER);
+		when(integerFeature.type()).thenReturn(Integer.class);
 
 		InputStream inputStream = mock(InputStream.class);
-		when(inputStream.expectedFeatures()).thenReturn(new ExpectedFeature[] { floatFeature, integerFeature });
+		when(inputStream.expectedFeatures()).thenReturn(new ExpectedFeature[] { doubleFeature, integerFeature });
 
 		// When
 		List<FeatureDescription> descriptors = factory.createDescriptions(inputStream);
 
 		// Then
-		assertThat(descriptors).containsOnly(new FeatureDescription("float", DOUBLE), new FeatureDescription("integer", INTEGER));
+		assertThat(descriptors).containsOnly(new FeatureDescription("double", Double.class), new FeatureDescription("integer", Integer.class));
 	}
 
 	@Test
 	public void should_create_descriptors_from_outputstream() {
 		// Given
-		ExpectedFeature floatFeature = mock(ExpectedFeature.class);
-		when(floatFeature.name()).thenReturn("float");
-		when(floatFeature.type()).thenReturn(DOUBLE);
+		ExpectedFeature doubleFeature = mock(ExpectedFeature.class);
+		when(doubleFeature.name()).thenReturn("double");
+		when(doubleFeature.type()).thenReturn(Double.class);
 
 		ExpectedFeature integerFeature = mock(ExpectedFeature.class);
 		when(integerFeature.name()).thenReturn("integer");
-		when(integerFeature.type()).thenReturn(INTEGER);
+		when(integerFeature.type()).thenReturn(Integer.class);
 
 		OutputStream outputStream = mock(OutputStream.class);
-		when(outputStream.newFeatures()).thenReturn(new ExpectedFeature[] { floatFeature, integerFeature });
+		when(outputStream.newFeatures()).thenReturn(new ExpectedFeature[] { doubleFeature, integerFeature });
 
 		// When
 		List<FeatureDescription> descriptors = factory.createDescriptions(outputStream);
 
 		// Then
-		assertThat(descriptors).containsOnly(new FeatureDescription("float", DOUBLE), new FeatureDescription("integer", INTEGER));
+		assertThat(descriptors).containsOnly(new FeatureDescription("double", Double.class), new FeatureDescription("integer", Integer.class));
 	}
 }

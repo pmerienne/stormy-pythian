@@ -16,10 +16,9 @@
 package stormy.pythian.model.instance;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static stormy.pythian.model.instance.FeaturesIndex.Builder.featuresIndex;
-import static stormy.pythian.model.instance.Instance.Builder.instance;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -30,56 +29,17 @@ public class InputUserSelectionFeaturesMapperTest {
 	@Test
 	public void should_retrieve_selected_feature() {
 		// Given
-		List<String> allFeatures = Arrays.asList("age", "viewCount");
-		FeaturesIndex index = featuresIndex().with(allFeatures).build();
+		List<String> selectedFeatures = Arrays.asList("age", "viewCount");
 
-		InputUserSelectionFeaturesMapper mapper = new InputUserSelectionFeaturesMapper(index, allFeatures);
-
-		Instance instance = instance() //
-				.with(new IntegerFeature(32)) //
-				.with(new IntegerFeature(42)) //
-				.build();
-
-		FeatureCollector collector = new FeatureCollector();
+		FeaturesIndex index = mock(FeaturesIndex.class);
+		when(index.getIndex("age")).thenReturn(0);
+		when(index.getIndex("viewCount")).thenReturn(2);
 
 		// When
-		mapper.forEachFeatures(instance, collector);
+		InputUserSelectionFeaturesMapper mapper = new InputUserSelectionFeaturesMapper(index, selectedFeatures);
+		int[] selectedIndexes = mapper.getSelectedIndex();
 
 		// Then
-		assertThat(collector.features).containsExactly(new IntegerFeature(32), new IntegerFeature(42));
-	}
-
-	@Test
-	public void should_retrieve_null_when_no_feature() {
-		// Given
-		List<String> allFeatures = Arrays.asList("age", "viewCount");
-		FeaturesIndex index = featuresIndex().with(allFeatures).build();
-
-		InputUserSelectionFeaturesMapper mapper = new InputUserSelectionFeaturesMapper(index, allFeatures);
-
-		Instance instance = instance() //
-				.with((Feature<?>) null) //
-				.with(new IntegerFeature(42)) //
-				.build();
-
-		FeatureCollector collector = new FeatureCollector();
-
-		// When
-		mapper.forEachFeatures(instance, collector);
-
-		// Then
-		assertThat(collector.features).containsExactly(null, new IntegerFeature(42));
-	}
-
-	@SuppressWarnings("serial")
-	private static class FeatureCollector implements FeatureProcedure {
-
-		public List<Feature<?>> features = new ArrayList<>();
-
-		@Override
-		public void process(Feature<?> feature) {
-			features.add(feature);
-		}
-
+		assertThat(selectedIndexes).isEqualTo(new int[] { 0, 2 });
 	}
 }

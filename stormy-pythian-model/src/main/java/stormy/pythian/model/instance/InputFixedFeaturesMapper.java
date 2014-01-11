@@ -22,26 +22,21 @@ public class InputFixedFeaturesMapper implements Serializable {
 
 	private static final long serialVersionUID = 5298891914881030970L;
 
-	private final Map<String, String> mappings;
-	private final FeaturesIndex featuresIndex;
+	private Map<String, String> mappings;
+	private FeaturesIndex featuresIndex;
 
 	public InputFixedFeaturesMapper(FeaturesIndex featuresIndex, Map<String, String> mappings) {
 		this.featuresIndex = featuresIndex;
 		this.mappings = mappings;
 	}
 
-	@SuppressWarnings("unchecked")
-	public <T> Feature<T> getFeature(Instance instance, String featureName) {
+	public int getFeatureIndex(String featureName) {
 		String outsideName = mappings.get(featureName);
 		if (outsideName != null) {
 			int index = featuresIndex.getIndex(outsideName);
-			if (index >= 0) {
-				return (Feature<T>) instance.getFeatures()[index];
-			} else {
-				return null;
-			}
+			return index;
 		} else {
-			return null;
+			return -1;
 		}
 	}
 

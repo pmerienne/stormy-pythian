@@ -23,8 +23,8 @@ public class InputUserSelectionFeaturesMapper implements Serializable {
 
 	private static final long serialVersionUID = 3749997614862014103L;
 
-	private final FeaturesIndex featuresIndex;
-	private final int[] selectedIndex;
+	private FeaturesIndex featuresIndex;
+	private int[] selectedIndex;
 
 	public InputUserSelectionFeaturesMapper(FeaturesIndex featuresIndex, List<String> selectedFeatures) {
 		this.featuresIndex = featuresIndex;
@@ -36,21 +36,9 @@ public class InputUserSelectionFeaturesMapper implements Serializable {
 		}
 	}
 
-	public void forEachFeatures(Instance instance, FeatureProcedure procedure) {
-		Feature<?>[] features = instance.getFeatures();
-		for (int index : selectedIndex) {
-			procedure.process(features[index]);
-		}
+	public int[] getSelectedIndex() {
+		return selectedIndex;
 	}
-	
-//	public Instance process(Instance instance, FeatureFunction function) {
-//		Feature<?>[] features = instance.getFeatures();
-//		for (int index : selectedIndex) {
-//			procedure.process(features[index]);
-//		}
-//		
-//		return new Instance(features);
-//	}
 
 	@Override
 	public int hashCode() {

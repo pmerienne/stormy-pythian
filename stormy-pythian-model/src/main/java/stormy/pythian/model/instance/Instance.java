@@ -16,11 +16,10 @@
 package stormy.pythian.model.instance;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
+import java.util.Map;
 
 import storm.trident.tuple.TridentTuple;
-import stormy.pythian.model.instance.Instance.Builder;
 
 public class Instance implements Serializable {
 
@@ -29,30 +28,146 @@ public class Instance implements Serializable {
 	public final static String INSTANCE_FIELD = "INSTANCE_FIELD";
 	public final static String NEW_INSTANCE_FIELD = "NEW_INSTANCE_FIELD";
 
-	private final Feature<?>[] features;
+	private final Object[] features;
+
+	public static Instance from(TridentTuple tuple) {
+		try {
+			return (Instance) tuple.getValueByField(INSTANCE_FIELD);
+		} catch (Exception ex) {
+			throw new IllegalStateException("No instance found in tuple " + tuple, ex);
+		}
+	}
+
+	public static Instance newInstance(OutputFeaturesMapper mapper, Map<String, Object> newFeaturesWithName) {
+		Object[] newFeatures = new Object[mapper.size()];
+
+		for (String featureName : newFeaturesWithName.keySet()) {
+			int index = mapper.getFeatureIndex(featureName);
+			if (index < 0) {
+				throw new IllegalArgumentException("Feature " + featureName + " does not exist");
+			}
+
+			newFeatures[index] = newFeaturesWithName.get(featureName);
+
+		}
+
+		return new Instance(newFeatures);
+	}
 
 	Instance() {
-		this.features = new Feature<?>[0];
+		this.features = new Object[0];
 	}
 
 	Instance(int size) {
-		this.features = new Feature<?>[size];
+		this.features = new Object[size];
 	}
 
-	Instance(Feature<?>[] features) {
+	Instance(Object... features) {
 		this.features = features;
 	}
 
-	public Feature<?>[] getFeatures() {
-		return features;
+	@SuppressWarnings("unchecked")
+	public <T> T getFeature(InputFixedFeaturesMapper inputFixedFeaturesMapper, String featureName) {
+		int index = inputFixedFeaturesMapper.getFeatureIndex(featureName);
+		return (T) (index < 0 ? null : features[index]);
 	}
 
-	public Feature<?> get(int i) {
-		return this.features[i];
+	public <T> Instance setFeature(InputFixedFeaturesMapper inputFixedFeaturesMapper, String featureName, T feature) {
+		int index = inputFixedFeaturesMapper.getFeatureIndex(featureName);
+		if (index < 0) {
+			throw new IllegalArgumentException("Feature " + featureName + " does not exist");
+		}
+
+		Object[] newFeatures = new Object[features.length];
+		System.arraycopy(features, 0, newFeatures, 0, features.length);
+
+		newFeatures[index] = feature;
+
+		return new Instance(newFeatures);
 	}
 
-	public void set(int i, Feature<?> feature) {
-		this.features[i] = feature;
+	public Instance setFeatures(InputFixedFeaturesMapper inputFixedFeaturesMapper, Map<String, Object> newFeaturesWithName) {
+		Object[] newFeatures = new Object[features.length];
+		System.arraycopy(features, 0, newFeatures, 0, features.length);
+
+		for (String featureName : newFeaturesWithName.keySet()) {
+			int index = inputFixedFeaturesMapper.getFeatureIndex(featureName);
+			if (index < 0) {
+				throw new IllegalArgumentException("Feature " + featureName + " does not exist");
+			}
+
+			newFeatures[index] = newFeaturesWithName.get(featureName);
+
+		}
+
+		return new Instance(newFeatures);
+	}
+
+	public <T> Instance setFeature(OutputFeaturesMapper mapper, String featureName, T feature) {
+		int index = mapper.getFeatureIndex(featureName);
+		if (index < 0) {
+			throw new IllegalArgumentException("Feature " + featureName + " does not exist");
+		}
+
+		Object[] newFeatures = new Object[mapper.size()];
+		System.arraycopy(features, 0, newFeatures, 0, features.length);
+
+		newFeatures[index] = feature;
+
+		return new Instance(newFeatures);
+	}
+
+	public Instance setFeatures(OutputFeaturesMapper mapper, Map<String, Object> newFeaturesWithName) {
+		Object[] newFeatures = new Object[mapper.size()];
+		System.arraycopy(features, 0, newFeatures, 0, features.length);
+
+		for (String featureName : newFeaturesWithName.keySet()) {
+			int index = mapper.getFeatureIndex(featureName);
+			if (index < 0) {
+				throw new IllegalArgumentException("Feature " + featureName + " does not exist");
+			}
+
+			newFeatures[index] = newFeaturesWithName.get(featureName);
+
+		}
+
+		return new Instance(newFeatures);
+
+	}
+
+	public Object[] getSelectedFeatures(InputUserSelectionFeaturesMapper inputUserSelectionFeaturesMapper) {
+		int[] selectedIndex = inputUserSelectionFeaturesMapper.getSelectedIndex();
+
+		Object[] selectedFeatures = new Object[selectedIndex.length];
+		int i = 0;
+		for (int index : selectedIndex) {
+			selectedFeatures[i] = features[index];
+			i++;
+		}
+
+		return selectedFeatures;
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T> void process(InputUserSelectionFeaturesMapper inputUserSelectionFeaturesMapper, FeatureProcedure<T> featureProcedure) {
+		int[] selectedIndex = inputUserSelectionFeaturesMapper.getSelectedIndex();
+		for (int index : selectedIndex) {
+			featureProcedure.process((T) features[index]);
+		}
+
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T> Instance transform(InputUserSelectionFeaturesMapper inputUserSelectionFeaturesMapper, FeatureFunction<T> function) {
+		Object[] newFeatures = new Object[features.length];
+		System.arraycopy(features, 0, newFeatures, 0, features.length);
+
+		int[] selectedIndex = inputUserSelectionFeaturesMapper.getSelectedIndex();
+		for (int index : selectedIndex) {
+			newFeatures[index] = function.transform((T) features[index]);
+		}
+
+		return new Instance(newFeatures);
 	}
 
 	public int size() {
@@ -63,7 +178,7 @@ public class Instance implements Serializable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((features == null) ? 0 : features.hashCode());
+		result = prime * result + ((features == null) ? 0 : Arrays.hashCode(features));
 		return result;
 	}
 
@@ -79,50 +194,14 @@ public class Instance implements Serializable {
 		if (features == null) {
 			if (other.features != null)
 				return false;
-		} else if (!features.equals(other.features))
+		} else if (!Arrays.equals(this.features, other.features))
 			return false;
 		return true;
 	}
 
 	@Override
 	public String toString() {
-		return "Instance [features=" + features + "]";
+		return "Instance [features=" + Arrays.toString(features) + "]";
 	}
 
-	public static class Builder {
-
-		private final List<Feature<?>> features = new ArrayList<>();
-
-		public static Builder instance() {
-			return new Builder();
-		}
-
-		public Builder with(Feature<?> feature) {
-			this.features.add(feature);
-			return this;
-		}
-
-		public Builder with(String string) {
-			return with(new TextFeature(string));
-		}
-		
-		public Instance build() {
-			Instance instance = new Instance(features.size());
-			int i = 0;
-			for (Feature<?> feature : features) {
-				instance.set(i, feature);
-				i++;
-			}
-			return instance;
-		}
-
-	}
-
-	public static Instance from(TridentTuple tuple) {
-		try {
-			return (Instance) tuple.getValueByField(INSTANCE_FIELD);
-		} catch (Exception ex) {
-			throw new IllegalStateException("No instance found in tuple " + tuple, ex);
-		}
-	}
 }

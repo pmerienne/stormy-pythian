@@ -22,74 +22,33 @@ public class OutputFeaturesMapper implements Serializable {
 
 	private static final long serialVersionUID = -1845403070125797936L;
 
-	private final Map<String, String> mappings;
+	private Map<String, String> mappings;
+	private FeaturesIndex featuresIndex;
 
-	private final FeaturesIndex featuresIndex;
-
-	public OutputFeaturesMapper(FeaturesIndex index, Map<String, String> mappings) {
-		this.featuresIndex = index;
+	public OutputFeaturesMapper(FeaturesIndex featuresIndex, Map<String, String> mappings) {
+		this.featuresIndex = featuresIndex;
 		this.mappings = mappings;
 	}
 
-	public InstanceView from(Instance original) {
-		return new InstanceView(original, mappings, featuresIndex);
+	public int getFeatureIndex(String featureName) {
+		String outsideName = mappings.get(featureName);
+		if (outsideName != null) {
+			int index = featuresIndex.getIndex(outsideName);
+			return index;
+		} else {
+			return -1;
+		}
 	}
 
-	public InstanceView newInstance() {
-		return new InstanceView(mappings, featuresIndex);
-	}
-
-	public static class InstanceView {
-
-		private final Instance instance;
-
-		private final Map<String, String> mappings;
-		private final FeaturesIndex featuresIndex;
-
-		public InstanceView(Instance original, Map<String, String> mappings, FeaturesIndex featuresIndex) {
-			this.mappings = mappings;
-			this.featuresIndex = featuresIndex;
-
-			Feature<?>[] originalFeatures = original.getFeatures();
-			Feature<?>[] features = new Feature<?>[featuresIndex.size()];
-			System.arraycopy(originalFeatures, 0, features, 0, originalFeatures.length);
-
-			this.instance = new Instance(features);
-		}
-
-		public InstanceView(Map<String, String> mappings, FeaturesIndex featuresIndex) {
-			this.mappings = mappings;
-			this.featuresIndex = featuresIndex;
-
-			Feature<?>[] features = new Feature<?>[featuresIndex.size()];
-			this.instance = new Instance(features);
-		}
-
-		public InstanceView add(String featureName, Feature<?> feature) {
-			String outsideName = mappings.get(featureName);
-			if (outsideName != null) {
-				int index = featuresIndex.getIndex(outsideName);
-				if (index >= 0) {
-					instance.getFeatures()[index] = feature;
-				} else {
-					throw new IllegalArgumentException("Instance does not contain feature " + featureName);
-				}
-			} else {
-				throw new IllegalArgumentException("No mappings found for feature " + featureName);
-			}
-
-			return this;
-		}
-
-		public Instance build() {
-			return instance;
-		}
+	public int size() {
+		return featuresIndex.size();
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + ((featuresIndex == null) ? 0 : featuresIndex.hashCode());
 		result = prime * result + ((mappings == null) ? 0 : mappings.hashCode());
 		return result;
 	}
@@ -103,6 +62,11 @@ public class OutputFeaturesMapper implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		OutputFeaturesMapper other = (OutputFeaturesMapper) obj;
+		if (featuresIndex == null) {
+			if (other.featuresIndex != null)
+				return false;
+		} else if (!featuresIndex.equals(other.featuresIndex))
+			return false;
 		if (mappings == null) {
 			if (other.mappings != null)
 				return false;
@@ -113,7 +77,7 @@ public class OutputFeaturesMapper implements Serializable {
 
 	@Override
 	public String toString() {
-		return "OutputFeaturesMapper [mappings=" + mappings + "]";
+		return "OutputFeaturesMapper [mappings=" + mappings + ", featuresIndex=" + featuresIndex + "]";
 	}
 
 }

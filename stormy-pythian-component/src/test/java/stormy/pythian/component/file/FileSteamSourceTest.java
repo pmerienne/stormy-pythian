@@ -23,12 +23,11 @@ import static org.fest.assertions.Assertions.assertThat;
 import static org.springframework.test.util.ReflectionTestUtils.getField;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 import static stormy.pythian.component.file.FileSteamSource.LINE_FEATURE;
-import static stormy.pythian.model.instance.Instance.Builder.instance;
+import static stormy.pythian.model.instance.InstanceTestBuilder.instance;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -46,7 +45,7 @@ import backtype.storm.utils.Utils;
 
 public class FileSteamSourceTest extends TridentIntegrationTest {
 
-	private static final int TOPOLOGY_START_TIME = 25000;
+	private static final int TOPOLOGY_START_TIME = 5000;
 
 	@Test
 	public void should_read_all_file_lines() throws IOException {
@@ -74,11 +73,7 @@ public class FileSteamSourceTest extends TridentIntegrationTest {
 
 		// When
 		this.launch();
-		System.out.println(cluster.getClusterInfo().get_topologies().get(0));
-		System.out.println(cluster.getClusterInfo().get_topologies().get(0).get_status());
 		Utils.sleep(TOPOLOGY_START_TIME);
-		System.out.println(cluster.getClusterInfo().get_topologies().get(0));
-		System.out.println(cluster.getClusterInfo().get_topologies().get(0).get_status());
 
 		// Then
 		assertThat(instanceCollector.getCollected()).containsOnly( //

@@ -16,77 +16,63 @@
 package stormy.pythian.model.instance;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-
-import static stormy.pythian.model.instance.Instance.Builder.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class InputFixedFeaturesMapperTest {
 
-	@SuppressWarnings("unchecked")
+	@InjectMocks
+	private InputFixedFeaturesMapper mapper;
+
+	@Mock
+	private Map<String, String> mappings;
+
+	@Mock
+	private FeaturesIndex featuresIndex;
+
 	@Test
-	public void should_retrieve_feature() {
+	public void should_retrieve_feature_index() {
 		// Given
-		FeaturesIndex index = mock(FeaturesIndex.class);
-		Map<String, String> mappings = mock(Map.class);
-		Instance instance = instance().with(new IntegerFeature(32)).build();
-
-		when(mappings.get("value")).thenReturn("age");
-		when(index.getIndex("age")).thenReturn(0);
-
-		InputFixedFeaturesMapper mapper = new InputFixedFeaturesMapper(index, mappings);
+		when(mappings.get("count")).thenReturn("view count");
+		when(featuresIndex.getIndex("view count")).thenReturn(3);
 
 		// When
-		Feature<Integer> actualFeature = mapper.getFeature(instance, "value");
+		int actualIndex = mapper.getFeatureIndex("count");
 
 		// Then
-		assertThat(actualFeature.getValue()).isEqualTo(32);
+		assertThat(actualIndex).isEqualTo(3);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
-	public void should_retrieve_null_with_no_mapping() {
+	public void should_retrieve_minus_one_with_no_mapping() {
 		// Given
-		FeaturesIndex index = mock(FeaturesIndex.class);
-		Map<String, String> mappings = mock(Map.class);
-		Instance instance = instance().with(new IntegerFeature(32)).build();
-
-		when(mappings.get("value")).thenReturn(null);
-
-		InputFixedFeaturesMapper mapper = new InputFixedFeaturesMapper(index, mappings);
+		when(mappings.get("count")).thenReturn(null);
 
 		// When
-		Feature<Integer> actualFeature = mapper.getFeature(instance, "value");
+		int actualIndex = mapper.getFeatureIndex("count");
 
 		// Then
-		assertThat(actualFeature).isNull();
+		assertThat(actualIndex).isEqualTo(-1);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
-	public void should_retrieve_null_with_no_feature() {
+	public void should_retrieve_minus_one_when_feature_not_in_index() {
 		// Given
-		FeaturesIndex index = mock(FeaturesIndex.class);
-		Map<String, String> mappings = mock(Map.class);
-		Instance instance = instance().with((Feature<?>) null).build();
-
-		when(mappings.get("value")).thenReturn("age");
-		when(index.getIndex("age")).thenReturn(0);
-
-		InputFixedFeaturesMapper mapper = new InputFixedFeaturesMapper(index, mappings);
+		when(mappings.get("count")).thenReturn("view count");
+		when(featuresIndex.getIndex("view count")).thenReturn(-1);
 
 		// When
-		Feature<Integer> actualFeature = mapper.getFeature(instance, "value");
+		int actualIndex = mapper.getFeatureIndex("count");
 
 		// Then
-		assertThat(actualFeature).isNull();
+		assertThat(actualIndex).isEqualTo(-1);
 	}
-
 }

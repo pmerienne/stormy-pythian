@@ -19,13 +19,13 @@ import static com.google.common.base.Objects.firstNonNull;
 import static org.apache.commons.io.FilenameUtils.getName;
 import static org.apache.commons.lang.RandomStringUtils.randomAlphabetic;
 import static stormy.pythian.model.annotation.ComponentType.STREAM_SOURCE;
-import static stormy.pythian.model.instance.FeatureType.TEXT;
 import static stormy.pythian.model.instance.Instance.NEW_INSTANCE_FIELD;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -44,7 +44,6 @@ import stormy.pythian.model.annotation.Topology;
 import stormy.pythian.model.component.Component;
 import stormy.pythian.model.instance.Instance;
 import stormy.pythian.model.instance.OutputFeaturesMapper;
-import stormy.pythian.model.instance.TextFeature;
 import backtype.storm.Config;
 import backtype.storm.task.TopologyContext;
 import backtype.storm.tuple.Fields;
@@ -59,7 +58,7 @@ public class FileSteamSource implements Component {
 
 	private static final int DEFAULT_MAX_BATCH_SIZE = 500;
 
-	@OutputStream(name = "lines", newFeatures = { @ExpectedFeature(name = LINE_FEATURE, type = TEXT) })
+	@OutputStream(name = "lines", newFeatures = { @ExpectedFeature(name = LINE_FEATURE, type = String.class) })
 	private Stream out;
 
 	@Mapper(stream = "lines")
@@ -164,7 +163,10 @@ public class FileSteamSource implements Component {
 				String line;
 				while (instances.size() < maxBatchSize && (line = file.readLine()) != null) {
 					try {
-						Instance instance = mapper.newInstance().add(LINE_FEATURE, new TextFeature(line)).build();
+						Map<String, Object> features = new HashMap<>();
+						features.put(LINE_FEATURE, line);
+						
+						Instance instance = Instance.newInstance(mapper, features);
 						instances.add(instance);
 					} catch (Exception ex) {
 						LOGGER.warn("Skipped instance : " + line);

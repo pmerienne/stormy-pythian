@@ -15,30 +15,6 @@
  */
 package stormy.pythian.component.preprocessor;
 
-import static java.io.File.createTempFile;
-import static java.util.Arrays.asList;
-import static org.apache.commons.io.FileUtils.writeLines;
-import static org.fest.assertions.Assertions.assertThat;
-import static org.springframework.test.util.ReflectionTestUtils.getField;
-import static org.springframework.test.util.ReflectionTestUtils.setField;
-import static stormy.pythian.component.file.FileSteamSource.LINE_FEATURE;
-import static stormy.pythian.model.instance.Instance.Builder.instance;
-
-import java.io.File;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import backtype.storm.tuple.Fields;
-import backtype.storm.tuple.Values;
-import backtype.storm.utils.Utils;
-import storm.trident.Stream;
-import storm.trident.testing.FixedBatchSpout;
-import stormy.pythian.component.file.FileSteamSource;
-import stormy.pythian.model.instance.InputFixedFeaturesMapper;
-import stormy.pythian.model.instance.Instance;
-import stormy.pythian.model.instance.TextFeature;
-import stormy.pythian.testing.InstanceCollector;
 import stormy.pythian.testing.TridentIntegrationTest;
 
 public class NormalizerTest extends TridentIntegrationTest {
