@@ -52,7 +52,7 @@ public class InstanceCollector extends BaseFilter {
 		return true;
 	}
 
-	public void listen(Stream stream) {
+	public void collect(Stream stream) {
 		stream.each(new Fields(NEW_INSTANCE_FIELD), this);
 	}
 

@@ -68,7 +68,7 @@ public class NormalizerTest extends TridentIntegrationTest {
 		Stream out = (Stream) getField(normalizer, "out");
 
 		InstanceCollector instanceCollector = new InstanceCollector();
-		instanceCollector.listen(out);
+		instanceCollector.collect(out);
 
 		// When
 		this.launch();

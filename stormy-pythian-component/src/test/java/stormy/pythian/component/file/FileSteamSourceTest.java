@@ -69,7 +69,7 @@ public class FileSteamSourceTest extends TridentIntegrationTest {
 		Stream out = (Stream) getField(component, "out");
 
 		InstanceCollector instanceCollector = new InstanceCollector();
-		instanceCollector.listen(out);
+		instanceCollector.collect(out);
 
 		// When
 		this.launch();
@@ -106,7 +106,7 @@ public class FileSteamSourceTest extends TridentIntegrationTest {
 		Stream out = (Stream) getField(component, "out");
 
 		InstanceCollector instanceCollector = new InstanceCollector();
-		instanceCollector.listen(out);
+		instanceCollector.collect(out);
 
 		// When
 		this.launch();
