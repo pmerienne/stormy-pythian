@@ -64,6 +64,22 @@ public class ComponentConfiguration {
 		this.id = id;
 	}
 
+	public List<InputStreamConfiguration> getInputStreams() {
+		return inputStreams;
+	}
+
+	public void setInputStreams(List<InputStreamConfiguration> inputStreams) {
+		this.inputStreams = inputStreams;
+	}
+
+	public List<OutputStreamConfiguration> getOutputStreams() {
+		return outputStreams;
+	}
+
+	public void setOutputStreams(List<OutputStreamConfiguration> outputStreams) {
+		this.outputStreams = outputStreams;
+	}
+
 	public OutputStreamConfiguration findOutputStreamByName(final String name) {
 		return tryFind(outputStreams, new Predicate<OutputStreamConfiguration>() {
 			public boolean apply(OutputStreamConfiguration candidate) {

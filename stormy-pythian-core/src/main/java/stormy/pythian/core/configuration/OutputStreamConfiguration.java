@@ -59,4 +59,8 @@ public class OutputStreamConfiguration {
 	public List<String> getNewFeatureNames() {
 		return newArrayList(transform(descriptor.getNewFeatures(), EXTRACT_NAME));
 	}
+
+	public Map<String, String> getMappings() {
+		return mappings;
+	}
 }

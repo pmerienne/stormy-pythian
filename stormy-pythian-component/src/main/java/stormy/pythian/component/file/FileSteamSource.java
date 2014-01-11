@@ -164,8 +164,7 @@ public class FileSteamSource implements Component {
 				String line;
 				while (instances.size() < maxBatchSize && (line = file.readLine()) != null) {
 					try {
-						Instance instance = new Instance();
-						mapper.setFeature(instance, LINE_FEATURE, new TextFeature(line));
+						Instance instance = mapper.newInstance().add(LINE_FEATURE, new TextFeature(line)).build();
 						instances.add(instance);
 					} catch (Exception ex) {
 						LOGGER.warn("Skipped instance : " + line);

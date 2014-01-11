@@ -50,20 +50,20 @@ public class ComponentFactory {
 		this.config = config;
 	}
 
-	public Component createComponent(ComponentConfiguration configuration, Map<String, Stream> inputStreams, Map<String, FeaturesIndex> featuresIndexes) {
+	public Component createComponent(ComponentConfiguration configuration, Map<String, Stream> inputStreams, Map<String, FeaturesIndex> inputFeaturesIndexes, Map<String, FeaturesIndex> outputFeaturesIndexes) {
 		try {
 			Component component = configuration.descriptor.clazz.newInstance();
 			setProperties(component, configuration.properties);
 			setInputStreams(component, inputStreams);
 			setTopology(component, tridentTopology);
 			setConfiguration(component, config);
-			setFeaturesMappers(component, configuration);
+			setFeaturesMappers(component, configuration, inputFeaturesIndexes, outputFeaturesIndexes);
 
 			component.init();
 
 			return component;
 		} catch (Exception e) {
-			throw new IllegalArgumentException("Unable to add component " + configuration, e);
+			throw new IllegalArgumentException("Unable to add component " + configuration.descriptor.name, e);
 		}
 	}
 
@@ -82,16 +82,16 @@ public class ComponentFactory {
 	}
 
 	// TODO : refactor !
-	private void setFeaturesMappers(Component component, ComponentConfiguration configuration) {
+	private void setFeaturesMappers(Component component, ComponentConfiguration configuration, Map<String, FeaturesIndex> inputFeaturesIndexes, Map<String, FeaturesIndex> outputFeaturesIndexes) {
 		for (InputStreamConfiguration isConfiguration : configuration.inputStreams) {
 			String streamName = isConfiguration.getStreamName();
 
 			switch (isConfiguration.getMappingType()) {
 			case USER_SELECTION:
-				setFeaturesMapper(component, streamName, new InputUserSelectionFeaturesMapper(isConfiguration.getSelectedFeatures()));
+				setFeaturesMapper(component, streamName, new InputUserSelectionFeaturesMapper(inputFeaturesIndexes.get(streamName), isConfiguration.getSelectedFeatures()));
 				break;
 			case FIXED_FEATURES:
-				setFeaturesMapper(component, streamName, new InputFixedFeaturesMapper(isConfiguration.getMappings()));
+				setFeaturesMapper(component, streamName, new InputFixedFeaturesMapper(inputFeaturesIndexes.get(streamName), isConfiguration.getMappings()));
 				break;
 			}
 
@@ -99,7 +99,7 @@ public class ComponentFactory {
 
 		for (OutputStreamConfiguration osConfiguration : configuration.outputStreams) {
 			String streamName = osConfiguration.getStreamName();
-			OutputFeaturesMapper mapper = new OutputFeaturesMapper(osConfiguration.mappings);
+			OutputFeaturesMapper mapper = new OutputFeaturesMapper(outputFeaturesIndexes.get(streamName), osConfiguration.mappings);
 			setFeaturesMapper(component, streamName, mapper);
 		}
 	}

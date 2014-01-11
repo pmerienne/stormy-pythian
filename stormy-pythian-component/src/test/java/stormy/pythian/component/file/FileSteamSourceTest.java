@@ -28,6 +28,7 @@ import static stormy.pythian.model.instance.Instance.Builder.instance;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -37,6 +38,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
 import storm.trident.Stream;
+import stormy.pythian.model.instance.FeaturesIndex;
 import stormy.pythian.model.instance.OutputFeaturesMapper;
 import stormy.pythian.testing.InstanceCollector;
 import stormy.pythian.testing.TridentIntegrationTest;
@@ -44,11 +46,12 @@ import backtype.storm.utils.Utils;
 
 public class FileSteamSourceTest extends TridentIntegrationTest {
 
-	private static final int TOPOLOGY_START_TIME = 5000;
+	private static final int TOPOLOGY_START_TIME = 25000;
 
 	@Test
 	public void should_read_all_file_lines() throws IOException {
 		// Given
+		FeaturesIndex index = FeaturesIndex.Builder.featuresIndex().with(asList(LINE_FEATURE)).build();
 		List<String> lines = asList("Lorem ipsum dolor sit amet", "consectetur adipisicing elit", "sed do eiusmod tempor incididunt ut labore et dolore magna aliqua");
 		File tmpFile = createTempFile("test-", ".txt");
 		tmpFile.deleteOnExit();
@@ -56,7 +59,7 @@ public class FileSteamSourceTest extends TridentIntegrationTest {
 
 		Map<String, String> mappings = new HashMap<>();
 		mappings.put(LINE_FEATURE, LINE_FEATURE);
-		OutputFeaturesMapper mapper = new OutputFeaturesMapper(mappings);
+		OutputFeaturesMapper mapper = new OutputFeaturesMapper(index, mappings);
 
 		FileSteamSource component = new FileSteamSource();
 		setField(component, "filename", tmpFile.getAbsolutePath());
@@ -71,19 +74,24 @@ public class FileSteamSourceTest extends TridentIntegrationTest {
 
 		// When
 		this.launch();
+		System.out.println(cluster.getClusterInfo().get_topologies().get(0));
+		System.out.println(cluster.getClusterInfo().get_topologies().get(0).get_status());
 		Utils.sleep(TOPOLOGY_START_TIME);
+		System.out.println(cluster.getClusterInfo().get_topologies().get(0));
+		System.out.println(cluster.getClusterInfo().get_topologies().get(0).get_status());
 
 		// Then
 		assertThat(instanceCollector.getCollected()).containsOnly( //
-				instance().with(LINE_FEATURE, lines.get(0)).build(), //
-				instance().with(LINE_FEATURE, lines.get(1)).build(), //
-				instance().with(LINE_FEATURE, lines.get(2)).build() //
+				instance().with(lines.get(0)).build(), //
+				instance().with(lines.get(1)).build(), //
+				instance().with(lines.get(2)).build() //
 				);
 	}
 
 	@Test
 	public void should_support_new_lines() throws IOException {
 		// Given
+		FeaturesIndex index = FeaturesIndex.Builder.featuresIndex().with(asList(LINE_FEATURE)).build();
 		List<String> firstLines = asList("Lorem ipsum dolor sit amet", "consectetur adipisicing elit", "sed do eiusmod tempor incididunt ut labore et dolore magna aliqua");
 		List<String> lastLines = asList("Excepteur sint occaecat cupidatat non proident", "sunt in culpa qui officia deserunt mollit anim");
 		File tmpFile = createTempFile("test-", ".txt");
@@ -92,7 +100,7 @@ public class FileSteamSourceTest extends TridentIntegrationTest {
 
 		Map<String, String> mappings = new HashMap<>();
 		mappings.put(LINE_FEATURE, LINE_FEATURE);
-		OutputFeaturesMapper mapper = new OutputFeaturesMapper(mappings);
+		OutputFeaturesMapper mapper = new OutputFeaturesMapper(index, mappings);
 
 		FileSteamSource component = new FileSteamSource();
 		setField(component, "filename", tmpFile.getAbsolutePath());
@@ -113,11 +121,11 @@ public class FileSteamSourceTest extends TridentIntegrationTest {
 
 		// Then
 		assertThat(instanceCollector.getCollected()).containsOnly( //
-				instance().with(LINE_FEATURE, firstLines.get(0)).build(), //
-				instance().with(LINE_FEATURE, firstLines.get(1)).build(), //
-				instance().with(LINE_FEATURE, firstLines.get(2)).build(), //
-				instance().with(LINE_FEATURE, lastLines.get(0)).build(), //
-				instance().with(LINE_FEATURE, lastLines.get(1)).build() //
+				instance().with(firstLines.get(0)).build(), //
+				instance().with(firstLines.get(1)).build(), //
+				instance().with(firstLines.get(2)).build(), //
+				instance().with(lastLines.get(0)).build(), //
+				instance().with(lastLines.get(1)).build() //
 				);
 	}
 

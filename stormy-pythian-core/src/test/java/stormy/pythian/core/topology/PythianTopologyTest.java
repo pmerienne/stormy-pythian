@@ -21,13 +21,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.RandomStringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -36,11 +32,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import storm.trident.Stream;
 import stormy.pythian.core.configuration.ComponentConfiguration;
-import stormy.pythian.core.configuration.ConnectionConfiguration;
 import stormy.pythian.core.configuration.PythianToplogyConfiguration;
-import stormy.pythian.core.topology.AvailableComponentPool;
-import stormy.pythian.core.topology.ComponentFactory;
-import stormy.pythian.core.topology.PythianTopology;
 import stormy.pythian.model.component.Component;
 import stormy.pythian.model.instance.FeaturesIndex;
 
@@ -59,6 +51,7 @@ public class PythianTopologyTest {
 	@Mock
 	private FeaturesIndexFactory featuresIndexFactory;
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void should_create_components() {
 		// Given
@@ -70,26 +63,24 @@ public class PythianTopologyTest {
 		when(topologyConfiguration.getComponents()).thenReturn(asList(componentConfiguration));
 		when(componentConfiguration.getId()).thenReturn(componentId);
 
-		List<ConnectionConfiguration> expectedConnections = new ArrayList<>();
-		when(topologyConfiguration.findConnectionsFrom(componentId)).thenReturn(expectedConnections);
-
 		Component component = mock(Component.class);
 		Map<String, Stream> inputStreams = new HashMap<>();
 
-		Map<String, FeaturesIndex> featuresIndexes = new HashMap<>();
+		Map<String, FeaturesIndex> inputFeaturesIndexes = mock(Map.class);
+		Map<String, FeaturesIndex> outputFeaturesIndexes = mock(Map.class);
 
 		when(componentPool.isEmpty()).thenReturn(false, true);
 		when(componentPool.getAvailableComponent()).thenReturn(componentConfiguration);
 		when(componentPool.getAvailableInputStreams(componentConfiguration)).thenReturn(inputStreams);
-		when(featuresIndexFactory.getFeaturesIndexes(componentConfiguration)).thenReturn(featuresIndexes);
-		when(componentFactory.createComponent(componentConfiguration, inputStreams, featuresIndexes)).thenReturn(component);
+		when(featuresIndexFactory.createInputFeaturesIndexes(componentConfiguration)).thenReturn(inputFeaturesIndexes);
+		when(featuresIndexFactory.createOutputFeaturesIndexes(componentConfiguration)).thenReturn(outputFeaturesIndexes);
+		when(componentFactory.createComponent(componentConfiguration, inputStreams, inputFeaturesIndexes, outputFeaturesIndexes)).thenReturn(component);
 
 		// Then
 		topology.build(topologyConfiguration);
 
 		// Then
 		verify(componentPool).registerBuildedComponent(component, componentConfiguration);
-		verify(featuresIndexFactory).registerBuildedComponent(componentConfiguration, expectedConnections);
 	}
 
 }

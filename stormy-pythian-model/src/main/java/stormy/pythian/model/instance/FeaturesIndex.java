@@ -1,8 +1,8 @@
 package stormy.pythian.model.instance;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class FeaturesIndex implements Serializable {
@@ -11,12 +11,57 @@ public class FeaturesIndex implements Serializable {
 
 	private final Map<String, Integer> mapping;
 
+	public FeaturesIndex() {
+		this.mapping = new HashMap<>();
+	}
+
 	public FeaturesIndex(Map<String, Integer> mapping) {
 		this.mapping = mapping;
 	}
 
+	public FeaturesIndex(Collection<String> features) {
+		this.mapping = new HashMap<>(features.size());
+		for (String feature : features) {
+			this.mapping.put(feature, mapping.size());
+		}
+	}
+
 	public Integer getIndex(String featureName) {
 		return mapping.get(featureName);
+	}
+
+	public int size() {
+		return mapping.size();
+	}
+
+	@Override
+	public String toString() {
+		return "FeaturesIndex [mapping=" + mapping + "]";
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((mapping == null) ? 0 : mapping.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		FeaturesIndex other = (FeaturesIndex) obj;
+		if (mapping == null) {
+			if (other.mapping != null)
+				return false;
+		} else if (!mapping.equals(other.mapping))
+			return false;
+		return true;
 	}
 
 	public static class Builder {
@@ -40,11 +85,11 @@ public class FeaturesIndex implements Serializable {
 		}
 
 		public Builder with(String feature) {
-			mapping.put(feature, mapping.size() + 1);
+			mapping.put(feature, mapping.size());
 			return this;
 		}
 
-		public Builder with(List<String> features) {
+		public Builder with(Collection<String> features) {
 			for (String feature : features) {
 				with(feature);
 			}
@@ -55,4 +100,5 @@ public class FeaturesIndex implements Serializable {
 			return new FeaturesIndex(mapping);
 		}
 	}
+
 }

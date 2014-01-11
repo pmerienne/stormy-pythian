@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 
 public class PythianToplogyConfiguration {
 
@@ -77,6 +78,14 @@ public class PythianToplogyConfiguration {
 				return componentId.equals(input.from);
 			}
 		}));
+	}
+
+	public ConnectionConfiguration findConnectionTo(final String componentId, final String streamName) {
+		return Iterables.tryFind(connections, new Predicate<ConnectionConfiguration>() {
+			public boolean apply(ConnectionConfiguration input) {
+				return componentId.equals(input.to) && streamName.equals(input.toStreamName);
+			}
+		}).orNull();
 	}
 
 	@Override

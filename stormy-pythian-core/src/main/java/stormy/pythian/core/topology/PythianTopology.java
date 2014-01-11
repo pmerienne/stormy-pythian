@@ -53,23 +53,25 @@ public class PythianTopology {
 
 		componentFactory = new ComponentFactory(tridentTopology, config);
 		componentPool = new AvailableComponentPool();
+		featuresIndexFactory = new FeaturesIndexFactory();
 	}
 
 	public void build(PythianToplogyConfiguration topologyConfiguration) {
 		componentPool.addConnections(topologyConfiguration.getConnections());
 		componentPool.addComponents(topologyConfiguration.getComponents());
+		featuresIndexFactory.initTable(topologyConfiguration);
 
 		// Init components
 		while (!componentPool.isEmpty()) {
 			ComponentConfiguration configuration = componentPool.getAvailableComponent();
 			if (configuration != null) {
 				Map<String, Stream> inputStreams = componentPool.getAvailableInputStreams(configuration);
-				Map<String, FeaturesIndex> featuresIndexes = featuresIndexFactory.getFeaturesIndexes(configuration);
+				Map<String, FeaturesIndex> inputFeaturesIndexes = featuresIndexFactory.createInputFeaturesIndexes(configuration);
+				Map<String, FeaturesIndex> outputFeaturesIndexes = featuresIndexFactory.createOutputFeaturesIndexes(configuration);
 				
-				Component component = componentFactory.createComponent(configuration, inputStreams, featuresIndexes);
+				Component component = componentFactory.createComponent(configuration, inputStreams, inputFeaturesIndexes, outputFeaturesIndexes);
 
 				componentPool.registerBuildedComponent(component, configuration);
-				featuresIndexFactory.registerBuildedComponent(configuration, topologyConfiguration.findConnectionsFrom(configuration.getId()));
 			} else {
 				throw new IllegalArgumentException("Unable to create topology, some connections are missing");
 			}

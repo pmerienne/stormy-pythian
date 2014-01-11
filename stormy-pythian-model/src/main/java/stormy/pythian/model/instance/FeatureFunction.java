@@ -1,6 +1,8 @@
 package stormy.pythian.model.instance;
 
-public interface FeatureFunction {
+import java.io.Serializable;
+
+public interface FeatureFunction extends Serializable {
 
 	<T> Feature<T> transform(Feature<T> feature);
 }

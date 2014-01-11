@@ -75,7 +75,7 @@ public class InputFixedFeaturesMapperTest {
 		// Given
 		FeaturesIndex index = mock(FeaturesIndex.class);
 		Map<String, String> mappings = mock(Map.class);
-		Instance instance = instance().with(null).build();
+		Instance instance = instance().with((Feature<?>) null).build();
 
 		when(mappings.get("value")).thenReturn("age");
 		when(index.getIndex("age")).thenReturn(0);

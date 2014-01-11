@@ -42,6 +42,15 @@ public class InputUserSelectionFeaturesMapper implements Serializable {
 			procedure.process(features[index]);
 		}
 	}
+	
+//	public Instance process(Instance instance, FeatureFunction function) {
+//		Feature<?>[] features = instance.getFeatures();
+//		for (int index : selectedIndex) {
+//			procedure.process(features[index]);
+//		}
+//		
+//		return new Instance(features);
+//	}
 
 	@Override
 	public int hashCode() {

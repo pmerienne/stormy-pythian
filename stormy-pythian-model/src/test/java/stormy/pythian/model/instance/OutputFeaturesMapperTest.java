@@ -15,39 +15,87 @@
  */
 package stormy.pythian.model.instance;
 
+import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Map;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
 
-@RunWith(MockitoJUnitRunner.class)
 public class OutputFeaturesMapperTest {
 
-	@InjectMocks
-	private OutputFeaturesMapper mapper;
-
-	@Mock
-	private Map<String, String> mappings;
-
+	@SuppressWarnings("unchecked")
 	@Test
-	public void should_set_feature() {
+	public void should_add_feature_to_new_instance() {
 		// Given
-		Feature<?> feature = mock(Feature.class);
-		Instance instance = mock(Instance.class);
+		IntegerFeature expectedFeature = new IntegerFeature(32);
 
+		Map<String, String> mappings = mock(Map.class);
 		when(mappings.get("age")).thenReturn("user age");
+		FeaturesIndex index = mock(FeaturesIndex.class);
+		when(index.getIndex("user age")).thenReturn(0);
+		when(index.size()).thenReturn(1);
+
+		OutputFeaturesMapper mapper = new OutputFeaturesMapper(index, mappings);
 
 		// When
-		mapper.setFeature(instance, "age", feature);
+		Instance instance = mapper.newInstance().add("age", new IntegerFeature(32)).build();
 
 		// Then
-		verify(instance).set("user age", feature);
+		assertThat(instance.getFeatures()[0]).isEqualTo(expectedFeature);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void should_add_feature_from_existing_instance() {
+		// Given
+		IntegerFeature existingFeature = new IntegerFeature(42);
+		IntegerFeature expectedFeature = new IntegerFeature(32);
+		Instance original = Instance.Builder.instance().with(existingFeature).build();
+
+		Map<String, String> mappings = mock(Map.class);
+		when(mappings.get("age")).thenReturn("user age");
+		FeaturesIndex index = mock(FeaturesIndex.class);
+		when(index.getIndex("user age")).thenReturn(1);
+		when(index.size()).thenReturn(2);
+
+		OutputFeaturesMapper mapper = new OutputFeaturesMapper(index, mappings);
+
+		// When
+		Instance instance = mapper.from(original).add("age", new IntegerFeature(32)).build();
+
+		// Then
+		assertThat(instance.getFeatures()[1]).isEqualTo(expectedFeature);
+		assertThat(instance.getFeatures()[0]).isEqualTo(existingFeature);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test(expected = IllegalArgumentException.class)
+	public void should_fail_with_unknown_feature() {
+		// Given
+		Map<String, String> mappings = mock(Map.class);
+		when(mappings.get("age")).thenReturn(null);
+		FeaturesIndex index = mock(FeaturesIndex.class);
+
+		OutputFeaturesMapper mapper = new OutputFeaturesMapper(index, mappings);
+
+		// When
+		mapper.newInstance().add("age", new IntegerFeature(32)).build();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test(expected = IllegalArgumentException.class)
+	public void should_fail_when_no_feature_index() {
+		// Given
+		Map<String, String> mappings = mock(Map.class);
+		when(mappings.get("age")).thenReturn("user age");
+		FeaturesIndex index = mock(FeaturesIndex.class);
+		when(index.getIndex("user age")).thenReturn(-1);
+
+		OutputFeaturesMapper mapper = new OutputFeaturesMapper(index, mappings);
+
+		// When
+		mapper.newInstance().add("age", new IntegerFeature(32)).build();
 	}
 }

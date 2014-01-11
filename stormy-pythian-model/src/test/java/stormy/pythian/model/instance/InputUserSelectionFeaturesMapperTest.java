@@ -16,53 +16,70 @@
 package stormy.pythian.model.instance;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.fest.assertions.MapAssert.entry;
+import static stormy.pythian.model.instance.FeaturesIndex.Builder.featuresIndex;
+import static stormy.pythian.model.instance.Instance.Builder.instance;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.junit.Before;
 import org.junit.Test;
 
 public class InputUserSelectionFeaturesMapperTest {
 
-	private InputUserSelectionFeaturesMapper mapper;
-
-	@Before
-	public void init() {
-		List<String> selectedFeatures = Arrays.asList("age", "viewCount");
-		mapper = new InputUserSelectionFeaturesMapper(selectedFeatures);
-	}
-
 	@Test
 	public void should_retrieve_selected_feature() {
 		// Given
-		Instance instance = new Instance();
-		instance.set("age", 32);
-		instance.set("viewCount", 42);
+		List<String> allFeatures = Arrays.asList("age", "viewCount");
+		FeaturesIndex index = featuresIndex().with(allFeatures).build();
+
+		InputUserSelectionFeaturesMapper mapper = new InputUserSelectionFeaturesMapper(index, allFeatures);
+
+		Instance instance = instance() //
+				.with(new IntegerFeature(32)) //
+				.with(new IntegerFeature(42)) //
+				.build();
+
+		FeatureCollector collector = new FeatureCollector();
 
 		// When
-		Map<String, Feature<?>> actualsFeatures = mapper.getFeatures(instance);
+		mapper.forEachFeatures(instance, collector);
 
 		// Then
-		assertThat(actualsFeatures).includes(entry("age", new IntegerFeature(32)), entry("viewCount", new IntegerFeature(42)));
+		assertThat(collector.features).containsExactly(new IntegerFeature(32), new IntegerFeature(42));
 	}
 
 	@Test
 	public void should_retrieve_null_when_no_feature() {
 		// Given
-		Instance instance = new Instance();
-		instance.set("viewCount", 42);
+		List<String> allFeatures = Arrays.asList("age", "viewCount");
+		FeaturesIndex index = featuresIndex().with(allFeatures).build();
+
+		InputUserSelectionFeaturesMapper mapper = new InputUserSelectionFeaturesMapper(index, allFeatures);
+
+		Instance instance = instance() //
+				.with((Feature<?>) null) //
+				.with(new IntegerFeature(42)) //
+				.build();
+
+		FeatureCollector collector = new FeatureCollector();
 
 		// When
-		Map<String, Feature<?>> actualsFeatures = mapper.getFeatures(instance);
+		mapper.forEachFeatures(instance, collector);
 
 		// Then
-		Map<String, Feature<?>> expectedFeatures = new HashMap<>();
-		expectedFeatures.put("age", null);
-		expectedFeatures.put("viewCount", new IntegerFeature(42));
-		assertThat(actualsFeatures).isEqualTo(expectedFeatures);
+		assertThat(collector.features).containsExactly(null, new IntegerFeature(42));
+	}
+
+	@SuppressWarnings("serial")
+	private static class FeatureCollector implements FeatureProcedure {
+
+		public List<Feature<?>> features = new ArrayList<>();
+
+		@Override
+		public void process(Feature<?> feature) {
+			features.add(feature);
+		}
+
 	}
 }

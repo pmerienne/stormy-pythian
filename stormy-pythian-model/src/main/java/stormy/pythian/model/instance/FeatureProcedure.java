@@ -1,6 +1,8 @@
 package stormy.pythian.model.instance;
 
-public interface FeatureProcedure {
+import java.io.Serializable;
+
+public interface FeatureProcedure extends Serializable {
 
 	void process(Feature<?> feature);
 }

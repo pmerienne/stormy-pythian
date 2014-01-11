@@ -77,10 +77,10 @@ public class StormSandBox {
 	}
 
 	private static Values createValues(String firstname, Integer age) {
-		Instance instance = new Instance();
-		instance.set("uuid", UUID.randomUUID().toString());
-		instance.set("firstname", firstname);
-		instance.set("age", age);
+		Instance instance = null;
+//		instance.set("uuid", UUID.randomUUID().toString());
+//		instance.set("firstname", firstname);
+//		instance.set("age", age);
 		return new Values(instance);
 	}
 
@@ -96,7 +96,8 @@ public class StormSandBox {
 		@Override
 		public void execute(TridentTuple tuple, TridentCollector collector) {
 			Instance instance = Instance.from(tuple);
-			Feature<?> feature = instance.get(featureName);
+//			Feature<?> feature = instance.get(featureName);
+			Feature<?> feature = null;
 			collector.emit(new Values(feature.getValue()));
 		}
 

@@ -107,11 +107,10 @@ public class WordCount implements Component {
 
 		@Override
 		public void execute(TridentTuple tuple, TridentCollector collector) {
-			Instance original = Instance.from(tuple);
-			Instance updated = new Instance(original);
-
 			Long count = tuple.getLongByField(COUNT_FEATURE);
-			outMapper.setFeature(updated, COUNT_FEATURE, new LongFeature(count));
+
+			Instance original = Instance.from(tuple);
+			Instance updated = outMapper.from(original).add(COUNT_FEATURE, new LongFeature(count)).build();
 
 			collector.emit(new Values(updated));
 		}

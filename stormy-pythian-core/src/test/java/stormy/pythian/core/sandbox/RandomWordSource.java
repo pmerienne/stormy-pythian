@@ -66,8 +66,7 @@ public class RandomWordSource implements Component {
 	}
 
 	private Values createValues(String sentence) {
-		Instance instance = new Instance();
-		mapper.setFeature(instance, WORD_FEATURE, new TextFeature(sentence));
+		Instance instance = mapper.newInstance().add(WORD_FEATURE, new TextFeature(sentence)).build();
 		return new Values(instance);
 	}
 

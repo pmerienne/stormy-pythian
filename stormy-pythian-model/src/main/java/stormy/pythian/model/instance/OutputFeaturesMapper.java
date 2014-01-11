@@ -24,13 +24,66 @@ public class OutputFeaturesMapper implements Serializable {
 
 	private final Map<String, String> mappings;
 
-	public OutputFeaturesMapper(Map<String, String> mappings) {
+	private final FeaturesIndex featuresIndex;
+
+	public OutputFeaturesMapper(FeaturesIndex index, Map<String, String> mappings) {
+		this.featuresIndex = index;
 		this.mappings = mappings;
 	}
 
-	public <T> void setFeature(Instance instance, String featureName, Feature<T> feature) {
-		String outsideName = mappings.get(featureName);
-		instance.set(outsideName, feature);
+	public InstanceView from(Instance original) {
+		return new InstanceView(original, mappings, featuresIndex);
+	}
+
+	public InstanceView newInstance() {
+		return new InstanceView(mappings, featuresIndex);
+	}
+
+	public static class InstanceView {
+
+		private final Instance instance;
+
+		private final Map<String, String> mappings;
+		private final FeaturesIndex featuresIndex;
+
+		public InstanceView(Instance original, Map<String, String> mappings, FeaturesIndex featuresIndex) {
+			this.mappings = mappings;
+			this.featuresIndex = featuresIndex;
+
+			Feature<?>[] originalFeatures = original.getFeatures();
+			Feature<?>[] features = new Feature<?>[featuresIndex.size()];
+			System.arraycopy(originalFeatures, 0, features, 0, originalFeatures.length);
+
+			this.instance = new Instance(features);
+		}
+
+		public InstanceView(Map<String, String> mappings, FeaturesIndex featuresIndex) {
+			this.mappings = mappings;
+			this.featuresIndex = featuresIndex;
+
+			Feature<?>[] features = new Feature<?>[featuresIndex.size()];
+			this.instance = new Instance(features);
+		}
+
+		public InstanceView add(String featureName, Feature<?> feature) {
+			String outsideName = mappings.get(featureName);
+			if (outsideName != null) {
+				int index = featuresIndex.getIndex(outsideName);
+				if (index >= 0) {
+					instance.getFeatures()[index] = feature;
+				} else {
+					throw new IllegalArgumentException("Instance does not contain feature " + featureName);
+				}
+			} else {
+				throw new IllegalArgumentException("No mappings found for feature " + featureName);
+			}
+
+			return this;
+		}
+
+		public Instance build() {
+			return instance;
+		}
 	}
 
 	@Override

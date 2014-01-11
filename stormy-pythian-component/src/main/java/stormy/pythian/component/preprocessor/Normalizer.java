@@ -34,6 +34,7 @@ import stormy.pythian.model.annotation.OutputStream;
 import stormy.pythian.model.component.Component;
 import stormy.pythian.model.instance.DoubleFeature;
 import stormy.pythian.model.instance.Feature;
+import stormy.pythian.model.instance.FeatureProcedure;
 import stormy.pythian.model.instance.Instance;
 import stormy.pythian.model.instance.InputUserSelectionFeaturesMapper;
 import backtype.storm.tuple.Fields;
@@ -67,22 +68,34 @@ public class Normalizer implements Component {
 			this.mapper = mapper;
 		}
 
+		@SuppressWarnings("serial")
 		@Override
 		public void execute(TridentTuple tuple, TridentCollector collector) {
-			Instance instance = new Instance(from(tuple));
-
-			Map<String, Feature<?>> features = mapper.getFeatures(instance);
-			double magnitude = magnitude(features.values());
-
-			for (String featureName : features.keySet()) {
-				Feature<?> feature = features.get(featureName);
-				if (feature instanceof DoubleFeature) {
-					DoubleFeature doubleFeature = (DoubleFeature) feature;
-					instance.set(featureName, doubleFeature.getValue() / magnitude);
+			Instance original = Instance.from(tuple);
+			
+			final double magnitude = 0.0;
+			mapper.forEachFeatures(original, new FeatureProcedure() {
+				@Override
+				public void process(Feature<?> feature) {
+//					magnitude += pow(((DoubleFeature) feature).getValue(), 2);
 				}
-			}
+			});
+//			
+//
+//			mapper.
+//			
+//			Map<String, Feature<?>> features = mapper.getFeatures(instance);
+//			double magnitude = magnitude(features.values());
+//
+//			for (String featureName : features.keySet()) {
+//				Feature<?> feature = features.get(featureName);
+//				if (feature instanceof DoubleFeature) {
+//					DoubleFeature doubleFeature = (DoubleFeature) feature;
+//					instance.set(featureName, doubleFeature.getValue() / magnitude);
+//				}
+//			}
 
-			collector.emit(new Values(instance));
+			collector.emit(new Values(null));
 		}
 
 		private double magnitude(Collection<Feature<?>> features) {

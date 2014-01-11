@@ -1,14 +1,14 @@
 package stormy.pythian.core.topology;
 
-import static stormy.pythian.model.instance.FeaturesIndex.Builder.featuresIndex;
-import static stormy.pythian.model.instance.FeaturesIndex.Builder.from;
-
-import java.util.List;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 import stormy.pythian.core.configuration.ComponentConfiguration;
 import stormy.pythian.core.configuration.ConnectionConfiguration;
+import stormy.pythian.core.configuration.InputStreamConfiguration;
 import stormy.pythian.core.configuration.OutputStreamConfiguration;
+import stormy.pythian.core.configuration.PythianToplogyConfiguration;
 import stormy.pythian.model.instance.FeaturesIndex;
 
 import com.google.common.collect.HashBasedTable;
@@ -16,38 +16,78 @@ import com.google.common.collect.Table;
 
 public class FeaturesIndexFactory {
 
-	private final Table<String, String, FeaturesIndex> featuresIndexes = HashBasedTable.create();
+	private Table<String, String, FeaturesIndex> outputFeaturesIndexes;
+	private Table<String, String, FeaturesIndex> inputFeaturesIndexes;
+	private PythianToplogyConfiguration topologyConfiguration;
 
-
-	public Map<String, FeaturesIndex> getFeaturesIndexes(ComponentConfiguration configuration) {
-		return featuresIndexes.row(configuration.getId());
+	public void initTable(PythianToplogyConfiguration topologyConfiguration) {
+		this.outputFeaturesIndexes = HashBasedTable.create();
+		this.inputFeaturesIndexes = HashBasedTable.create();
+		this.topologyConfiguration = topologyConfiguration;
 	}
 
-	
-	public FeaturesIndex getFeaturesIndex(ComponentConfiguration configuration, String inputStreamName) {
-		FeaturesIndex inputStreamFeaturesIndex = featuresIndexes.get(configuration.id, inputStreamName);
-		return inputStreamFeaturesIndex;
-	}
+	public Map<String, FeaturesIndex> createInputFeaturesIndexes(ComponentConfiguration component) {
+		Map<String, FeaturesIndex> indexes = new HashMap<>(component.getInputStreams().size());
 
-	public void registerBuildedComponent(ComponentConfiguration configuration, List<ConnectionConfiguration> outputConnections) {
-		for (ConnectionConfiguration connection : outputConnections) {
-			OutputStreamConfiguration outputStreamConfiguration = configuration.findOutputStreamByName(connection.fromStreamName);
-			createFeaturesIndex(configuration.getId(), outputStreamConfiguration);
+		for (InputStreamConfiguration inputStream : component.getInputStreams()) {
+			String streamName = inputStream.getStreamName();
+			FeaturesIndex index = createFeaturesIndex(component.getId(), inputStream);
+			indexes.put(streamName, index);
 		}
+
+		return indexes;
 	}
 
-	private FeaturesIndex createFeaturesIndex(String componentId, OutputStreamConfiguration outputStreamConfiguration) {
-		FeaturesIndex featuresIndex;
+	private FeaturesIndex createFeaturesIndex(String componentId, InputStreamConfiguration inputStream) {
+		FeaturesIndex index = null;
 
-		if (outputStreamConfiguration.hasInputStreamSource()) {
-			FeaturesIndex inputStreamFeaturesIndex = featuresIndexes.get(componentId, outputStreamConfiguration.getInputStreamSource());
-			featuresIndex = from(inputStreamFeaturesIndex).with(outputStreamConfiguration.getNewFeatureNames()).build();
+		String streamName = inputStream.getStreamName();
+		ConnectionConfiguration connection = topologyConfiguration.findConnectionTo(componentId, streamName);
+
+		if (connection == null) {
+			switch (inputStream.getMappingType()) {
+			case FIXED_FEATURES:
+				index = new FeaturesIndex(inputStream.getMappings().values());
+				break;
+			case USER_SELECTION:
+				index = new FeaturesIndex(inputStream.getSelectedFeatures());
+				break;
+			}
 		} else {
-			featuresIndex = featuresIndex().with(outputStreamConfiguration.getNewFeatureNames()).build();
+			index = outputFeaturesIndexes.get(connection.from, connection.fromStreamName);
 		}
 
-		featuresIndexes.put(componentId, outputStreamConfiguration.getStreamName(), featuresIndex);
-		return featuresIndex;
+		inputFeaturesIndexes.put(componentId, streamName, index);
+
+		return index;
+	}
+
+	public Map<String, FeaturesIndex> createOutputFeaturesIndexes(ComponentConfiguration component) {
+		Map<String, FeaturesIndex> indexes = new HashMap<>(component.getOutputStreams().size());
+
+		for (OutputStreamConfiguration stream : component.getOutputStreams()) {
+			String streamName = stream.getStreamName();
+			FeaturesIndex index = createFeaturesIndex(component.getId(), stream);
+			indexes.put(streamName, index);
+		}
+
+		return indexes;
+	}
+
+	private FeaturesIndex createFeaturesIndex(String componentId, OutputStreamConfiguration outputStream) {
+		FeaturesIndex index = null;
+
+		Collection<String> newFeatures = outputStream.getMappings().values();
+
+		if (!outputStream.hasInputStreamSource()) {
+			index = new FeaturesIndex(newFeatures);
+		} else {
+			FeaturesIndex inputIndex = inputFeaturesIndexes.get(componentId, outputStream.getInputStreamSource());
+			index = FeaturesIndex.Builder.from(inputIndex).with(newFeatures).build();
+		}
+
+		outputFeaturesIndexes.put(componentId, outputStream.getStreamName(), index);
+		return index;
 	}
 
 }

@@ -19,6 +19,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import storm.trident.tuple.TridentTuple;
+import stormy.pythian.model.instance.Instance.Builder;
+
 public class Instance implements Serializable {
 
 	private static final long serialVersionUID = 4970738933759230736L;
@@ -34,6 +37,10 @@ public class Instance implements Serializable {
 
 	Instance(int size) {
 		this.features = new Feature<?>[size];
+	}
+
+	Instance(Feature<?>[] features) {
+		this.features = features;
 	}
 
 	public Feature<?>[] getFeatures() {
@@ -95,6 +102,10 @@ public class Instance implements Serializable {
 			return this;
 		}
 
+		public Builder with(String string) {
+			return with(new TextFeature(string));
+		}
+		
 		public Instance build() {
 			Instance instance = new Instance(features.size());
 			int i = 0;
@@ -103,6 +114,15 @@ public class Instance implements Serializable {
 				i++;
 			}
 			return instance;
+		}
+
+	}
+
+	public static Instance from(TridentTuple tuple) {
+		try {
+			return (Instance) tuple.getValueByField(INSTANCE_FIELD);
+		} catch (Exception ex) {
+			throw new IllegalStateException("No instance found in tuple " + tuple, ex);
 		}
 	}
 }
