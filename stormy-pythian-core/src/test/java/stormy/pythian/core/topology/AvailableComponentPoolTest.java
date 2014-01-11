@@ -20,6 +20,7 @@ import static org.apache.commons.lang.RandomStringUtils.randomAlphabetic;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.fest.assertions.MapAssert.entry;
 import static org.mockito.Mockito.mock;
+import static stormy.pythian.model.annotation.MappingType.USER_SELECTION;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -175,10 +176,10 @@ public class AvailableComponentPoolTest {
 
 	public static class TestComponentWithInputStreams implements Component {
 
-		@InputStream(expectedFeatures = {}, name = "in1")
+		@InputStream(name = "in1", type = USER_SELECTION)
 		public Stream in1;
 
-		@InputStream(expectedFeatures = {}, name = "in2")
+		@InputStream(name = "in2", type = USER_SELECTION)
 		public Stream in2;
 
 		@Override

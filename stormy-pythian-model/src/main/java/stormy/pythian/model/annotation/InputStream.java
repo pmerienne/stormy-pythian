@@ -15,8 +15,6 @@
  */
 package stormy.pythian.model.annotation;
 
-import static stormy.pythian.model.annotation.MappingType.USER_SELECTION;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -27,9 +25,9 @@ import java.lang.annotation.Target;
 public @interface InputStream {
 
 	String name();
-	
-	MappingType type() default USER_SELECTION;
-	
+
+	MappingType type();
+
 	ExpectedFeature[] expectedFeatures() default {};
-	
+
 }

@@ -17,6 +17,7 @@ package stormy.pythian.core.utils;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static stormy.pythian.model.annotation.MappingType.USER_SELECTION;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -45,10 +46,10 @@ public class ReflectionHelperTest {
 	public void should_find_input_streams() {
 		// Given
 		class TestComponent implements Component {
-			@InputStream(name = "in1", expectedFeatures = {})
+			@InputStream(name = "in1", type = USER_SELECTION)
 			public Stream clock;
 
-			@InputStream(name = "in2", expectedFeatures = {})
+			@InputStream(name = "in2", type = USER_SELECTION)
 			public Stream words;
 
 			@Override
@@ -109,10 +110,10 @@ public class ReflectionHelperTest {
 		// Given
 		class TestComponent implements Component {
 
-			@InputStream(name = "in1", expectedFeatures = {})
+			@InputStream(name = "in1", type = USER_SELECTION)
 			public Stream test;
 
-			@InputStream(name = "in2", expectedFeatures = {})
+			@InputStream(name = "in2", type = USER_SELECTION)
 			public Stream words;
 
 			@Override

@@ -18,6 +18,7 @@ package stormy.pythian.core.description;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.when;
+import static stormy.pythian.model.annotation.MappingType.USER_SELECTION;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,7 +51,7 @@ public class OutputStreamDescriptionFactoryTest {
 		@Documentation(name = "Test component")
 		class TestComponent implements Component {
 
-			@InputStream(expectedFeatures = {}, name = "in")
+			@InputStream(name = "in", type = USER_SELECTION)
 			public Stream in;
 
 			@OutputStream(from = "in", name = "out1")
@@ -83,7 +84,7 @@ public class OutputStreamDescriptionFactoryTest {
 		// Given
 		@Documentation(name = "Test component")
 		class TestComponent implements Component {
-			@InputStream(expectedFeatures = {}, name = "in")
+			@InputStream(name = "in", type = USER_SELECTION)
 			public Stream in;
 
 			@OutputStream(from = "in", name = "out1")
@@ -104,7 +105,7 @@ public class OutputStreamDescriptionFactoryTest {
 		@Documentation(name = "Test component")
 		class TestComponent implements Component {
 
-			@InputStream(expectedFeatures = {}, name = "in")
+			@InputStream(name = "in", type = USER_SELECTION)
 			public Stream in;
 
 			@OutputStream(from = "in", name = "out1")

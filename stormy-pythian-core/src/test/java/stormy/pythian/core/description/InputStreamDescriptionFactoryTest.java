@@ -51,7 +51,7 @@ public class InputStreamDescriptionFactoryTest {
 		@Documentation(name = "Test component")
 		class TestComponent implements Component {
 
-			@InputStream(name = "in1")
+			@InputStream(name = "in1", type = USER_SELECTION)
 			private Stream in1;
 
 			@InputStream(name = "in2", type = FIXED_FEATURES, expectedFeatures = {})
@@ -83,7 +83,7 @@ public class InputStreamDescriptionFactoryTest {
 		@Documentation(name = "Test component")
 		class TestComponent implements Component {
 
-			@InputStream(expectedFeatures = {}, name = "in")
+			@InputStream(name = "in", type = USER_SELECTION)
 			private Object in;
 
 			@Override
@@ -101,10 +101,10 @@ public class InputStreamDescriptionFactoryTest {
 		@Documentation(name = "Test component")
 		class TestComponent implements Component {
 
-			@InputStream(expectedFeatures = {}, name = "in1")
+			@InputStream(name = "in1", type = USER_SELECTION)
 			public Stream in1;
 
-			@InputStream(expectedFeatures = {}, name = "in1")
+			@InputStream(name = "in1", type = USER_SELECTION)
 			public Stream in2;
 
 			@Override
