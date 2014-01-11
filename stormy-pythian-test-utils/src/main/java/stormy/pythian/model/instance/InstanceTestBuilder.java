@@ -34,4 +34,9 @@ public class InstanceTestBuilder {
 	public Instance build() {
 		return new Instance(features.toArray());
 	}
+
+	public InstanceTestBuilder withAll(List<Object> newFeatures) {
+		features.addAll(newFeatures);
+		return this;
+	}
 }

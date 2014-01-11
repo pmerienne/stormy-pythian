@@ -15,46 +15,90 @@
  */
 package stormy.pythian.component.preprocessor;
 
+import static java.lang.Math.abs;
+import static org.apache.commons.lang.math.RandomUtils.nextDouble;
+import static org.fest.assertions.Assertions.assertThat;
+import static org.springframework.test.util.ReflectionTestUtils.getField;
+import static org.springframework.test.util.ReflectionTestUtils.setField;
+import static stormy.pythian.model.instance.Instance.INSTANCE_FIELD;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.junit.Test;
+
+import storm.trident.Stream;
+import storm.trident.testing.FixedBatchSpout;
+import stormy.pythian.model.instance.FeaturesIndex;
+import stormy.pythian.model.instance.InputUserSelectionFeaturesMapper;
+import stormy.pythian.model.instance.Instance;
+import stormy.pythian.model.instance.InstanceTestBuilder;
+import stormy.pythian.testing.InstanceCollector;
 import stormy.pythian.testing.TridentIntegrationTest;
+import backtype.storm.tuple.Fields;
+import backtype.storm.tuple.Values;
+import backtype.storm.utils.Utils;
 
 public class NormalizerTest extends TridentIntegrationTest {
-//
-//	private static final int TOPOLOGY_START_TIME = 5000;
-//
-//	public void should_normalize_features() {
-//		// Given
-//				Stream in = topology.newStream("test", new FixedBatchSpout(new Fields(Instance.INSTANCE_FIELD), 5, outputs))
-//
-//				Map<String, String> mappings = new HashMap<>();
-//				mappings.put(LINE_FEATURE, LINE_FEATURE);
-//				FixedFeaturesMapper mapper = new FixedFeaturesMapper(mappings);
-//
-//				FileSteamSource component = new FileSteamSource();
-//				setField(component, "filename", tmpFile.getAbsolutePath());
-//				setField(component, "mapper", mapper);
-//				setField(component, "topology", topology);
-//
-//				component.init();
-//				Stream out = (Stream) getField(component, "out");
-//
-//				InstanceCollector instanceCollector = new InstanceCollector();
-//				instanceCollector.listen(out);
-//
-//				// When
-//				this.launch();
-//				Utils.sleep(TOPOLOGY_START_TIME);
-//
-//				// Then
-//				assertThat(instanceCollector.getCollected()).containsOnly( //
-//						instance().with(LINE_FEATURE, lines.get(0)).build(), //
-//						instance().with(LINE_FEATURE, lines.get(1)).build(), //
-//						instance().with(LINE_FEATURE, lines.get(2)).build() //
-//						);
-//	}
-//
-//	private Values createValues(String sentence) {
-//		Instance instance = new Instance();
-//		mapper.setFeature(instance, WORD_FEATURE, new TextFeature(sentence));
-//		return new Values(instance);
-//	}
+	//
+	private static final int TOPOLOGY_START_TIME = 5000;
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void should_normalize_doubles_features() {
+		// Given
+		List<String> features = Arrays.asList("f1", "f2", "f3", "f4", "f5", "f6");
+		InputUserSelectionFeaturesMapper mapper = new InputUserSelectionFeaturesMapper(new FeaturesIndex(features), features);
+
+		FixedBatchSpout spout = new FixedBatchSpout(new Fields(INSTANCE_FIELD), 3, //
+				createValues(features.size()), //
+				createValues(features.size()), //
+				createValues(features.size()), //
+				createValues(features.size()), //
+				createValues(features.size()), //
+				createValues(features.size()) //
+		);
+		Stream inputStream = topology.newStream("test", spout);
+
+		Normalizer normalizer = new Normalizer();
+		setField(normalizer, "mapper", mapper);
+		setField(normalizer, "in", inputStream);
+		normalizer.init();
+		Stream out = (Stream) getField(normalizer, "out");
+
+		InstanceCollector instanceCollector = new InstanceCollector();
+		instanceCollector.listen(out);
+
+		// When
+		this.launch();
+		Utils.sleep(TOPOLOGY_START_TIME);
+
+		// Then
+		List<Instance> actualInstances = instanceCollector.getCollected();
+		for (Instance instance : actualInstances) {
+			Object[] actualFeatures = instance.getSelectedFeatures(mapper);
+			assertThat(actualFeatures).hasSize(features.size());
+			assertNormalized(actualFeatures);
+		}
+	}
+
+	private void assertNormalized(Object[] actualFeatures) {
+		assertThat(actualFeatures).isNotNull();
+
+		for (int i = 0; i < actualFeatures.length; i++) {
+			assertThat(abs((Double) actualFeatures[i])).isLessThan(1.0);
+		}
+	}
+
+	private Values createValues(int size) {
+		List<Object> features = new ArrayList<>(size);
+		for (int i = 0; i < size; i++) {
+			features.add(nextDouble() * 10);
+		}
+
+		Instance instance = InstanceTestBuilder.instance().withAll(features).build();
+		return new Values(instance);
+	}
+
 }
