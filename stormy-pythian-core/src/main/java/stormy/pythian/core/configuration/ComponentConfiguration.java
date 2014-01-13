@@ -16,7 +16,6 @@
 package stormy.pythian.core.configuration;
 
 import static com.google.common.collect.Iterables.tryFind;
-import static org.apache.commons.lang.RandomStringUtils.randomAlphabetic;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +33,7 @@ public class ComponentConfiguration {
 	public List<PropertyConfiguration> properties = new ArrayList<>();
 	public List<InputStreamConfiguration> inputStreams = new ArrayList<>();
 	public List<OutputStreamConfiguration> outputStreams = new ArrayList<>();
+	private List<StateConfiguration> states = new ArrayList<>();
 
 	public ComponentConfiguration() {
 	}
@@ -80,6 +80,14 @@ public class ComponentConfiguration {
 		this.outputStreams = outputStreams;
 	}
 
+	public List<StateConfiguration> getStates() {
+		return states;
+	}
+
+	public void setStates(List<StateConfiguration> states) {
+		this.states = states;
+	}
+
 	public OutputStreamConfiguration findOutputStreamByName(final String name) {
 		return tryFind(outputStreams, new Predicate<OutputStreamConfiguration>() {
 			public boolean apply(OutputStreamConfiguration candidate) {
@@ -88,26 +96,4 @@ public class ComponentConfiguration {
 		}).orNull();
 	}
 
-	public static class Builder {
-
-		public String id;
-		public ComponentDescription description;
-
-		public List<PropertyConfiguration> properties = new ArrayList<>();
-		public List<InputStreamConfiguration> inputStreams = new ArrayList<>();
-		public List<OutputStreamConfiguration> outputStreams = new ArrayList<>();
-
-		public static Builder componentConfiguration() {
-			return new Builder();
-		}
-
-		public Builder() {
-			this.id = randomAlphabetic(6);
-		}
-
-		public Builder of(ComponentDescription description) {
-			this.description = description;
-			return this;
-		}
-	}
 }
