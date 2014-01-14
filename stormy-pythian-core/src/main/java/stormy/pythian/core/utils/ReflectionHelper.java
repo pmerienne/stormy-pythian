@@ -33,12 +33,14 @@ import org.reflections.ReflectionUtils;
 
 import storm.trident.Stream;
 import storm.trident.TridentTopology;
+import storm.trident.state.StateFactory;
 import stormy.pythian.core.configuration.PropertyConfiguration;
 import stormy.pythian.model.annotation.Configuration;
-import stormy.pythian.model.annotation.Mapper;
 import stormy.pythian.model.annotation.InputStream;
+import stormy.pythian.model.annotation.Mapper;
 import stormy.pythian.model.annotation.OutputStream;
 import stormy.pythian.model.annotation.Property;
+import stormy.pythian.model.annotation.State;
 import stormy.pythian.model.annotation.Topology;
 import stormy.pythian.model.component.Component;
 import stormy.pythian.model.instance.InputFixedFeaturesMapper;
@@ -171,6 +173,18 @@ public class ReflectionHelper {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	public static void setStateFactory(Component component, String stateName, StateFactory stateFactory) {
+		try {
+			Set<Field> fields = getFields(component.getClass(), withState(stateName));
+			if (fields != null && !fields.isEmpty()) {
+				Field field = fields.iterator().next();
+				writeField(field, component, stateFactory, true);
+			}
+		} catch (Exception e) {
+			throw new IllegalArgumentException("Unable to set StateFactory for " + stateName, e);
+		}
+	}
 
 	@SuppressWarnings("unchecked")
 	private static void setInputStream(Component component, String name, Stream stream) {
@@ -242,6 +256,18 @@ public class ReflectionHelper {
 				}
 
 				return input.getAnnotation(Mapper.class).stream().equals(streamName);
+			}
+		};
+	}
+
+	private static <T extends AnnotatedElement> Predicate<T> withState(final String stateName) {
+		return new Predicate<T>() {
+			public boolean apply(T input) {
+				if (input == null || !input.isAnnotationPresent(State.class)) {
+					return false;
+				}
+
+				return input.getAnnotation(State.class).name().equals(stateName);
 			}
 		};
 	}

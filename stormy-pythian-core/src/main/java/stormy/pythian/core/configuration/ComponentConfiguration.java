@@ -18,7 +18,9 @@ package stormy.pythian.core.configuration;
 import static com.google.common.collect.Iterables.tryFind;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import stormy.pythian.core.description.ComponentDescription;
 
@@ -33,7 +35,7 @@ public class ComponentConfiguration {
 	public List<PropertyConfiguration> properties = new ArrayList<>();
 	public List<InputStreamConfiguration> inputStreams = new ArrayList<>();
 	public List<OutputStreamConfiguration> outputStreams = new ArrayList<>();
-	private List<StateConfiguration> states = new ArrayList<>();
+	private final Map<String, String> stateFactories = new HashMap<>();
 
 	public ComponentConfiguration() {
 	}
@@ -80,12 +82,12 @@ public class ComponentConfiguration {
 		this.outputStreams = outputStreams;
 	}
 
-	public List<StateConfiguration> getStates() {
-		return states;
+	public void addStateFactory(String name, String id) {
+		this.stateFactories.put(name, id);
 	}
 
-	public void setStates(List<StateConfiguration> states) {
-		this.states = states;
+	public Map<String, String> getStateFactories() {
+		return stateFactories;
 	}
 
 	public OutputStreamConfiguration findOutputStreamByName(final String name) {

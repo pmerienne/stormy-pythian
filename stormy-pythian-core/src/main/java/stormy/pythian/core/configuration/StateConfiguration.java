@@ -1,27 +1,56 @@
+/**
+ * Copyright 2013-2015 Pierre Merienne
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * 		http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package stormy.pythian.core.configuration;
+
+import static org.apache.commons.lang.RandomStringUtils.randomAlphabetic;
+import stormy.pythian.core.description.StateDescription;
 
 public abstract class StateConfiguration {
 
-	protected final String name;
-	protected final StateBackend backend;
-	protected final TransactionType transactionType;
+	protected final String id;
 
-	public StateConfiguration(String name, TransactionType transactionType, StateBackend backend) {
-		this.name = name;
+	protected final StateDescription description;;
+
+	protected final TransactionType transactionType;
+	protected final StateBackend backend;
+
+	public StateConfiguration(String id, StateDescription description, TransactionType transactionType, StateBackend backend) {
+		this.id = id;
+		this.description = description;
 		this.transactionType = transactionType;
 		this.backend = backend;
 	}
 
-	public String getName() {
-		return name;
+	public StateConfiguration(StateDescription description, TransactionType transactionType, StateBackend backend) {
+		this.id = randomAlphabetic(6);
+		this.description = description;
+		this.transactionType = transactionType;
+		this.backend = backend;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public StateDescription getDescription() {
+		return description;
 	}
 
 	public StateBackend getBackend() {
 		return backend;
-	}
-
-	public TransactionType getTransactionType() {
-		return transactionType;
 	}
 
 	@Override
@@ -29,8 +58,9 @@ public abstract class StateConfiguration {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((backend == null) ? 0 : backend.hashCode());
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((description == null) ? 0 : description.hashCode());
 		result = prime * result + ((transactionType == null) ? 0 : transactionType.hashCode());
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		return result;
 	}
 
@@ -45,19 +75,28 @@ public abstract class StateConfiguration {
 		StateConfiguration other = (StateConfiguration) obj;
 		if (backend != other.backend)
 			return false;
-		if (name == null) {
-			if (other.name != null)
+		if (description == null) {
+			if (other.description != null)
 				return false;
-		} else if (!name.equals(other.name))
+		} else if (!description.equals(other.description))
 			return false;
 		if (transactionType != other.transactionType)
+			return false;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
 			return false;
 		return true;
 	}
 
 	@Override
 	public String toString() {
-		return "StateConfiguration [name=" + name + ", backend=" + backend + ", transactionType=" + transactionType + "]";
+		return "StateConfiguration [uuid=" + id + ", description=" + description + ", transactionType=" + transactionType + ", backend=" + backend + "]";
+	}
+
+	public TransactionType getTransactionType() {
+		return transactionType;
 	}
 
 	public static enum StateBackend {
@@ -66,5 +105,9 @@ public abstract class StateConfiguration {
 
 	public static enum TransactionType {
 		TRANSACTIONAL, NONE, OPAQUE;
+	}
+
+	public String getStateName() {
+		return description.getName();
 	}
 }

@@ -35,6 +35,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import storm.trident.Stream;
 import storm.trident.TridentTopology;
+import storm.trident.state.StateFactory;
 import stormy.pythian.core.configuration.ComponentConfiguration;
 import stormy.pythian.core.configuration.InputStreamConfiguration;
 import stormy.pythian.core.configuration.OutputStreamConfiguration;
@@ -47,6 +48,7 @@ import stormy.pythian.model.annotation.InputStream;
 import stormy.pythian.model.annotation.Mapper;
 import stormy.pythian.model.annotation.OutputStream;
 import stormy.pythian.model.annotation.Property;
+import stormy.pythian.model.annotation.State;
 import stormy.pythian.model.annotation.Topology;
 import stormy.pythian.model.component.Component;
 import stormy.pythian.model.instance.FeaturesIndex;
@@ -74,7 +76,7 @@ public class ComponentFactoryTest {
 		configuration.descriptor = new ComponentDescription(TestComponent.class);
 
 		// When
-		Component component = factory.createComponent(configuration, new HashMap<String, Stream>(), new HashMap<String, FeaturesIndex>(), new HashMap<String, FeaturesIndex>());
+		Component component = factory.createComponent(configuration, new HashMap<String, StateFactory>(),  new HashMap<String, Stream>(), new HashMap<String, FeaturesIndex>(), new HashMap<String, FeaturesIndex>());
 
 		// Then
 		assertThat(component).isInstanceOf(TestComponent.class);
@@ -91,7 +93,8 @@ public class ComponentFactoryTest {
 		configuration.properties.add(new PropertyConfiguration("distributed", true));
 
 		// When
-		Component component = factory.createComponent(configuration, new HashMap<String, Stream>(), new HashMap<String, FeaturesIndex>(), new HashMap<String, FeaturesIndex>());
+		Component component = factory.createComponent(configuration, new HashMap<String, StateFactory>(), new HashMap<String, Stream>(), new HashMap<String, FeaturesIndex>(),
+				new HashMap<String, FeaturesIndex>());
 
 		// Then
 		TestComponent testComponent = (TestComponent) component;
@@ -112,7 +115,7 @@ public class ComponentFactoryTest {
 		when(originalInputStream.applyAssembly(isA(ReplaceInstanceField.class))).thenReturn(switchedStream);
 
 		// When
-		Component component = factory.createComponent(configuration, inputStreams, new HashMap<String, FeaturesIndex>(), new HashMap<String, FeaturesIndex>());
+		Component component = factory.createComponent(configuration, new HashMap<String, StateFactory>(), inputStreams, new HashMap<String, FeaturesIndex>(), new HashMap<String, FeaturesIndex>());
 
 		// Then
 		assertThat(component).isInstanceOf(TestComponent.class);
@@ -132,7 +135,8 @@ public class ComponentFactoryTest {
 		inputStreams.put("in1", expectedStream);
 
 		// When
-		TestComponent component = (TestComponent) factory.createComponent(configuration, inputStreams, new HashMap<String, FeaturesIndex>(), new HashMap<String, FeaturesIndex>());
+		TestComponent component = (TestComponent) factory.createComponent(configuration, new HashMap<String, StateFactory>(), inputStreams, new HashMap<String, FeaturesIndex>(),
+				new HashMap<String, FeaturesIndex>());
 
 		// Then
 		assertThat(component.topology).isEqualTo(tridentTopology);
@@ -149,7 +153,8 @@ public class ComponentFactoryTest {
 		inputStreams.put("in1", expectedStream);
 
 		// When
-		TestComponent component = (TestComponent) factory.createComponent(configuration, inputStreams, new HashMap<String, FeaturesIndex>(), new HashMap<String, FeaturesIndex>());
+		TestComponent component = (TestComponent) factory.createComponent(configuration, new HashMap<String, StateFactory>(), inputStreams, new HashMap<String, FeaturesIndex>(),
+				new HashMap<String, FeaturesIndex>());
 
 		// Then
 		assertThat(component.configuration).isEqualTo(config);
@@ -172,7 +177,7 @@ public class ComponentFactoryTest {
 		configuration.inputStreams.add(inputStreamConfiguration);
 
 		// When
-		TestComponent component = (TestComponent) factory.createComponent(configuration, EMPTY_MAP, inputFeaturesIndexes, new HashMap<String, FeaturesIndex>());
+		TestComponent component = (TestComponent) factory.createComponent(configuration, new HashMap<String, StateFactory>(), EMPTY_MAP, inputFeaturesIndexes, new HashMap<String, FeaturesIndex>());
 
 		// Then
 		assertThat(component.in1Mapper).isEqualTo(new InputUserSelectionFeaturesMapper(expectedIndex, selectedFeatures));
@@ -195,10 +200,32 @@ public class ComponentFactoryTest {
 		configuration.outputStreams.add(new OutputStreamConfiguration(outputStreamDescription, mappings));
 
 		// When
-		TestComponent component = (TestComponent) factory.createComponent(configuration, EMPTY_MAP, new HashMap<String, FeaturesIndex>(), outputFeaturesIndexes);
+		TestComponent component = (TestComponent) factory.createComponent(configuration, new HashMap<String, StateFactory>(), EMPTY_MAP, new HashMap<String, FeaturesIndex>(), outputFeaturesIndexes);
 
 		// Then
 		assertThat(component.out1Mapper).isEqualTo(new OutputFeaturesMapper(expectedIndex, mappings));
+	}
+
+	@Test
+	public void should_set_state_factories() {
+		// Given
+		StateFactory expectedStateFactory = mock(StateFactory.class);
+		StateFactory unexpectedStateFactory = mock(StateFactory.class);
+		Map<String, StateFactory> topologyStateFactories = new HashMap<>();
+		topologyStateFactories.put("1", unexpectedStateFactory);
+		topologyStateFactories.put("2", expectedStateFactory);
+
+		ComponentConfiguration configuration = new ComponentConfiguration();
+		configuration.descriptor = new ComponentDescription(TestComponent.class);
+		configuration.addStateFactory("Word count", "2");
+		
+
+		// When
+		Component component = factory.createComponent(configuration, topologyStateFactories, new HashMap<String, Stream>(), new HashMap<String, FeaturesIndex>(), new HashMap<String, FeaturesIndex>());
+
+		// Then
+		TestComponent testComponent = (TestComponent) component;
+		assertThat(testComponent.stateFactory).isEqualTo(expectedStateFactory);
 	}
 
 	public static class TestComponent implements Component {
@@ -223,6 +250,9 @@ public class ComponentFactoryTest {
 
 		@Mapper(stream = "out1")
 		public OutputFeaturesMapper out1Mapper;
+
+		@State(name = "Word count")
+		private StateFactory stateFactory;
 
 		public boolean isReady = false;
 

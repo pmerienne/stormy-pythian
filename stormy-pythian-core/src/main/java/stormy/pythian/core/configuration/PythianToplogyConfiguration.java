@@ -31,23 +31,27 @@ public class PythianToplogyConfiguration {
 
 	private final List<ComponentConfiguration> components;
 	private final List<ConnectionConfiguration> connections;
+	private final List<StateConfiguration> states;
 
 	public PythianToplogyConfiguration() {
 		this.id = UUID.randomUUID().toString();
 		this.components = new ArrayList<>();
 		this.connections = new ArrayList<>();
+		this.states = new ArrayList<>();
 	}
 
 	public PythianToplogyConfiguration(String id, List<ComponentConfiguration> components, List<ConnectionConfiguration> connections) {
 		this.id = id;
 		this.components = components;
 		this.connections = connections;
+		this.states = new ArrayList<>();
 	}
 
 	public PythianToplogyConfiguration(String id) {
 		this.id = id;
 		this.components = new ArrayList<>();
 		this.connections = new ArrayList<>();
+		this.states = new ArrayList<>();
 	}
 
 	public void ensureId() {
@@ -70,6 +74,10 @@ public class PythianToplogyConfiguration {
 
 	public List<ConnectionConfiguration> getConnections() {
 		return connections;
+	}
+
+	public List<StateConfiguration> getStates() {
+		return states;
 	}
 
 	public List<ConnectionConfiguration> findConnectionsFrom(final String componentId) {

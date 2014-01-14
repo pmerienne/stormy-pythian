@@ -28,12 +28,14 @@ import org.junit.Test;
 
 import storm.trident.Stream;
 import storm.trident.TridentTopology;
+import storm.trident.state.StateFactory;
 import stormy.pythian.core.configuration.PropertyConfiguration;
 import stormy.pythian.model.annotation.Configuration;
 import stormy.pythian.model.annotation.Mapper;
 import stormy.pythian.model.annotation.InputStream;
 import stormy.pythian.model.annotation.OutputStream;
 import stormy.pythian.model.annotation.Property;
+import stormy.pythian.model.annotation.State;
 import stormy.pythian.model.annotation.Topology;
 import stormy.pythian.model.component.Component;
 import stormy.pythian.model.instance.InputFixedFeaturesMapper;
@@ -225,6 +227,29 @@ public class ReflectionHelperTest {
 
 		// Then
 		assertThat(testComponent.mapper).isEqualTo(mapper);
+	}
+	
 
+	@Test
+	public void should_set_state_factory() {
+		// Given
+		class TestComponent implements Component {
+
+			@State(name = "Word count")
+			private StateFactory stateFactory;
+
+			@Override
+			public void init() {
+			}
+		}
+
+		TestComponent component = new TestComponent();
+		StateFactory stateFactory = mock(StateFactory.class);
+
+		// When
+		ReflectionHelper.setStateFactory(component, "Word count", stateFactory);
+
+		// Then
+		assertThat(component.stateFactory).isEqualTo(stateFactory);
 	}
 }
