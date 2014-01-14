@@ -132,7 +132,7 @@ public class InstanceTest {
 		when(inputFixedFeaturesMapper.getFeatureIndex("age")).thenReturn(2);
 
 		// When
-		Instance newInstance = instance.setFeature(inputFixedFeaturesMapper, "age", 32);
+		Instance newInstance = instance.withFeature(inputFixedFeaturesMapper, "age", 32);
 
 		// Then
 		assertThat(newInstance).isEqualTo(new Instance("Patrick", "Star", 32));
@@ -150,7 +150,7 @@ public class InstanceTest {
 		features.put("name", "Star");
 
 		// When
-		Instance newInstance = instance.setFeatures(inputFixedFeaturesMapper, features);
+		Instance newInstance = instance.withFeatures(inputFixedFeaturesMapper, features);
 
 		// Then
 		assertThat(newInstance).isEqualTo(new Instance("Patrick", "Star", 32));
@@ -164,7 +164,7 @@ public class InstanceTest {
 		when(outputFeaturesMapper.getFeatureIndex("age")).thenReturn(2);
 
 		// When
-		Instance newInstance = instance.setFeature(outputFeaturesMapper, "age", 32);
+		Instance newInstance = instance.withFeature(outputFeaturesMapper, "age", 32);
 
 		// Then
 		assertThat(newInstance).isEqualTo(new Instance("Patrick", "Star", 32));
@@ -183,7 +183,7 @@ public class InstanceTest {
 		features.put("name", "Star");
 
 		// When
-		Instance newInstance = instance.setFeatures(outputFeaturesMapper, features);
+		Instance newInstance = instance.withFeatures(outputFeaturesMapper, features);
 
 		// Then
 		assertThat(newInstance).isEqualTo(new Instance("Patrick", "Star", 32));

@@ -72,7 +72,7 @@ public class Instance implements Serializable {
 		return (T) (index < 0 ? null : features[index]);
 	}
 
-	public <T> Instance setFeature(InputFixedFeaturesMapper inputFixedFeaturesMapper, String featureName, T feature) {
+	public <T> Instance withFeature(InputFixedFeaturesMapper inputFixedFeaturesMapper, String featureName, T feature) {
 		int index = inputFixedFeaturesMapper.getFeatureIndex(featureName);
 		if (index < 0) {
 			throw new IllegalArgumentException("Feature " + featureName + " does not exist");
@@ -86,7 +86,7 @@ public class Instance implements Serializable {
 		return new Instance(newFeatures);
 	}
 
-	public Instance setFeatures(InputFixedFeaturesMapper inputFixedFeaturesMapper, Map<String, Object> newFeaturesWithName) {
+	public Instance withFeatures(InputFixedFeaturesMapper inputFixedFeaturesMapper, Map<String, Object> newFeaturesWithName) {
 		Object[] newFeatures = new Object[features.length];
 		System.arraycopy(features, 0, newFeatures, 0, features.length);
 
@@ -103,7 +103,7 @@ public class Instance implements Serializable {
 		return new Instance(newFeatures);
 	}
 
-	public <T> Instance setFeature(OutputFeaturesMapper mapper, String featureName, T feature) {
+	public <T> Instance withFeature(OutputFeaturesMapper mapper, String featureName, T feature) {
 		int index = mapper.getFeatureIndex(featureName);
 		if (index < 0) {
 			throw new IllegalArgumentException("Feature " + featureName + " does not exist");
@@ -117,7 +117,7 @@ public class Instance implements Serializable {
 		return new Instance(newFeatures);
 	}
 
-	public Instance setFeatures(OutputFeaturesMapper mapper, Map<String, Object> newFeaturesWithName) {
+	public Instance withFeatures(OutputFeaturesMapper mapper, Map<String, Object> newFeaturesWithName) {
 		Object[] newFeatures = new Object[mapper.size()];
 		System.arraycopy(features, 0, newFeatures, 0, features.length);
 

@@ -110,7 +110,7 @@ public class WordCount implements Component {
 			Instance original = Instance.from(tuple);
 
 			Long count = tuple.getLongByField(COUNT_FEATURE);
-			Instance updated = original.setFeature(outMapper, COUNT_FEATURE, count);
+			Instance updated = original.withFeature(outMapper, COUNT_FEATURE, count);
 
 			collector.emit(new Values(updated));
 		}

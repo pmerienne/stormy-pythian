@@ -105,7 +105,7 @@ public class Counter implements Component {
 			Instance original = Instance.from(tuple);
 			Long count = tuple.getLongByField(COUNT_FEATURE);
 
-			Instance newInstance = original.setFeature(outputMapper, COUNT_FEATURE, count);
+			Instance newInstance = original.withFeature(outputMapper, COUNT_FEATURE, count);
 			collector.emit(new Values(newInstance));
 		}
 
