@@ -35,7 +35,7 @@ public class FeaturesIndexFactory {
 	private Table<String, String, FeaturesIndex> inputFeaturesIndexes;
 	private PythianToplogyConfiguration topologyConfiguration;
 
-	public void initTable(PythianToplogyConfiguration topologyConfiguration) {
+	public void init(PythianToplogyConfiguration topologyConfiguration) {
 		this.outputFeaturesIndexes = HashBasedTable.create();
 		this.inputFeaturesIndexes = HashBasedTable.create();
 		this.topologyConfiguration = topologyConfiguration;

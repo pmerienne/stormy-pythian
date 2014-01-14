@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package stormy.pythian.core.sandbox;
+package stormy.pythian.sandbox;
 
 import static stormy.pythian.model.annotation.ComponentType.ANALYTICS;
 import static stormy.pythian.model.annotation.MappingType.FIXED_FEATURES;
@@ -24,13 +24,14 @@ import storm.trident.operation.BaseFunction;
 import storm.trident.operation.TridentCollector;
 import storm.trident.operation.builtin.Count;
 import storm.trident.operation.builtin.MapGet;
-import storm.trident.testing.MemoryMapState;
+import storm.trident.state.StateFactory;
 import storm.trident.tuple.TridentTuple;
 import stormy.pythian.model.annotation.Documentation;
 import stormy.pythian.model.annotation.ExpectedFeature;
 import stormy.pythian.model.annotation.InputStream;
 import stormy.pythian.model.annotation.Mapper;
 import stormy.pythian.model.annotation.OutputStream;
+import stormy.pythian.model.annotation.State;
 import stormy.pythian.model.component.Component;
 import stormy.pythian.model.instance.InputFixedFeaturesMapper;
 import stormy.pythian.model.instance.Instance;
@@ -57,13 +58,16 @@ public class WordCount implements Component {
 
 	@Mapper(stream = "out")
 	private OutputFeaturesMapper outputMapper;
+	
+	@State(name = "count state")
+	private StateFactory stateFactory;
 
 	@Override
 	public void init() {
 		TridentState wordCounts = in//
 				.each(new Fields(INSTANCE_FIELD), new ExtractFeature(WORD_FEATURE, inputMapper), new Fields(WORD_FEATURE)) //
 				.groupBy(new Fields(WORD_FEATURE)) //
-				.persistentAggregate(new MemoryMapState.Factory(), new Fields(WORD_FEATURE), new Count(), new Fields(COUNT_FEATURE)); //
+				.persistentAggregate(stateFactory, new Fields(WORD_FEATURE), new Count(), new Fields(COUNT_FEATURE)); //
 
 		out = in //
 		.each(new Fields(INSTANCE_FIELD), new ExtractFeature(WORD_FEATURE, inputMapper), new Fields(WORD_FEATURE)) //

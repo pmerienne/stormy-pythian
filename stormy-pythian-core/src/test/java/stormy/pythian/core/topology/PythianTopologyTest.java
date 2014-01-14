@@ -31,6 +31,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import storm.trident.Stream;
+import storm.trident.state.StateFactory;
 import stormy.pythian.core.configuration.ComponentConfiguration;
 import stormy.pythian.core.configuration.PythianToplogyConfiguration;
 import stormy.pythian.model.component.Component;
@@ -51,6 +52,9 @@ public class PythianTopologyTest {
 	@Mock
 	private FeaturesIndexFactory featuresIndexFactory;
 
+	@Mock
+	private PythianStateFactory pythianStateFactory;
+
 	@SuppressWarnings("unchecked")
 	@Test
 	public void should_create_components() {
@@ -60,8 +64,10 @@ public class PythianTopologyTest {
 		PythianToplogyConfiguration topologyConfiguration = mock(PythianToplogyConfiguration.class);
 
 		ComponentConfiguration componentConfiguration = mock(ComponentConfiguration.class);
-		when(topologyConfiguration.getComponents()).thenReturn(asList(componentConfiguration));
 		when(componentConfiguration.getId()).thenReturn(componentId);
+		when(topologyConfiguration.getComponents()).thenReturn(asList(componentConfiguration));
+
+		Map<String, StateFactory> expectedStateFactories = new HashMap<>();
 
 		Component component = mock(Component.class);
 		Map<String, Stream> inputStreams = new HashMap<>();
@@ -74,7 +80,8 @@ public class PythianTopologyTest {
 		when(componentPool.getAvailableInputStreams(componentConfiguration)).thenReturn(inputStreams);
 		when(featuresIndexFactory.createInputFeaturesIndexes(componentConfiguration)).thenReturn(inputFeaturesIndexes);
 		when(featuresIndexFactory.createOutputFeaturesIndexes(componentConfiguration)).thenReturn(outputFeaturesIndexes);
-		when(componentFactory.createComponent(componentConfiguration, inputStreams, inputFeaturesIndexes, outputFeaturesIndexes)).thenReturn(component);
+		when(pythianStateFactory.createStateFactories(topologyConfiguration)).thenReturn(expectedStateFactories);
+		when(componentFactory.createComponent(componentConfiguration, expectedStateFactories, inputStreams, inputFeaturesIndexes, outputFeaturesIndexes)).thenReturn(component);
 
 		// Then
 		topology.build(topologyConfiguration);

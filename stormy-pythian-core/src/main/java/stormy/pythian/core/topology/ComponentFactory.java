@@ -18,6 +18,7 @@ package stormy.pythian.core.topology;
 import static stormy.pythian.core.utils.ReflectionHelper.setConfiguration;
 import static stormy.pythian.core.utils.ReflectionHelper.setFeaturesMapper;
 import static stormy.pythian.core.utils.ReflectionHelper.setProperties;
+import static stormy.pythian.core.utils.ReflectionHelper.setStateFactory;
 import static stormy.pythian.core.utils.ReflectionHelper.setTopology;
 
 import java.util.HashMap;
@@ -26,6 +27,7 @@ import java.util.Map.Entry;
 
 import storm.trident.Stream;
 import storm.trident.TridentTopology;
+import storm.trident.state.StateFactory;
 import stormy.pythian.core.configuration.ComponentConfiguration;
 import stormy.pythian.core.configuration.InputStreamConfiguration;
 import stormy.pythian.core.configuration.OutputStreamConfiguration;
@@ -45,12 +47,12 @@ public class ComponentFactory {
 	public ComponentFactory() {
 	}
 
-	public ComponentFactory(TridentTopology tridentTopology, Config config) {
+	public void init(TridentTopology tridentTopology, Config config) {
 		this.tridentTopology = tridentTopology;
 		this.config = config;
 	}
 
-	public Component createComponent(ComponentConfiguration configuration, Map<String, Stream> inputStreams, Map<String, FeaturesIndex> inputFeaturesIndexes, Map<String, FeaturesIndex> outputFeaturesIndexes) {
+	public Component createComponent(ComponentConfiguration configuration, Map<String, StateFactory> topologyStateFactories, Map<String, Stream> inputStreams, Map<String, FeaturesIndex> inputFeaturesIndexes, Map<String, FeaturesIndex> outputFeaturesIndexes) {
 		try {
 			Component component = configuration.descriptor.clazz.newInstance();
 			setProperties(component, configuration.properties);
@@ -58,12 +60,23 @@ public class ComponentFactory {
 			setTopology(component, tridentTopology);
 			setConfiguration(component, config);
 			setFeaturesMappers(component, configuration, inputFeaturesIndexes, outputFeaturesIndexes);
+			setStateFactories(component, configuration, topologyStateFactories);
 
 			component.init();
 
 			return component;
 		} catch (Exception e) {
 			throw new IllegalArgumentException("Unable to add component " + configuration.descriptor.name, e);
+		}
+	}
+
+	private void setStateFactories(Component component, ComponentConfiguration componentConfiguration, Map<String, StateFactory> topologyStateFactories) {
+		for(Entry<String, String> entry : componentConfiguration.getStateFactories().entrySet()) {
+			String stateFactoryName = entry.getKey();
+			String stateFactoryId = entry.getValue();
+			StateFactory stateFactory = topologyStateFactories.get(stateFactoryId);
+			
+			setStateFactory(component, stateFactoryName, stateFactory);
 		}
 	}
 

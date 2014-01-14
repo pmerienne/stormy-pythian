@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package stormy.pythian.core.sandbox;
+package stormy.pythian.sandbox;
 
 import static org.apache.commons.lang.RandomStringUtils.randomAlphabetic;
+import static stormy.pythian.core.configuration.StateFactoryConfiguration.TransactionType.NONE;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -26,9 +27,11 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 
 import stormy.pythian.core.configuration.ComponentConfiguration;
 import stormy.pythian.core.configuration.ConnectionConfiguration;
+import stormy.pythian.core.configuration.InMemoryStateConfiguration;
 import stormy.pythian.core.configuration.InputStreamConfiguration;
 import stormy.pythian.core.configuration.OutputStreamConfiguration;
 import stormy.pythian.core.configuration.PythianToplogyConfiguration;
+import stormy.pythian.core.configuration.StateFactoryConfiguration;
 import stormy.pythian.core.description.ComponentDescription;
 import stormy.pythian.core.description.ComponentDescriptionFactory;
 import stormy.pythian.core.ioc.StormyPythianCoreConfig;
@@ -40,7 +43,9 @@ public class SandBox {
 
 	public static void main(String[] args) {
 		ApplicationContext context = new AnnotationConfigApplicationContext(StormyPythianCoreConfig.class);
-		
+
+		StateFactoryConfiguration stateFactoryConfiguration = new InMemoryStateConfiguration(NONE);
+
 		ComponentDescriptionFactory componentDescriptionFactory = context.getBean(ComponentDescriptionFactory.class);
 
 		ComponentDescription randomWordSource = componentDescriptionFactory.createDeclaration(RandomWordSource.class);
@@ -51,7 +56,8 @@ public class SandBox {
 		ComponentConfiguration wordCountConfiguration = new ComponentConfiguration(randomAlphabetic(6), wordCount);
 		wordCountConfiguration.inputStreams.add(new InputStreamConfiguration(wordCount.inputStreamDescriptions.get(0), createMappings(WordCount.WORD_FEATURE, "random word")));
 		wordCountConfiguration.outputStreams.add(new OutputStreamConfiguration(wordCount.outputStreamDescriptions.get(0), createMappings(WordCount.COUNT_FEATURE, "word count")));
-
+		wordCountConfiguration.addStateFactory("count state", stateFactoryConfiguration);
+		
 		ComponentDescription consoleOutput = componentDescriptionFactory.createDeclaration(ConsoleOutput.class);
 		ComponentConfiguration consoleOutputConfiguration = new ComponentConfiguration(randomAlphabetic(6), consoleOutput);
 		consoleOutputConfiguration.inputStreams.add(new InputStreamConfiguration(consoleOutput.inputStreamDescriptions.get(0), Arrays.asList("random word", "word count")));
@@ -62,6 +68,7 @@ public class SandBox {
 		topologyConfiguration.getComponents().add(randomWordSourceConfiguration);
 		topologyConfiguration.getComponents().add(wordCountConfiguration);
 		topologyConfiguration.getComponents().add(consoleOutputConfiguration);
+		topologyConfiguration.addStateFactory(stateFactoryConfiguration);
 
 		topologyConfiguration.getConnections().add(new ConnectionConfiguration(randomWordSourceConfiguration.id, "out", wordCountConfiguration.id, "in"));
 		topologyConfiguration.getConnections().add(new ConnectionConfiguration(wordCountConfiguration.id, "out", consoleOutputConfiguration.id, "in"));

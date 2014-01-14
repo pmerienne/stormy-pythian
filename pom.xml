@@ -13,6 +13,7 @@
 		<module>stormy-pythian-service</module>
 		<module>stormy-pythian-component</module>
 		<module>stormy-pythian-test-utils</module>
+		<module>stormy-pythian-sand-box</module>
 	</modules>
 
 	<properties>
