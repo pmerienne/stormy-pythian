@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package stormy.pythian.core.sandbox;
+package stormy.pythian.sandbox;
 
 import static stormy.pythian.model.annotation.ComponentType.ANALYTICS;
 import static stormy.pythian.model.annotation.MappingType.FIXED_FEATURES;

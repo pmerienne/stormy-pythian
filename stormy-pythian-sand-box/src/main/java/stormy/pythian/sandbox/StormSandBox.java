@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package stormy.pythian.core.sandbox;
+package stormy.pythian.sandbox;
 
 import static stormy.pythian.model.instance.Instance.INSTANCE_FIELD;
 
