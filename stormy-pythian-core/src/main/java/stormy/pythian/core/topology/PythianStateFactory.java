@@ -23,7 +23,7 @@ import storm.trident.state.StateFactory;
 import storm.trident.testing.MemoryMapState;
 import stormy.pythian.core.configuration.InMemoryStateConfiguration;
 import stormy.pythian.core.configuration.PythianToplogyConfiguration;
-import stormy.pythian.core.configuration.StateConfiguration;
+import stormy.pythian.core.configuration.StateFactoryConfiguration;
 import backtype.storm.task.IMetricsContext;
 
 public class PythianStateFactory {
@@ -31,7 +31,7 @@ public class PythianStateFactory {
 	public Map<String, StateFactory> createStateFactories(PythianToplogyConfiguration topologyConfiguration) {
 		Map<String, StateFactory> stateFactoriesByIds = new HashMap<>();
 
-		for (StateConfiguration stateConfiguration : topologyConfiguration.getStates()) {
+		for (StateFactoryConfiguration stateConfiguration : topologyConfiguration.getStates()) {
 			StateFactory stateFactory = this.createStateFactory(stateConfiguration);
 			stateFactoriesByIds.put(stateConfiguration.getId(), stateFactory);
 		}
@@ -39,7 +39,7 @@ public class PythianStateFactory {
 		return stateFactoriesByIds;
 	}
 
-	protected StateFactory createStateFactory(StateConfiguration configuration) {
+	protected StateFactory createStateFactory(StateFactoryConfiguration configuration) {
 		if (configuration instanceof InMemoryStateConfiguration) {
 			return createStateFactory((InMemoryStateConfiguration) configuration);
 		} else {

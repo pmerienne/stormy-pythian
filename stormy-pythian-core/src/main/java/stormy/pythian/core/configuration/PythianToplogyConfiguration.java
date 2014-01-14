@@ -31,7 +31,7 @@ public class PythianToplogyConfiguration {
 
 	private final List<ComponentConfiguration> components;
 	private final List<ConnectionConfiguration> connections;
-	private final List<StateConfiguration> states;
+	private final List<StateFactoryConfiguration> states;
 
 	public PythianToplogyConfiguration() {
 		this.id = UUID.randomUUID().toString();
@@ -76,7 +76,7 @@ public class PythianToplogyConfiguration {
 		return connections;
 	}
 
-	public List<StateConfiguration> getStates() {
+	public List<StateFactoryConfiguration> getStates() {
 		return states;
 	}
 
