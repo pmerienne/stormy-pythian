@@ -80,6 +80,10 @@ public class PythianToplogyConfiguration {
 		return states;
 	}
 
+	public void addStateFactory(StateFactoryConfiguration stateFactoryConfiguration) {
+		this.states.add(stateFactoryConfiguration);
+	}
+
 	public List<ConnectionConfiguration> findConnectionsFrom(final String componentId) {
 		return newArrayList(filter(connections, new Predicate<ConnectionConfiguration>() {
 			public boolean apply(ConnectionConfiguration input) {

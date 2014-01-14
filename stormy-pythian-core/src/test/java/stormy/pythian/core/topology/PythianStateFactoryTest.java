@@ -33,7 +33,6 @@ import storm.trident.state.StateFactory;
 import stormy.pythian.core.configuration.InMemoryStateConfiguration;
 import stormy.pythian.core.configuration.PythianToplogyConfiguration;
 import stormy.pythian.core.configuration.StateFactoryConfiguration;
-import stormy.pythian.core.description.StateFactoryDescription;
 import stormy.pythian.core.topology.PythianStateFactory.NoneTransactionalInMemoryStateFactory;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -45,8 +44,7 @@ public class PythianStateFactoryTest {
 	@Test
 	public void should_create_state_factories() {
 		// Given
-		StateFactoryDescription description = mock(StateFactoryDescription.class);
-		StateFactoryConfiguration expectedStateConfiguration = new InMemoryStateConfiguration(description, NONE);
+		StateFactoryConfiguration expectedStateConfiguration = new InMemoryStateConfiguration(NONE);
 
 		PythianToplogyConfiguration topologyConfiguration = mock(PythianToplogyConfiguration.class);
 		when(topologyConfiguration.getStates()).thenReturn(Arrays.asList(expectedStateConfiguration));
@@ -62,8 +60,7 @@ public class PythianStateFactoryTest {
 	@Test
 	public void should_create_in_memory_state_factory() {
 		// Given
-		StateFactoryDescription description = mock(StateFactoryDescription.class);
-		InMemoryStateConfiguration configuration = new InMemoryStateConfiguration(description, NONE);
+		InMemoryStateConfiguration configuration = new InMemoryStateConfiguration(NONE);
 
 		// When
 		StateFactory stateFactory = factory.createStateFactory(configuration);

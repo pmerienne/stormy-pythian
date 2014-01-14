@@ -86,6 +86,10 @@ public class ComponentConfiguration {
 		this.stateFactories.put(name, id);
 	}
 
+	public void addStateFactory(String name, StateFactoryConfiguration configuration) {
+		this.stateFactories.put(name, configuration.getId());
+	}
+
 	public Map<String, String> getStateFactories() {
 		return stateFactories;
 	}

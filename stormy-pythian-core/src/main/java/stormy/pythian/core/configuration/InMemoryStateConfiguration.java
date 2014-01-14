@@ -15,12 +15,11 @@
  */
 package stormy.pythian.core.configuration;
 
-import stormy.pythian.core.description.StateFactoryDescription;
 
 public class InMemoryStateConfiguration extends StateFactoryConfiguration {
 
-	public InMemoryStateConfiguration(StateFactoryDescription description, TransactionType transactionType) {
-		super(description, transactionType, StateBackend.IN_MEMORY);
+	public InMemoryStateConfiguration(TransactionType transactionType) {
+		super(transactionType, StateBackend.IN_MEMORY);
 	}
 
 }

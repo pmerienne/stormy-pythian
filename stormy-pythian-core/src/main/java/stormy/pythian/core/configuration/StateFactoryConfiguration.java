@@ -16,37 +16,28 @@
 package stormy.pythian.core.configuration;
 
 import static org.apache.commons.lang.RandomStringUtils.randomAlphabetic;
-import stormy.pythian.core.description.StateFactoryDescription;
 
 public abstract class StateFactoryConfiguration {
 
 	protected final String id;
 
-	protected final StateFactoryDescription description;;
-
 	protected final TransactionType transactionType;
 	protected final StateBackend backend;
 
-	public StateFactoryConfiguration(String id, StateFactoryDescription description, TransactionType transactionType, StateBackend backend) {
+	public StateFactoryConfiguration(String id, TransactionType transactionType, StateBackend backend) {
 		this.id = id;
-		this.description = description;
 		this.transactionType = transactionType;
 		this.backend = backend;
 	}
 
-	public StateFactoryConfiguration(StateFactoryDescription description, TransactionType transactionType, StateBackend backend) {
+	public StateFactoryConfiguration(TransactionType transactionType, StateBackend backend) {
 		this.id = randomAlphabetic(6);
-		this.description = description;
 		this.transactionType = transactionType;
 		this.backend = backend;
 	}
 
 	public String getId() {
 		return id;
-	}
-
-	public StateFactoryDescription getDescription() {
-		return description;
 	}
 
 	public StateBackend getBackend() {
@@ -58,7 +49,6 @@ public abstract class StateFactoryConfiguration {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((backend == null) ? 0 : backend.hashCode());
-		result = prime * result + ((description == null) ? 0 : description.hashCode());
 		result = prime * result + ((transactionType == null) ? 0 : transactionType.hashCode());
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		return result;
@@ -75,11 +65,6 @@ public abstract class StateFactoryConfiguration {
 		StateFactoryConfiguration other = (StateFactoryConfiguration) obj;
 		if (backend != other.backend)
 			return false;
-		if (description == null) {
-			if (other.description != null)
-				return false;
-		} else if (!description.equals(other.description))
-			return false;
 		if (transactionType != other.transactionType)
 			return false;
 		if (id == null) {
@@ -92,7 +77,7 @@ public abstract class StateFactoryConfiguration {
 
 	@Override
 	public String toString() {
-		return "StateConfiguration [uuid=" + id + ", description=" + description + ", transactionType=" + transactionType + ", backend=" + backend + "]";
+		return "StateFactoryConfiguration [id=" + id + ", transactionType=" + transactionType + ", backend=" + backend + "]";
 	}
 
 	public TransactionType getTransactionType() {
@@ -105,9 +90,5 @@ public abstract class StateFactoryConfiguration {
 
 	public static enum TransactionType {
 		TRANSACTIONAL, NONE, OPAQUE;
-	}
-
-	public String getStateName() {
-		return description.getName();
 	}
 }
