@@ -41,37 +41,38 @@ public class PythianStateFactory {
 
 	protected StateFactory createStateFactory(StateFactoryConfiguration configuration) {
 		if (configuration instanceof InMemoryStateConfiguration) {
-			return createStateFactory((InMemoryStateConfiguration) configuration);
+			return createInMemoryStateFactory((InMemoryStateConfiguration) configuration);
 		} else {
-			throw new UnsupportedOperationException("Can not create state factory for " + configuration.getBackend());
+			throw new UnsupportedOperationException("Can not create state factory for backend : " + configuration.getBackend());
 		}
 	}
 
-	private StateFactory createStateFactory(InMemoryStateConfiguration configuration) {
+	private StateFactory createInMemoryStateFactory(InMemoryStateConfiguration configuration) {
 		StateFactory stateFactory = null;
 		switch (configuration.getTransactionType()) {
 		case NONE:
 			stateFactory = new NoneTransactionalInMemoryStateFactory(configuration.getId());
 			break;
 		case OPAQUE:
-			stateFactory = null;
+			stateFactory = new OpaqueTransactionalInMemoryStateFactory(configuration.getId());
 			break;
 		case TRANSACTIONAL:
-			stateFactory = null;
+			stateFactory = new TransactionalInMemoryStateFactory(configuration.getId());
 			break;
-
+		default:
+			throw new UnsupportedOperationException("Can not create in memory state factory for transaction type : " + configuration.getTransactionType());
 		}
 
 		return stateFactory;
 	}
 
-	public static class NoneTransactionalInMemoryStateFactory implements StateFactory {
+	public abstract static class InMemoryStateFactory implements StateFactory {
 
-		private static final long serialVersionUID = 4999724405495023460L;
+		private static final long serialVersionUID = -3589505813476300002L;
 
 		private final String uuid;
 
-		public NoneTransactionalInMemoryStateFactory(String uuid) {
+		public InMemoryStateFactory(String uuid) {
 			this.uuid = uuid;
 		}
 
@@ -82,8 +83,10 @@ public class PythianStateFactory {
 		@SuppressWarnings("rawtypes")
 		@Override
 		public State makeState(Map conf, IMetricsContext metrics, int partitionIndex, int numPartitions) {
-			return new MemoryMapState(uuid);
+			return createState(uuid);
 		}
+
+		protected abstract State createState(String uuid);
 
 		@Override
 		public int hashCode() {
@@ -101,7 +104,7 @@ public class PythianStateFactory {
 				return false;
 			if (getClass() != obj.getClass())
 				return false;
-			NoneTransactionalInMemoryStateFactory other = (NoneTransactionalInMemoryStateFactory) obj;
+			InMemoryStateFactory other = (InMemoryStateFactory) obj;
 			if (uuid == null) {
 				if (other.uuid != null)
 					return false;
@@ -110,5 +113,50 @@ public class PythianStateFactory {
 			return true;
 		}
 
+	}
+
+	public static class NoneTransactionalInMemoryStateFactory extends InMemoryStateFactory {
+
+		public NoneTransactionalInMemoryStateFactory(String uuid) {
+			super(uuid);
+		}
+
+		private static final long serialVersionUID = 7032563580553707943L;
+
+		@SuppressWarnings("rawtypes")
+		@Override
+		protected State createState(String uuid) {
+			return new MemoryMapState(uuid);
+		}
+	}
+
+	public static class OpaqueTransactionalInMemoryStateFactory extends InMemoryStateFactory {
+
+		private static final long serialVersionUID = -6433397890576750143L;
+
+		public OpaqueTransactionalInMemoryStateFactory(String uuid) {
+			super(uuid);
+		}
+
+		@SuppressWarnings("rawtypes")
+		@Override
+		protected State createState(String uuid) {
+			return new MemoryMapState(uuid);
+		}
+	}
+
+	public static class TransactionalInMemoryStateFactory extends InMemoryStateFactory {
+
+		private static final long serialVersionUID = -6512983913668194068L;
+
+		public TransactionalInMemoryStateFactory(String uuid) {
+			super(uuid);
+		}
+
+		@SuppressWarnings("rawtypes")
+		@Override
+		protected State createState(String uuid) {
+			return new MemoryMapState(uuid);
+		}
 	}
 }
