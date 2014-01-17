@@ -28,7 +28,7 @@ import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Values;
 
 @Documentation(name = "Time window counter", description = "Count features occurence during a fixed time window.")
-public class TimeWindowCounter implements Component {
+public class TimeWindowDistinctFeatureCounter implements Component {
 
 	public static final String DATE_FEATURE = "Date";
 	public static final String SELECTED_FEATURE = "Group by";

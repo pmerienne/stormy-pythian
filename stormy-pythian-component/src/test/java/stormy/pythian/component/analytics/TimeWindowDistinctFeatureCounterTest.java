@@ -6,9 +6,9 @@ import static org.apache.commons.lang.time.DateUtils.addHours;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.springframework.test.util.ReflectionTestUtils.getField;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
-import static stormy.pythian.component.analytics.TimeWindowCounter.COUNT_FEATURE;
-import static stormy.pythian.component.analytics.TimeWindowCounter.DATE_FEATURE;
-import static stormy.pythian.component.analytics.TimeWindowCounter.SELECTED_FEATURE;
+import static stormy.pythian.component.analytics.TimeWindowDistinctFeatureCounter.COUNT_FEATURE;
+import static stormy.pythian.component.analytics.TimeWindowDistinctFeatureCounter.DATE_FEATURE;
+import static stormy.pythian.component.analytics.TimeWindowDistinctFeatureCounter.SELECTED_FEATURE;
 import static stormy.pythian.model.instance.Instance.INSTANCE_FIELD;
 import static stormy.pythian.model.instance.InstanceTestBuilder.instance;
 
@@ -34,7 +34,7 @@ import backtype.storm.tuple.Values;
 import backtype.storm.utils.Utils;
 
 
-public class TimeWindowCounterTest extends TridentIntegrationTest {
+public class TimeWindowDistinctFeatureCounterTest extends TridentIntegrationTest {
 
 	private static final int TOPOLOGY_START_TIME = 5000;
 
@@ -70,7 +70,7 @@ public class TimeWindowCounterTest extends TridentIntegrationTest {
 		);
 		Stream inputStream = topology.newStream("test", spout);
 
-		TimeWindowCounter counter = new TimeWindowCounter();
+		TimeWindowDistinctFeatureCounter counter = new TimeWindowDistinctFeatureCounter();
 		setField(counter, "in", inputStream);
 		setField(counter, "inputMapper", inputMapper);
 		setField(counter, "outputMapper", outputMapper);
