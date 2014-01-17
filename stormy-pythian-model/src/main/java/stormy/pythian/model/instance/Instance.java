@@ -71,6 +71,12 @@ public class Instance implements Serializable {
 		int index = inputFixedFeaturesMapper.getFeatureIndex(featureName);
 		return (T) (index < 0 ? null : features[index]);
 	}
+	@SuppressWarnings("unchecked")
+	public <T> T getFeature(OutputFeaturesMapper outputMapper, String featureName) {
+		int index = outputMapper.getFeatureIndex(featureName);
+		return (T) (index < 0 ? null : features[index]);
+	}
+
 
 	public <T> Instance withFeature(InputFixedFeaturesMapper inputFixedFeaturesMapper, String featureName, T feature) {
 		int index = inputFixedFeaturesMapper.getFeatureIndex(featureName);

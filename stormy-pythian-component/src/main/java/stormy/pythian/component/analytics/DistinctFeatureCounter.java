@@ -42,7 +42,6 @@ import backtype.storm.tuple.Values;
 @Documentation(name = "Count", description = "Count features occurence.")
 public class DistinctFeatureCounter implements Component {
 
-	public static final String SELECTED_FEATURES = "Feature";
 	public static final String COUNT_FEATURE = "Feature count";
 
 	private static final String SELECTED_FEATURES_FIELD = "SELECTED_FEATURES_FIELD";
@@ -59,7 +58,7 @@ public class DistinctFeatureCounter implements Component {
 
 	@Mapper(stream = "out")
 	private OutputFeaturesMapper outputMapper;
-	
+
 	@State(name = "Count's state")
 	private StateFactory stateFactory;
 

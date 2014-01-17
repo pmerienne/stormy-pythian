@@ -25,7 +25,7 @@ import java.lang.annotation.Target;
 public @interface ExpectedFeature {
 
 	@SuppressWarnings("rawtypes")
-	Class type();
+	Class type() default Object.class;
 
 	String name();
 }
