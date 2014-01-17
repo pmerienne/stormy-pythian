@@ -18,7 +18,7 @@ package stormy.pythian.component.analytics;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.springframework.test.util.ReflectionTestUtils.getField;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
-import static stormy.pythian.component.analytics.Counter.COUNT_FEATURE;
+import static stormy.pythian.component.analytics.DistinctFeatureCounter.COUNT_FEATURE;
 import static stormy.pythian.model.instance.Instance.INSTANCE_FIELD;
 import static stormy.pythian.model.instance.InstanceTestBuilder.instance;
 
@@ -42,7 +42,7 @@ import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Values;
 import backtype.storm.utils.Utils;
 
-public class CounterTest extends TridentIntegrationTest {
+public class DistinctFeatureCounterTest extends TridentIntegrationTest {
 
 	private static final int TOPOLOGY_START_TIME = 5000;
 
@@ -69,7 +69,7 @@ public class CounterTest extends TridentIntegrationTest {
 		);
 		Stream inputStream = topology.newStream("test", spout);
 
-		Counter counter = new Counter();
+		DistinctFeatureCounter counter = new DistinctFeatureCounter();
 		setField(counter, "in", inputStream);
 		setField(counter, "inputMapper", inputMapper);
 		setField(counter, "outputMapper", outputMapper);

@@ -17,6 +17,7 @@ package stormy.pythian.component.analytics;
 
 import static stormy.pythian.model.annotation.MappingType.USER_SELECTION;
 import static stormy.pythian.model.instance.Instance.INSTANCE_FIELD;
+import static stormy.pythian.model.instance.Instance.NEW_INSTANCE_FIELD;
 import storm.trident.Stream;
 import storm.trident.TridentState;
 import storm.trident.operation.BaseFunction;
@@ -39,10 +40,13 @@ import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Values;
 
 @Documentation(name = "Count", description = "Count features occurence.")
-public class Counter implements Component {
+public class DistinctFeatureCounter implements Component {
 
-	private static final String SELECTED_FEATURES = "SELECTED_FEATURES";
-	public static final String COUNT_FEATURE = "COUNT_FEATURE";
+	public static final String SELECTED_FEATURES = "Feature";
+	public static final String COUNT_FEATURE = "Feature count";
+
+	private static final String SELECTED_FEATURES_FIELD = "SELECTED_FEATURES_FIELD";
+	private static final String COUNT_FIELD = "COUNT_FIELD";
 
 	@InputStream(name = "in", type = USER_SELECTION)
 	private Stream in;
@@ -64,14 +68,14 @@ public class Counter implements Component {
 	@Override
 	public void init() {
 		TridentState counts = in //
-				.each(new Fields(INSTANCE_FIELD), new ExtractFeatures(inputMapper), new Fields(SELECTED_FEATURES)) //
-				.groupBy(new Fields(SELECTED_FEATURES)) //
-				.persistentAggregate(stateFactory, new Fields(SELECTED_FEATURES), new Count(), new Fields(COUNT_FEATURE)); //
+				.each(new Fields(INSTANCE_FIELD), new ExtractFeatures(inputMapper), new Fields(SELECTED_FEATURES_FIELD)) //
+				.groupBy(new Fields(SELECTED_FEATURES_FIELD)) //
+				.persistentAggregate(stateFactory, new Fields(SELECTED_FEATURES_FIELD), new Count(), new Fields(COUNT_FIELD)); //
 
 		out = in //
-		.each(new Fields(INSTANCE_FIELD), new ExtractFeatures(inputMapper), new Fields(SELECTED_FEATURES)) //
-				.stateQuery(counts, new Fields(SELECTED_FEATURES), new MapGet(), new Fields(COUNT_FEATURE)) //
-				.each(new Fields(INSTANCE_FIELD, COUNT_FEATURE), new AddFeatures(outputMapper), new Fields(Instance.NEW_INSTANCE_FIELD));
+		.each(new Fields(INSTANCE_FIELD), new ExtractFeatures(inputMapper), new Fields(SELECTED_FEATURES_FIELD)) //
+				.stateQuery(counts, new Fields(SELECTED_FEATURES_FIELD), new MapGet(), new Fields(COUNT_FIELD)) //
+				.each(new Fields(INSTANCE_FIELD, COUNT_FIELD), new AddFeatures(outputMapper), new Fields(NEW_INSTANCE_FIELD));
 
 	}
 
@@ -107,7 +111,7 @@ public class Counter implements Component {
 		@Override
 		public void execute(TridentTuple tuple, TridentCollector collector) {
 			Instance original = Instance.from(tuple);
-			Long count = tuple.getLongByField(COUNT_FEATURE);
+			Long count = tuple.getLongByField(COUNT_FIELD);
 
 			Instance newInstance = original.withFeature(outputMapper, COUNT_FEATURE, count);
 			collector.emit(new Values(newInstance));
