@@ -31,6 +31,7 @@ import org.junit.Test;
 
 import storm.trident.Stream;
 import storm.trident.testing.FixedBatchSpout;
+import storm.trident.testing.MemoryMapState;
 import stormy.pythian.model.instance.FeaturesIndex;
 import stormy.pythian.model.instance.InputUserSelectionFeaturesMapper;
 import stormy.pythian.model.instance.Instance;
@@ -72,6 +73,7 @@ public class CounterTest extends TridentIntegrationTest {
 		setField(counter, "in", inputStream);
 		setField(counter, "inputMapper", inputMapper);
 		setField(counter, "outputMapper", outputMapper);
+		setField(counter, "stateFactory", new MemoryMapState.Factory());
 		counter.init();
 
 		Stream out = (Stream) getField(counter, "out");

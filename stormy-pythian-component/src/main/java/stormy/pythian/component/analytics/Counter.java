@@ -23,13 +23,14 @@ import storm.trident.operation.BaseFunction;
 import storm.trident.operation.TridentCollector;
 import storm.trident.operation.builtin.Count;
 import storm.trident.operation.builtin.MapGet;
-import storm.trident.testing.MemoryMapState;
+import storm.trident.state.StateFactory;
 import storm.trident.tuple.TridentTuple;
 import stormy.pythian.model.annotation.Documentation;
 import stormy.pythian.model.annotation.ExpectedFeature;
 import stormy.pythian.model.annotation.InputStream;
 import stormy.pythian.model.annotation.Mapper;
 import stormy.pythian.model.annotation.OutputStream;
+import stormy.pythian.model.annotation.State;
 import stormy.pythian.model.component.Component;
 import stormy.pythian.model.instance.InputUserSelectionFeaturesMapper;
 import stormy.pythian.model.instance.Instance;
@@ -54,6 +55,9 @@ public class Counter implements Component {
 
 	@Mapper(stream = "out")
 	private OutputFeaturesMapper outputMapper;
+	
+	@State(name = "Count's state")
+	private StateFactory stateFactory;
 
 	private static final long serialVersionUID = -5312700259983804231L;
 
@@ -62,7 +66,7 @@ public class Counter implements Component {
 		TridentState counts = in //
 				.each(new Fields(INSTANCE_FIELD), new ExtractFeatures(inputMapper), new Fields(SELECTED_FEATURES)) //
 				.groupBy(new Fields(SELECTED_FEATURES)) //
-				.persistentAggregate(new MemoryMapState.Factory(), new Fields(SELECTED_FEATURES), new Count(), new Fields(COUNT_FEATURE)); //
+				.persistentAggregate(stateFactory, new Fields(SELECTED_FEATURES), new Count(), new Fields(COUNT_FEATURE)); //
 
 		out = in //
 		.each(new Fields(INSTANCE_FIELD), new ExtractFeatures(inputMapper), new Fields(SELECTED_FEATURES)) //
