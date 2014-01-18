@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.pmerienne</groupId>
 	<artifactId>stormy-pythian</artifactId>
@@ -28,6 +27,7 @@
 		<spring.version>3.2.4.RELEASE</spring.version>
 
 		<!-- Utils -->
+		<mahout-math.version>0.8</mahout-math.version>
 		<guava.version>14.0</guava.version>
 		<reflections.version>0.9.9-RC1</reflections.version>
 
@@ -135,6 +135,11 @@
 
 			<!-- Utils -->
 			<dependency>
+				<groupId>org.apache.mahout</groupId>
+				<artifactId>mahout-math</artifactId>
+				<version>${mahout-math.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>com.google.guava</groupId>
 				<artifactId>guava</artifactId>
 				<version>${guava.version}</version>
@@ -144,6 +149,19 @@
 				<artifactId>reflections</artifactId>
 				<version>${reflections.version}</version>
 			</dependency>
+
+			<!-- Log -->
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-api</artifactId>
+				<version>${slf4j.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-log4j12</artifactId>
+				<version>${slf4j.version}</version>
+			</dependency>
+
 
 			<!-- Test -->
 			<dependency>

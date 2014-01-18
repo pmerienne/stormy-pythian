@@ -1,11 +1,15 @@
 package stormy.pythian.component.analytics;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.fest.assertions.Delta.delta;
 import static org.springframework.test.util.ReflectionTestUtils.getField;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
-import static stormy.pythian.component.analytics.GlobalFeatureMean.MEAN_FEATURE;
-import static stormy.pythian.component.analytics.GlobalFeatureMean.SELECTED_FEATURE;
+import static stormy.pythian.component.analytics.GlobalFeatureQuantiles.QUANTILE_95th_FEATURE;
+import static stormy.pythian.component.analytics.GlobalFeatureQuantiles.QUANTILE_99th9_FEATURE;
+import static stormy.pythian.component.analytics.GlobalFeatureQuantiles.QUANTILE_99th_FEATURE;
+import static stormy.pythian.component.analytics.GlobalFeatureQuantiles.QUANTILE_90th_FEATURE;
+import static stormy.pythian.component.analytics.GlobalFeatureQuantiles.MEDIAN_FEATURE;
+import static stormy.pythian.component.analytics.GlobalFeatureQuantiles.QUANTILE_75th_FEATURE;
+import static stormy.pythian.component.analytics.GlobalFeatureQuantiles.SELECTED_FEATURE;
 import static stormy.pythian.model.instance.Instance.INSTANCE_FIELD;
 import static stormy.pythian.model.instance.InstanceTestBuilder.instance;
 
@@ -29,22 +33,29 @@ import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Values;
 import backtype.storm.utils.Utils;
 
-public class GlobalFeatureMeanTest extends TridentIntegrationTest {
+
+
+public class GlobalFeatureQuantilesTest extends TridentIntegrationTest {
 
 	private static final int TOPOLOGY_START_TIME = 5000;
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void should_compute_feature_mean() {
+	public void should_compute_features_quantiles() {
 		// Given
 		List<String> inputFeatures = Arrays.asList("firstname", "lastname", "age");
 		Map<String, String> inputMappings = new HashMap<>();
 		inputMappings.put(SELECTED_FEATURE, "age");
 		InputFixedFeaturesMapper inputMapper = new InputFixedFeaturesMapper(new FeaturesIndex(inputFeatures), inputMappings);
 
-		List<String> outputFeatures = Arrays.asList("firstname", "lastname", "age", "age mean");
+		List<String> outputFeatures = Arrays.asList("firstname", "lastname", "age", "median", "75th percentiles", "90th percentiles", "95th percentiles", "99th percentiles", "99.9th percentiles");
 		Map<String, String> mappings = new HashMap<>();
-		mappings.put(MEAN_FEATURE, "age mean");
+		mappings.put(MEDIAN_FEATURE, "median");
+		mappings.put(QUANTILE_75th_FEATURE, "75th percentiles");
+		mappings.put(QUANTILE_90th_FEATURE, "90th percentiles");
+		mappings.put(QUANTILE_95th_FEATURE, "95th percentiles");
+		mappings.put(QUANTILE_99th_FEATURE, "99th percentiles");
+		mappings.put(QUANTILE_99th9_FEATURE, "99.9th percentiles");
 		OutputFeaturesMapper outputMapper = new OutputFeaturesMapper(new FeaturesIndex(outputFeatures), mappings);
 
 		FixedBatchSpout spout = new FixedBatchSpout(new Fields(INSTANCE_FIELD), 1, //
@@ -57,14 +68,14 @@ public class GlobalFeatureMeanTest extends TridentIntegrationTest {
 		);
 		Stream inputStream = topology.newStream("test", spout);
 
-		GlobalFeatureMean globalFeatureMean = new GlobalFeatureMean();
-		setField(globalFeatureMean, "in", inputStream);
-		setField(globalFeatureMean, "inputMapper", inputMapper);
-		setField(globalFeatureMean, "outputMapper", outputMapper);
-		setField(globalFeatureMean, "stateFactory", new MemoryMapState.Factory());
-		globalFeatureMean.init();
+		GlobalFeatureQuantiles component = new GlobalFeatureQuantiles();
+		setField(component, "in", inputStream);
+		setField(component, "inputMapper", inputMapper);
+		setField(component, "outputMapper", outputMapper);
+		setField(component, "stateFactory", new MemoryMapState.Factory());
+		component.init();
 
-		Stream out = (Stream) getField(globalFeatureMean, "out");
+		Stream out = (Stream) getField(component, "out");
 		InstanceCollector instanceCollector = new InstanceCollector();
 		instanceCollector.collect(out);
 
@@ -75,11 +86,7 @@ public class GlobalFeatureMeanTest extends TridentIntegrationTest {
 		// Then
 		List<Instance> collected = instanceCollector.getCollected();
 		assertThat(collected).hasSize(6);
-		assertThat((double) collected.get(1).getFeature(outputMapper, MEAN_FEATURE)).isEqualTo((27) / 1.0, delta(10e-6));
-		assertThat((double) collected.get(2).getFeature(outputMapper, MEAN_FEATURE)).isEqualTo((27 + 32) / 2.0, delta(10e-6));
-		assertThat((double) collected.get(3).getFeature(outputMapper, MEAN_FEATURE)).isEqualTo((27 + 32 + 27) / 3.0, delta(10e-6));
-		assertThat((double) collected.get(4).getFeature(outputMapper, MEAN_FEATURE)).isEqualTo((27 + 32 + 27 + 27) / 4.0, delta(10e-6));
-		assertThat((double) collected.get(5).getFeature(outputMapper, MEAN_FEATURE)).isEqualTo((27 + 32 + 27 + 27 + 28) / 5.0, delta(10e-6));
+		System.out.println(collected);
 	}
 
 	private Values createInputValues(String firstname, String lastName, int age) {
