@@ -20,6 +20,7 @@ import java.util.List;
 
 public class InstanceTestBuilder {
 
+	private Object label = null;
 	private final List<Object> features = new ArrayList<>();
 
 	public static InstanceTestBuilder instance() {
@@ -31,8 +32,13 @@ public class InstanceTestBuilder {
 		return this;
 	}
 
+	public InstanceTestBuilder label(Object label) {
+		this.label = label;
+		return this;
+	}
+	
 	public Instance build() {
-		return new Instance(features.toArray());
+		return new Instance(label, features.toArray());
 	}
 
 	public InstanceTestBuilder withAll(List<Object> newFeatures) {
