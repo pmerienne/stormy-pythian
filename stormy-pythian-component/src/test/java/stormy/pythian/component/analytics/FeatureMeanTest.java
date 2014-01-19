@@ -19,9 +19,9 @@ import static org.fest.assertions.Assertions.assertThat;
 import static org.fest.assertions.Delta.delta;
 import static org.springframework.test.util.ReflectionTestUtils.getField;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
-import static stormy.pythian.component.analytics.DistinctFeatureMean.GROUP_BY_FEATURE;
-import static stormy.pythian.component.analytics.DistinctFeatureMean.MEAN_FEATURE;
-import static stormy.pythian.component.analytics.DistinctFeatureMean.MEAN_ON_FEATURE;
+import static stormy.pythian.component.analytics.Constants.COMPUTED_FEATURE;
+import static stormy.pythian.component.analytics.Constants.GROUP_BY_FEATURE;
+import static stormy.pythian.component.analytics.FeatureMean.MEAN_FEATURE;
 import static stormy.pythian.model.instance.Instance.INSTANCE_FIELD;
 import static stormy.pythian.model.instance.InstanceTestBuilder.instance;
 
@@ -45,7 +45,7 @@ import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Values;
 import backtype.storm.utils.Utils;
 
-public class DistinctFeatureMeanTest extends TridentIntegrationTest {
+public class FeatureMeanTest extends TridentIntegrationTest {
 
 	private static final int TOPOLOGY_START_TIME = 5000;
 
@@ -55,7 +55,7 @@ public class DistinctFeatureMeanTest extends TridentIntegrationTest {
 		// Given
 		List<String> inputFeatures = Arrays.asList("username", "call duration");
 		Map<String, String> inputMappings = new HashMap<>();
-		inputMappings.put(MEAN_ON_FEATURE, "call duration");
+		inputMappings.put(COMPUTED_FEATURE, "call duration");
 		inputMappings.put(GROUP_BY_FEATURE, "username");
 		InputFixedFeaturesMapper inputMapper = new InputFixedFeaturesMapper(new FeaturesIndex(inputFeatures), inputMappings);
 
@@ -76,7 +76,7 @@ public class DistinctFeatureMeanTest extends TridentIntegrationTest {
 		);
 		Stream inputStream = topology.newStream("test", spout);
 
-		DistinctFeatureMean distinctFeatureMean = new DistinctFeatureMean();
+		FeatureMean distinctFeatureMean = new FeatureMean();
 		setField(distinctFeatureMean, "in", inputStream);
 		setField(distinctFeatureMean, "inputMapper", inputMapper);
 		setField(distinctFeatureMean, "outputMapper", outputMapper);

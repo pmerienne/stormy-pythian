@@ -19,8 +19,8 @@ import static org.fest.assertions.Assertions.assertThat;
 import static org.fest.assertions.Delta.delta;
 import static org.springframework.test.util.ReflectionTestUtils.getField;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
-import static stormy.pythian.component.analytics.GlobalFeatureMean.MEAN_FEATURE;
-import static stormy.pythian.component.analytics.GlobalFeatureMean.SELECTED_FEATURE;
+import static stormy.pythian.component.analytics.Constants.COMPUTED_FEATURE;
+import static stormy.pythian.component.analytics.Constants.MEAN_FEATURE;
 import static stormy.pythian.model.instance.Instance.INSTANCE_FIELD;
 import static stormy.pythian.model.instance.InstanceTestBuilder.instance;
 
@@ -44,7 +44,7 @@ import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Values;
 import backtype.storm.utils.Utils;
 
-public class GlobalFeatureMeanTest extends TridentIntegrationTest {
+public class GlobalMeanTest extends TridentIntegrationTest {
 
 	private static final int TOPOLOGY_START_TIME = 5000;
 
@@ -54,7 +54,7 @@ public class GlobalFeatureMeanTest extends TridentIntegrationTest {
 		// Given
 		List<String> inputFeatures = Arrays.asList("firstname", "lastname", "age");
 		Map<String, String> inputMappings = new HashMap<>();
-		inputMappings.put(SELECTED_FEATURE, "age");
+		inputMappings.put(COMPUTED_FEATURE, "age");
 		InputFixedFeaturesMapper inputMapper = new InputFixedFeaturesMapper(new FeaturesIndex(inputFeatures), inputMappings);
 
 		List<String> outputFeatures = Arrays.asList("firstname", "lastname", "age", "age mean");
@@ -72,7 +72,7 @@ public class GlobalFeatureMeanTest extends TridentIntegrationTest {
 		);
 		Stream inputStream = topology.newStream("test", spout);
 
-		GlobalFeatureMean globalFeatureMean = new GlobalFeatureMean();
+		GlobalMean globalFeatureMean = new GlobalMean();
 		setField(globalFeatureMean, "in", inputStream);
 		setField(globalFeatureMean, "inputMapper", inputMapper);
 		setField(globalFeatureMean, "outputMapper", outputMapper);

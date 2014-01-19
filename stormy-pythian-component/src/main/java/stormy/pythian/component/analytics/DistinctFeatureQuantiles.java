@@ -34,6 +34,7 @@ import storm.trident.operation.builtin.MapGet;
 import storm.trident.state.StateFactory;
 import storm.trident.tuple.TridentTuple;
 import stormy.pythian.component.analytics.tdigest.TDigest;
+import stormy.pythian.component.common.ExtractFeatures;
 import stormy.pythian.model.annotation.Documentation;
 import stormy.pythian.model.annotation.ExpectedFeature;
 import stormy.pythian.model.annotation.InputStream;
@@ -94,34 +95,14 @@ public class DistinctFeatureQuantiles implements Component {
 	@Override
 	public void init() {
 		TridentState quantiles = in //
-				.each(new Fields(INSTANCE_FIELD), new ExtractGroupByFeature(inputMapper), new Fields(GROUP_BY_FIELD)) //
+				.each(new Fields(INSTANCE_FIELD), new ExtractFeatures(inputMapper, GROUP_BY_FEATURE), new Fields(GROUP_BY_FIELD)) //
 				.groupBy(new Fields(GROUP_BY_FIELD)) //
 				.persistentAggregate(stateFactory, new Fields(INSTANCE_FIELD), new QuantilesAggregator(inputMapper, compression), new Fields(QUANTILES_STATE_FIELD));
 
 		out = in //
-		.each(new Fields(INSTANCE_FIELD), new ExtractGroupByFeature(inputMapper), new Fields(GROUP_BY_FIELD)) //
+				.each(new Fields(INSTANCE_FIELD), new ExtractFeatures(inputMapper, GROUP_BY_FEATURE), new Fields(GROUP_BY_FIELD)) //
 				.stateQuery(quantiles, new Fields(GROUP_BY_FIELD), new MapGet(), new Fields(QUANTILES_STATE_FIELD)) //
 				.each(new Fields(INSTANCE_FIELD, QUANTILES_STATE_FIELD), new AddQuantilesFeatures(outputMapper), new Fields(NEW_INSTANCE_FIELD));
-	}
-
-	private static class ExtractGroupByFeature extends BaseFunction {
-
-		private static final long serialVersionUID = -2823417821288444544L;
-
-		private final InputFixedFeaturesMapper inputMapper;
-
-		public ExtractGroupByFeature(InputFixedFeaturesMapper mapper) {
-			this.inputMapper = mapper;
-		}
-
-		@Override
-		public void execute(TridentTuple tuple, TridentCollector collector) {
-			Instance instance = Instance.from(tuple);
-
-			Object groupByFeature = instance.getFeature(inputMapper, GROUP_BY_FEATURE);
-			collector.emit(new Values(groupByFeature));
-		}
-
 	}
 
 	private static class QuantilesAggregator implements CombinerAggregator<TDigest> {

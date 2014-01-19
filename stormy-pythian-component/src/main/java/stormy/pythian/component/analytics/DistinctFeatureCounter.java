@@ -26,6 +26,7 @@ import storm.trident.operation.builtin.Count;
 import storm.trident.operation.builtin.MapGet;
 import storm.trident.state.StateFactory;
 import storm.trident.tuple.TridentTuple;
+import stormy.pythian.component.common.ExtractFeatures;
 import stormy.pythian.model.annotation.Documentation;
 import stormy.pythian.model.annotation.ExpectedFeature;
 import stormy.pythian.model.annotation.InputStream;
@@ -75,25 +76,6 @@ public class DistinctFeatureCounter implements Component {
 		.each(new Fields(INSTANCE_FIELD), new ExtractFeatures(inputMapper), new Fields(SELECTED_FEATURES_FIELD)) //
 				.stateQuery(counts, new Fields(SELECTED_FEATURES_FIELD), new MapGet(), new Fields(COUNT_FIELD)) //
 				.each(new Fields(INSTANCE_FIELD, COUNT_FIELD), new AddFeatures(outputMapper), new Fields(NEW_INSTANCE_FIELD));
-
-	}
-
-	private static class ExtractFeatures extends BaseFunction {
-
-		private static final long serialVersionUID = -2823417821288444544L;
-
-		private final InputUserSelectionFeaturesMapper inputMapper;
-
-		public ExtractFeatures(InputUserSelectionFeaturesMapper mapper) {
-			this.inputMapper = mapper;
-		}
-
-		@Override
-		public void execute(TridentTuple tuple, TridentCollector collector) {
-			Instance instance = Instance.from(tuple);
-			Object[] selectedFeatures = instance.getSelectedFeatures(inputMapper);
-			collector.emit(new Values(selectedFeatures));
-		}
 
 	}
 
