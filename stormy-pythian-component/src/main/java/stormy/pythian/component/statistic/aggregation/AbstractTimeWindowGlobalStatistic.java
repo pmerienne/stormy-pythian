@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package stormy.pythian.component.analytics;
+package stormy.pythian.component.statistic.aggregation;
 
-import static stormy.pythian.component.analytics.Constants.COMPUTED_FEATURE;
-import static stormy.pythian.component.analytics.Constants.DATE_FEATURE;
-import static stormy.pythian.component.analytics.Constants.DATE_FIELD;
-import static stormy.pythian.component.analytics.Constants.SLOT_FIELD;
-import static stormy.pythian.component.analytics.Constants.SLOT_STATISTIC_FIELD;
-import static stormy.pythian.component.analytics.Constants.STATISTIC_FIELD;
+import static stormy.pythian.component.statistic.aggregation.Constants.COMPUTED_FEATURE;
+import static stormy.pythian.component.statistic.aggregation.Constants.DATE_FEATURE;
+import static stormy.pythian.component.statistic.aggregation.Constants.DATE_FIELD;
+import static stormy.pythian.component.statistic.aggregation.Constants.SLOT_FIELD;
+import static stormy.pythian.component.statistic.aggregation.Constants.SLOT_STATISTIC_FIELD;
+import static stormy.pythian.component.statistic.aggregation.Constants.STATISTIC_FIELD;
 import static stormy.pythian.model.annotation.MappingType.FIXED_FEATURES;
 import static stormy.pythian.model.instance.Instance.INSTANCE_FIELD;
 import static stormy.pythian.model.instance.Instance.NEW_INSTANCE_FIELD;
@@ -32,9 +32,9 @@ import storm.trident.operation.TridentCollector;
 import storm.trident.operation.builtin.MapGet;
 import storm.trident.state.StateFactory;
 import storm.trident.tuple.TridentTuple;
-import stormy.pythian.component.analytics.StatisticAggregator.AddStatisticFeatures;
-import stormy.pythian.component.analytics.StatisticAggregator.AggregableStatistic;
 import stormy.pythian.component.common.ExtractFeatures;
+import stormy.pythian.component.statistic.aggregation.StatisticAggregator.AddStatisticFeatures;
+import stormy.pythian.component.statistic.aggregation.StatisticAggregator.AggregableStatistic;
 import stormy.pythian.model.annotation.ExpectedFeature;
 import stormy.pythian.model.annotation.InputStream;
 import stormy.pythian.model.annotation.Mapper;

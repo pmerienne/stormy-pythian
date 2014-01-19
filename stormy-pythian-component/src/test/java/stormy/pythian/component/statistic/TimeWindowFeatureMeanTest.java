@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package stormy.pythian.component.analytics;
+package stormy.pythian.component.statistic;
 
 import static org.apache.commons.lang.time.DateUtils.MILLIS_PER_DAY;
 import static org.apache.commons.lang.time.DateUtils.MILLIS_PER_HOUR;
@@ -21,10 +21,10 @@ import static org.apache.commons.lang.time.DateUtils.addHours;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.springframework.test.util.ReflectionTestUtils.getField;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
-import static stormy.pythian.component.analytics.Constants.COMPUTED_FEATURE;
-import static stormy.pythian.component.analytics.Constants.DATE_FEATURE;
-import static stormy.pythian.component.analytics.Constants.GROUP_BY_FEATURE;
-import static stormy.pythian.component.analytics.Constants.MEAN_FEATURE;
+import static stormy.pythian.component.statistic.aggregation.Constants.COMPUTED_FEATURE;
+import static stormy.pythian.component.statistic.aggregation.Constants.DATE_FEATURE;
+import static stormy.pythian.component.statistic.aggregation.Constants.GROUP_BY_FEATURE;
+import static stormy.pythian.component.statistic.aggregation.Constants.MEAN_FEATURE;
 import static stormy.pythian.model.instance.Instance.INSTANCE_FIELD;
 import static stormy.pythian.model.instance.InstanceTestBuilder.instance;
 
@@ -39,6 +39,7 @@ import org.junit.Test;
 import storm.trident.Stream;
 import storm.trident.testing.FixedBatchSpout;
 import storm.trident.testing.MemoryMapState;
+import stormy.pythian.component.statistic.TimeWindowFeatureMean;
 import stormy.pythian.model.instance.FeaturesIndex;
 import stormy.pythian.model.instance.InputFixedFeaturesMapper;
 import stormy.pythian.model.instance.Instance;
@@ -49,15 +50,13 @@ import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Values;
 import backtype.storm.utils.Utils;
 
-
-
-public class TimeWindowGlobalMeanTest extends TridentIntegrationTest {
+public class TimeWindowFeatureMeanTest extends TridentIntegrationTest {
 
 	private static final int TOPOLOGY_START_TIME = 5000;
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void should_compute_global_duration_mean_during_last_day() {
+	public void should_compute_each_user_call_duration_mean_during_last_day() {
 		// Given
 		List<String> inputFeatures = Arrays.asList("username", "call date", "call duration");
 
@@ -88,7 +87,7 @@ public class TimeWindowGlobalMeanTest extends TridentIntegrationTest {
 		);
 		Stream inputStream = topology.newStream("test", spout);
 
-		TimeWindowGlobalMean component = new TimeWindowGlobalMean();
+		TimeWindowFeatureMean component = new TimeWindowFeatureMean();
 		setField(component, "in", inputStream);
 		setField(component, "inputMapper", inputMapper);
 		setField(component, "outputMapper", outputMapper);
@@ -113,8 +112,8 @@ public class TimeWindowGlobalMeanTest extends TridentIntegrationTest {
 				createOutputInstance("pmerienne", twelveHoursAgo, 100, 150.0), //
 				createOutputInstance("jchanut", twelveHoursAgo, 150, 150.0), //
 
-				createOutputInstance("pmerienne", anHourAgo, 100, 112.5), //
-				createOutputInstance("jchanut", anHourAgo, 100, 112.5) //
+				createOutputInstance("pmerienne", anHourAgo, 100, 100.0), //
+				createOutputInstance("jchanut", anHourAgo, 100, 125.0) //
 				);
 	}
 

@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package stormy.pythian.component.analytics;
+package stormy.pythian.component.statistic.aggregation;
 
-import static stormy.pythian.component.analytics.Constants.COMPUTED_FEATURE;
-import static stormy.pythian.component.analytics.Constants.STATISTIC_FIELD;
+import static stormy.pythian.component.statistic.aggregation.Constants.COMPUTED_FEATURE;
+import static stormy.pythian.component.statistic.aggregation.Constants.STATISTIC_FIELD;
 
 import java.io.Serializable;
 

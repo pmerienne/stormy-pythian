@@ -13,24 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package stormy.pythian.component.analytics;
+package stormy.pythian.component.statistic;
 
-import static stormy.pythian.component.analytics.Constants.COUNT_FEATURE;
-import static stormy.pythian.model.annotation.ComponentType.ANALYTICS;
+import static stormy.pythian.component.statistic.aggregation.Constants.MEAN_FEATURE;
 import storm.trident.Stream;
-import stormy.pythian.component.analytics.StatisticAggregator.AggregableStatistic;
+import stormy.pythian.component.statistic.aggregation.AbstractTimeWindowGlobalStatistic;
+import stormy.pythian.component.statistic.aggregation.AggregableMean;
+import stormy.pythian.component.statistic.aggregation.AggregableMean.MeanState;
+import stormy.pythian.component.statistic.aggregation.StatisticAggregator.AggregableStatistic;
 import stormy.pythian.model.annotation.Documentation;
 import stormy.pythian.model.annotation.ExpectedFeature;
 import stormy.pythian.model.annotation.Mapper;
 import stormy.pythian.model.annotation.OutputStream;
 import stormy.pythian.model.instance.OutputFeaturesMapper;
 
-@Documentation(name = "Time window global count", type = ANALYTICS)
-public class TimeWindowGlobalCount extends AbstractTimeWindowGlobalStatistic<Long> {
+@Documentation(name = "Time window global mean", description = "Compute a feature mean during a time period")
+public class TimeWindowGlobalMean extends AbstractTimeWindowGlobalStatistic<MeanState> {
 
 	private static final long serialVersionUID = 1L;
 
-	@OutputStream(name = "out", from = "in", newFeatures = { @ExpectedFeature(name = COUNT_FEATURE, type = Long.class) })
+	@OutputStream(name = "out", from = "in", newFeatures = { @ExpectedFeature(name = MEAN_FEATURE, type = Double.class) })
 	private Stream out;
 
 	@Mapper(stream = "out")
@@ -38,7 +40,7 @@ public class TimeWindowGlobalCount extends AbstractTimeWindowGlobalStatistic<Lon
 
 	@Override
 	public void init() {
-		AggregableStatistic<Long> aggregableStatistic = new AggregableCount(outputMapper);
+		AggregableStatistic<MeanState> aggregableStatistic = new AggregableMean(outputMapper);
 		out = initOutputStream(aggregableStatistic);
 	}
 

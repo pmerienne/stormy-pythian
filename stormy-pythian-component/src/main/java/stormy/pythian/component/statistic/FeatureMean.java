@@ -13,20 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package stormy.pythian.component.analytics;
+package stormy.pythian.component.statistic;
 
-import static stormy.pythian.component.analytics.Constants.MEAN_FEATURE;
+import static stormy.pythian.component.statistic.aggregation.Constants.MEAN_FEATURE;
+import static stormy.pythian.model.annotation.ComponentType.ANALYTICS;
 import storm.trident.Stream;
-import stormy.pythian.component.analytics.AggregableMean.MeanState;
-import stormy.pythian.component.analytics.StatisticAggregator.AggregableStatistic;
+import stormy.pythian.component.statistic.aggregation.AbstractFeatureStatistic;
+import stormy.pythian.component.statistic.aggregation.AggregableMean;
+import stormy.pythian.component.statistic.aggregation.AggregableMean.MeanState;
+import stormy.pythian.component.statistic.aggregation.StatisticAggregator.AggregableStatistic;
 import stormy.pythian.model.annotation.Documentation;
 import stormy.pythian.model.annotation.ExpectedFeature;
 import stormy.pythian.model.annotation.Mapper;
 import stormy.pythian.model.annotation.OutputStream;
 import stormy.pythian.model.instance.OutputFeaturesMapper;
 
-@Documentation(name = "Time window global mean", description = "Compute a feature mean during a time period")
-public class TimeWindowGlobalMean extends AbstractTimeWindowGlobalStatistic<MeanState> {
+@Documentation(name = "Feature mean", type = ANALYTICS)
+public class FeatureMean extends AbstractFeatureStatistic<MeanState> {
 
 	private static final long serialVersionUID = 1L;
 

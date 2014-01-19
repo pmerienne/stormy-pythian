@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package stormy.pythian.component.analytics.tdigest;
+package stormy.pythian.component.statistic.tdigest;
 
 import java.io.Serializable;
 import java.nio.ByteBuffer;

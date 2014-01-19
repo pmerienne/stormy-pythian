@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package stormy.pythian.component.analytics;
+package stormy.pythian.component.statistic.aggregation;
 
-import static stormy.pythian.component.analytics.Constants.COUNT_FEATURE;
-import stormy.pythian.component.analytics.StatisticAggregator.AggregableStatistic;
+import static stormy.pythian.component.statistic.aggregation.Constants.COUNT_FEATURE;
+import stormy.pythian.component.statistic.aggregation.StatisticAggregator.AggregableStatistic;
 import stormy.pythian.model.instance.Instance;
 import stormy.pythian.model.instance.OutputFeaturesMapper;
 

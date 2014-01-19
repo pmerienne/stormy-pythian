@@ -13,23 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package stormy.pythian.component.analytics;
+package stormy.pythian.component.statistic.aggregation;
 
 import static java.util.Arrays.asList;
-import static stormy.pythian.component.analytics.Constants.MEDIAN_FEATURE;
-import static stormy.pythian.component.analytics.Constants.QUANTILE_75th_FEATURE;
-import static stormy.pythian.component.analytics.Constants.QUANTILE_90th_FEATURE;
-import static stormy.pythian.component.analytics.Constants.QUANTILE_95th_FEATURE;
-import static stormy.pythian.component.analytics.Constants.QUANTILE_99th9_FEATURE;
-import static stormy.pythian.component.analytics.Constants.QUANTILE_99th_FEATURE;
+import static stormy.pythian.component.statistic.aggregation.Constants.MEDIAN_FEATURE;
+import static stormy.pythian.component.statistic.aggregation.Constants.QUANTILE_75th_FEATURE;
+import static stormy.pythian.component.statistic.aggregation.Constants.QUANTILE_90th_FEATURE;
+import static stormy.pythian.component.statistic.aggregation.Constants.QUANTILE_95th_FEATURE;
+import static stormy.pythian.component.statistic.aggregation.Constants.QUANTILE_99th9_FEATURE;
+import static stormy.pythian.component.statistic.aggregation.Constants.QUANTILE_99th_FEATURE;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.mahout.common.RandomUtils;
 
-import stormy.pythian.component.analytics.StatisticAggregator.AggregableStatistic;
-import stormy.pythian.component.analytics.tdigest.TDigest;
+import stormy.pythian.component.statistic.aggregation.StatisticAggregator.AggregableStatistic;
+import stormy.pythian.component.statistic.tdigest.TDigest;
 import stormy.pythian.model.instance.Instance;
 import stormy.pythian.model.instance.OutputFeaturesMapper;
 

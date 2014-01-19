@@ -13,20 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package stormy.pythian.component.analytics;
+package stormy.pythian.component.statistic;
 
-import static stormy.pythian.component.analytics.Constants.COUNT_FEATURE;
+import static stormy.pythian.component.statistic.aggregation.Constants.COUNT_FEATURE;
 import static stormy.pythian.model.annotation.ComponentType.ANALYTICS;
 import storm.trident.Stream;
-import stormy.pythian.component.analytics.StatisticAggregator.AggregableStatistic;
+import stormy.pythian.component.statistic.aggregation.AbstractTimeWindowGlobalStatistic;
+import stormy.pythian.component.statistic.aggregation.AggregableCount;
+import stormy.pythian.component.statistic.aggregation.StatisticAggregator.AggregableStatistic;
 import stormy.pythian.model.annotation.Documentation;
 import stormy.pythian.model.annotation.ExpectedFeature;
 import stormy.pythian.model.annotation.Mapper;
 import stormy.pythian.model.annotation.OutputStream;
 import stormy.pythian.model.instance.OutputFeaturesMapper;
 
-@Documentation(name = "Time window feature count", type = ANALYTICS)
-public class TimeWindowFeatureCount extends AbstractTimeWindowFeatureStatistic<Long> {
+@Documentation(name = "Time window global count", type = ANALYTICS)
+public class TimeWindowGlobalCount extends AbstractTimeWindowGlobalStatistic<Long> {
 
 	private static final long serialVersionUID = 1L;
 

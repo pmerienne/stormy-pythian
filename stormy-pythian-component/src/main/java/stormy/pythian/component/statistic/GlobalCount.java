@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package stormy.pythian.component.analytics;
+package stormy.pythian.component.statistic;
 
-import static stormy.pythian.component.analytics.Constants.COUNT_FEATURE;
+import static stormy.pythian.component.statistic.aggregation.Constants.COUNT_FEATURE;
 import static stormy.pythian.model.annotation.ComponentType.ANALYTICS;
 import storm.trident.Stream;
-import stormy.pythian.component.analytics.StatisticAggregator.AggregableStatistic;
+import stormy.pythian.component.statistic.aggregation.AbstractGlobalStatistic;
+import stormy.pythian.component.statistic.aggregation.AggregableCount;
+import stormy.pythian.component.statistic.aggregation.StatisticAggregator.AggregableStatistic;
 import stormy.pythian.model.annotation.Documentation;
 import stormy.pythian.model.annotation.ExpectedFeature;
 import stormy.pythian.model.annotation.Mapper;

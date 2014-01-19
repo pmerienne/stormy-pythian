@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package stormy.pythian.component.analytics;
+package stormy.pythian.component.statistic;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.fest.assertions.Delta.delta;
 import static org.springframework.test.util.ReflectionTestUtils.getField;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
-import static stormy.pythian.component.analytics.Constants.COMPUTED_FEATURE;
-import static stormy.pythian.component.analytics.Constants.MEAN_FEATURE;
+import static stormy.pythian.component.statistic.aggregation.Constants.COMPUTED_FEATURE;
+import static stormy.pythian.component.statistic.aggregation.Constants.MEAN_FEATURE;
 import static stormy.pythian.model.instance.Instance.INSTANCE_FIELD;
 import static stormy.pythian.model.instance.InstanceTestBuilder.instance;
 
@@ -34,6 +34,7 @@ import org.junit.Test;
 import storm.trident.Stream;
 import storm.trident.testing.FixedBatchSpout;
 import storm.trident.testing.MemoryMapState;
+import stormy.pythian.component.statistic.GlobalMean;
 import stormy.pythian.model.instance.FeaturesIndex;
 import stormy.pythian.model.instance.InputFixedFeaturesMapper;
 import stormy.pythian.model.instance.Instance;
