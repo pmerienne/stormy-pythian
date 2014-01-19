@@ -24,6 +24,12 @@
 			<artifactId>storm</artifactId>
 		</dependency>
 
+		<!-- External DM libs -->
+		<dependency>
+			<groupId>com.github.pmerienne</groupId>
+			<artifactId>trident-ml</artifactId>
+		</dependency>
+
 		<!-- Utils -->
 		<dependency>
 			<groupId>org.apache.mahout</groupId>
@@ -35,12 +41,6 @@
 		</dependency>
 
 		<!-- Test -->
-		<dependency>
-			<groupId>com.tdunning</groupId>
-			<artifactId>t-digest</artifactId>
-			<version>1.0</version>
-			<scope>test</scope>
-		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>

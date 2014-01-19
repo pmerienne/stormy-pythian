@@ -20,13 +20,14 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.7</maven.compiler.source>
 		<maven.compiler.target>1.7</maven.compiler.target>
-		
+
 		<maven.javadoc.skip>true</maven.javadoc.skip>
 
 		<!-- Version dependencies -->
 		<storm.version>0.8.2</storm.version>
 		<trident-extended-state.version>0.0.2</trident-extended-state.version>
 		<spring.version>3.2.4.RELEASE</spring.version>
+		<trident-ml.version>0.0.3</trident-ml.version>
 
 		<!-- Utils -->
 		<mahout-math.version>0.8</mahout-math.version>
@@ -100,6 +101,19 @@
 				<groupId>com.github.pmerienne</groupId>
 				<artifactId>trident-extended-state</artifactId>
 				<version>${trident-extended-state.version}</version>
+			</dependency>
+
+			<!-- External DM libs -->
+			<dependency>
+				<groupId>com.github.pmerienne</groupId>
+				<artifactId>trident-ml</artifactId>
+				<version>${trident-ml.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>storm</groupId>
+						<artifactId>storm</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 
 			<!-- Spring -->
