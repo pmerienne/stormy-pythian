@@ -28,8 +28,9 @@ public class Instance implements Serializable {
 	public final static String INSTANCE_FIELD = "INSTANCE_FIELD";
 	public final static String NEW_INSTANCE_FIELD = "NEW_INSTANCE_FIELD";
 
+	private final Object label;
 	private final Object[] features;
-
+	
 	public static Instance from(TridentTuple tuple) {
 		try {
 			return (Instance) tuple.getValueByField(INSTANCE_FIELD);
@@ -51,18 +52,37 @@ public class Instance implements Serializable {
 
 		}
 
-		return new Instance(newFeatures);
+		return new Instance(null, newFeatures);
+	}
+
+	public static Instance newInstance(OutputFeaturesMapper mapper, Object label, Map<String, Object> newFeaturesWithName) {
+		Object[] newFeatures = new Object[mapper.size()];
+
+		for (String featureName : newFeaturesWithName.keySet()) {
+			int index = mapper.getFeatureIndex(featureName);
+			if (index < 0) {
+				throw new IllegalArgumentException("Feature " + featureName + " does not exist");
+			}
+
+			newFeatures[index] = newFeaturesWithName.get(featureName);
+
+		}
+
+		return new Instance(label, newFeatures);
 	}
 
 	Instance() {
 		this.features = new Object[0];
+		this.label = null;
 	}
 
-	Instance(int size) {
+	Instance(Object label, int size) {
+		this.label = label;
 		this.features = new Object[size];
 	}
 
-	Instance(Object... features) {
+	Instance(Object label, Object[] features) {
+		this.label = label;
 		this.features = features;
 	}
 
@@ -89,7 +109,7 @@ public class Instance implements Serializable {
 
 		newFeatures[index] = feature;
 
-		return new Instance(newFeatures);
+		return new Instance(this.label, newFeatures);
 	}
 
 	public Instance withFeatures(InputFixedFeaturesMapper inputFixedFeaturesMapper, Map<String, Object> newFeaturesWithName) {
@@ -106,7 +126,7 @@ public class Instance implements Serializable {
 
 		}
 
-		return new Instance(newFeatures);
+		return new Instance(this.label, newFeatures);
 	}
 
 	public <T> Instance withFeature(OutputFeaturesMapper mapper, String featureName, T feature) {
@@ -120,7 +140,7 @@ public class Instance implements Serializable {
 
 		newFeatures[index] = feature;
 
-		return new Instance(newFeatures);
+		return new Instance(this.label, newFeatures);
 	}
 
 	public Instance withFeatures(OutputFeaturesMapper mapper, Map<String, Object> newFeaturesWithName) {
@@ -137,8 +157,13 @@ public class Instance implements Serializable {
 
 		}
 
-		return new Instance(newFeatures);
-
+		return new Instance(this.label, newFeatures);
+	}
+	
+	public Instance withLabel(Object label) {
+		Object[] newFeatures = new Object[features.length];
+		System.arraycopy(features, 0, newFeatures, 0, features.length);
+		return new Instance(this.label, newFeatures);
 	}
 
 	public Object[] getSelectedFeatures(InputUserSelectionFeaturesMapper inputUserSelectionFeaturesMapper) {
@@ -173,18 +198,27 @@ public class Instance implements Serializable {
 			newFeatures[index] = function.transform((T) features[index]);
 		}
 
-		return new Instance(newFeatures);
+		return new Instance(this.label, newFeatures);
 	}
 
 	public int size() {
 		return this.features.length;
+	}
+	
+	public boolean hasLabel() {
+		return this.label != null;
+	}
+
+	public Object getLabel() {
+		return this.label;
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((features == null) ? 0 : Arrays.hashCode(features));
+		result = prime * result + Arrays.hashCode(features);
+		result = prime * result + ((label == null) ? 0 : label.hashCode());
 		return result;
 	}
 
@@ -197,17 +231,21 @@ public class Instance implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		Instance other = (Instance) obj;
-		if (features == null) {
-			if (other.features != null)
+		if (!Arrays.equals(features, other.features))
+			return false;
+		if (label == null) {
+			if (other.label != null)
 				return false;
-		} else if (!Arrays.equals(this.features, other.features))
+		} else if (!label.equals(other.label))
 			return false;
 		return true;
 	}
 
 	@Override
 	public String toString() {
-		return "Instance [features=" + Arrays.toString(features) + "]";
+		return "Instance [label=" + label + ", features=" + Arrays.toString(features) + "]";
 	}
+	
+	
 
 }

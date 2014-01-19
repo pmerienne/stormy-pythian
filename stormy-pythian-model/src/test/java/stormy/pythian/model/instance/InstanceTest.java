@@ -41,7 +41,7 @@ public class InstanceTest {
 	@Test
 	public void should_get_feature_by_name() {
 		// Given
-		Instance instance = new Instance("Patrick", "Star", 32);
+		Instance instance = createUnlabelledInstance("Patrick", "Star", 32);
 
 		String featureName = "age";
 		when(inputFixedFeaturesMapper.getFeatureIndex("age")).thenReturn(2);
@@ -56,7 +56,7 @@ public class InstanceTest {
 	@Test
 	public void should_get_null_feature_if_feature_does_not_exist() {
 		// Given
-		Instance instance = new Instance("Patrick", "Star", 32);
+		Instance instance = createUnlabelledInstance("Patrick", "Star", 32);
 
 		String featureName = "age";
 		when(inputFixedFeaturesMapper.getFeatureIndex("age")).thenReturn(-1);
@@ -71,7 +71,7 @@ public class InstanceTest {
 	@Test
 	public void should_get_selected_features() {
 		// Given
-		Instance instance = new Instance("Patrick", "Star", 32);
+		Instance instance = createUnlabelledInstance("Patrick", "Star", 32);
 		when(inputUserSelectionFeaturesMapper.getSelectedIndex()).thenReturn(new int[] { 0, 2 });
 
 		// When
@@ -86,7 +86,7 @@ public class InstanceTest {
 	@Test
 	public void should_apply_procedure() {
 		// Given
-		Instance instance = new Instance("Patrick", "Star", 32);
+		Instance instance = createUnlabelledInstance("Patrick", "Star", 32);
 		when(inputUserSelectionFeaturesMapper.getSelectedIndex()).thenReturn(new int[] { 0, 1 });
 
 		final StringBuilder sb = new StringBuilder();
@@ -108,7 +108,7 @@ public class InstanceTest {
 	@Test
 	public void should_apply_function() {
 		// Given
-		Instance instance = new Instance("Patrick", "Star", 32);
+		Instance instance = createUnlabelledInstance("Patrick", "Star", 32);
 		when(inputUserSelectionFeaturesMapper.getSelectedIndex()).thenReturn(new int[] { 0, 1 });
 
 		FeatureFunction<String> function = new FeatureFunction<String>() {
@@ -122,26 +122,26 @@ public class InstanceTest {
 		Instance newInstance = instance.transform(inputUserSelectionFeaturesMapper, function);
 
 		// Then
-		assertThat(newInstance).isEqualTo(new Instance("patrick", "star", 32));
+		assertThat(newInstance).isEqualTo(createUnlabelledInstance("patrick", "star", 32));
 	}
 
 	@Test
 	public void should_set_feature_with_input_mapper() {
 		// Given
-		Instance instance = new Instance("Patrick", "Star", 26);
+		Instance instance = createUnlabelledInstance("Patrick", "Star", 26);
 		when(inputFixedFeaturesMapper.getFeatureIndex("age")).thenReturn(2);
 
 		// When
 		Instance newInstance = instance.withFeature(inputFixedFeaturesMapper, "age", 32);
 
 		// Then
-		assertThat(newInstance).isEqualTo(new Instance("Patrick", "Star", 32));
+		assertThat(newInstance).isEqualTo(createUnlabelledInstance("Patrick", "Star", 32));
 	}
 
 	@Test
 	public void should_set_features_with_input_mapper() {
 		// Given
-		Instance instance = new Instance("Patrick", "star", 27);
+		Instance instance = createUnlabelledInstance("Patrick", "star", 27);
 		when(inputFixedFeaturesMapper.getFeatureIndex("name")).thenReturn(1);
 		when(inputFixedFeaturesMapper.getFeatureIndex("age")).thenReturn(2);
 
@@ -153,13 +153,13 @@ public class InstanceTest {
 		Instance newInstance = instance.withFeatures(inputFixedFeaturesMapper, features);
 
 		// Then
-		assertThat(newInstance).isEqualTo(new Instance("Patrick", "Star", 32));
+		assertThat(newInstance).isEqualTo(createUnlabelledInstance("Patrick", "Star", 32));
 	}
 
 	@Test
 	public void should_set_feature_with_output_mapper() {
 		// Given
-		Instance instance = new Instance("Patrick", "Star");
+		Instance instance = createUnlabelledInstance("Patrick", "Star");
 		when(outputFeaturesMapper.size()).thenReturn(3);
 		when(outputFeaturesMapper.getFeatureIndex("age")).thenReturn(2);
 
@@ -167,13 +167,13 @@ public class InstanceTest {
 		Instance newInstance = instance.withFeature(outputFeaturesMapper, "age", 32);
 
 		// Then
-		assertThat(newInstance).isEqualTo(new Instance("Patrick", "Star", 32));
+		assertThat(newInstance).isEqualTo(createUnlabelledInstance("Patrick", "Star", 32));
 	}
 
 	@Test
 	public void should_set_features_with_output_mapper() {
 		// Given
-		Instance instance = new Instance("Patrick");
+		Instance instance = createUnlabelledInstance("Patrick");
 		when(outputFeaturesMapper.size()).thenReturn(3);
 		when(outputFeaturesMapper.getFeatureIndex("name")).thenReturn(1);
 		when(outputFeaturesMapper.getFeatureIndex("age")).thenReturn(2);
@@ -186,7 +186,7 @@ public class InstanceTest {
 		Instance newInstance = instance.withFeatures(outputFeaturesMapper, features);
 
 		// Then
-		assertThat(newInstance).isEqualTo(new Instance("Patrick", "Star", 32));
+		assertThat(newInstance).isEqualTo(createUnlabelledInstance("Patrick", "Star", 32));
 	}
 
 	@Test
@@ -206,14 +206,19 @@ public class InstanceTest {
 		Instance newInstance = Instance.newInstance(outputFeaturesMapper, features);
 
 		// Then
-		assertThat(newInstance).isEqualTo(new Instance("Patrick", "Star", 32));
+		assertThat(newInstance).isEqualTo(createUnlabelledInstance("Patrick", "Star", 32));
 	}
 	
 	@Test
 	public void equals_and_hashcode_should_be_correclty_implemented() {
-		assertThat(new Instance("Patrick", "Star", 32)).isEqualTo(new Instance("Patrick", "Star", 32));
-		assertThat(new Instance("Patrick", "Star", 27)).isNotEqualTo(new Instance("Patrick", "Star", 32));
-		assertThat(new Instance("Patrick", "Star", 32).hashCode()).isEqualTo(new Instance("Patrick", "Star", 32).hashCode());
-		assertThat(new Instance("Patrick", "Star", 27).hashCode()).isNotEqualTo(new Instance("Patrick", "Star", 32).hashCode());
+		assertThat(createUnlabelledInstance("Patrick", "Star", 32)).isEqualTo(createUnlabelledInstance("Patrick", "Star", 32));
+		assertThat(createUnlabelledInstance("Patrick", "Star", 27)).isNotEqualTo(createUnlabelledInstance("Patrick", "Star", 32));
+		assertThat(createUnlabelledInstance("Patrick", "Star", 32).hashCode()).isEqualTo(createUnlabelledInstance("Patrick", "Star", 32).hashCode());
+		assertThat(createUnlabelledInstance("Patrick", "Star", 27).hashCode()).isNotEqualTo(createUnlabelledInstance("Patrick", "Star", 32).hashCode());
+	}
+	
+	private Instance createUnlabelledInstance(Object... features) {
+		return new Instance(null, features);
+		
 	}
 }
