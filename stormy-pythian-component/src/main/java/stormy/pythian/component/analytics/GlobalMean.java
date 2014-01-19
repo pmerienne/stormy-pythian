@@ -16,6 +16,7 @@
 package stormy.pythian.component.analytics;
 
 import static stormy.pythian.component.analytics.Constants.MEAN_FEATURE;
+import static stormy.pythian.model.annotation.ComponentType.ANALYTICS;
 import storm.trident.Stream;
 import stormy.pythian.component.analytics.AggregableMean.MeanState;
 import stormy.pythian.component.analytics.StatisticAggregator.AggregableStatistic;
@@ -25,7 +26,7 @@ import stormy.pythian.model.annotation.Mapper;
 import stormy.pythian.model.annotation.OutputStream;
 import stormy.pythian.model.instance.OutputFeaturesMapper;
 
-@Documentation(name = "Global mean", description = "Compute a feature's mean")
+@Documentation(name = "Global mean", type = ANALYTICS)
 public class GlobalMean extends AbstractGlobalStatistic<MeanState> {
 
 	private static final long serialVersionUID = 2631375121511675756L;
@@ -38,8 +39,8 @@ public class GlobalMean extends AbstractGlobalStatistic<MeanState> {
 
 	@Override
 	public void init() {
-		AggregableStatistic<MeanState> aggregableStatistic = new AggregableMean(outputMapper, MEAN_FEATURE);
-		out = initOutStream(aggregableStatistic);
+		AggregableStatistic<MeanState> aggregableStatistic = new AggregableMean(outputMapper);
+		out = initOutputStream(aggregableStatistic);
 	}
 
 }

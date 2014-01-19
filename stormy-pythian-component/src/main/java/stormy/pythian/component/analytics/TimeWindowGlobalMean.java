@@ -25,10 +25,10 @@ import stormy.pythian.model.annotation.Mapper;
 import stormy.pythian.model.annotation.OutputStream;
 import stormy.pythian.model.instance.OutputFeaturesMapper;
 
-@Documentation(name = "", description = "Compute a feature mean during a time period")
+@Documentation(name = "Time window global mean", description = "Compute a feature mean during a time period")
 public class TimeWindowGlobalMean extends AbstractTimeWindowGlobalStatistic<MeanState> {
 
-	private static final long serialVersionUID = 8519536445789386805L;
+	private static final long serialVersionUID = 1L;
 
 	@OutputStream(name = "out", from = "in", newFeatures = { @ExpectedFeature(name = MEAN_FEATURE, type = Double.class) })
 	private Stream out;
@@ -38,7 +38,7 @@ public class TimeWindowGlobalMean extends AbstractTimeWindowGlobalStatistic<Mean
 
 	@Override
 	public void init() {
-		AggregableStatistic<MeanState> aggregableStatistic = new AggregableMean(outputMapper, MEAN_FEATURE);
+		AggregableStatistic<MeanState> aggregableStatistic = new AggregableMean(outputMapper);
 		out = initOutputStream(aggregableStatistic);
 	}
 

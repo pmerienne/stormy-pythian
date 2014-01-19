@@ -15,6 +15,7 @@
  */
 package stormy.pythian.component.analytics;
 
+import static stormy.pythian.component.analytics.Constants.MEAN_FEATURE;
 import stormy.pythian.component.analytics.AggregableMean.MeanState;
 import stormy.pythian.component.analytics.StatisticAggregator.AggregableStatistic;
 import stormy.pythian.model.instance.Instance;
@@ -25,11 +26,9 @@ public class AggregableMean implements AggregableStatistic<MeanState> {
 	private static final long serialVersionUID = 845845674309635484L;
 
 	private final OutputFeaturesMapper mapper;
-	private final String featureName;
 
-	public AggregableMean(OutputFeaturesMapper mapper, String featureName) {
+	public AggregableMean(OutputFeaturesMapper mapper) {
 		this.mapper = mapper;
-		this.featureName = featureName;
 	}
 
 	@Override
@@ -49,7 +48,7 @@ public class AggregableMean implements AggregableStatistic<MeanState> {
 
 	@Override
 	public Instance update(Instance original, MeanState statistic) {
-		return original.withFeature(mapper, featureName, statistic == null ? null : statistic.getMean());
+		return original.withFeature(mapper, MEAN_FEATURE, statistic == null ? null : statistic.getMean());
 	}
 
 	public static class MeanState {

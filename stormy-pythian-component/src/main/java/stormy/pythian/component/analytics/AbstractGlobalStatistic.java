@@ -47,7 +47,7 @@ public abstract class AbstractGlobalStatistic<T> implements Component {
 
 	private static final long serialVersionUID = -5312700259983804231L;
 
-	public Stream initOutStream(AggregableStatistic<T> aggregableStatistic) {
+	public Stream initOutputStream(AggregableStatistic<T> aggregableStatistic) {
 		TridentState statistics = in.shuffle() //
 				.persistentAggregate(stateFactory, new Fields(INSTANCE_FIELD), new StatisticAggregator<T>(inputMapper, aggregableStatistic), new Fields(STATISTIC_FIELD));
 

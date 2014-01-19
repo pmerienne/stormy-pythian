@@ -21,7 +21,7 @@ import static org.springframework.test.util.ReflectionTestUtils.getField;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 import static stormy.pythian.component.analytics.Constants.COMPUTED_FEATURE;
 import static stormy.pythian.component.analytics.Constants.GROUP_BY_FEATURE;
-import static stormy.pythian.component.analytics.FeatureMean.MEAN_FEATURE;
+import static stormy.pythian.component.analytics.Constants.MEAN_FEATURE;
 import static stormy.pythian.model.instance.Instance.INSTANCE_FIELD;
 import static stormy.pythian.model.instance.InstanceTestBuilder.instance;
 

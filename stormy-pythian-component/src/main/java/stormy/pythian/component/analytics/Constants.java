@@ -23,6 +23,15 @@ public interface Constants {
 
 	public static final String MEAN_FEATURE = "Feature mean";
 
+	public static final String MEDIAN_FEATURE = "Feature median";
+	public static final String QUANTILE_75th_FEATURE = "Feature 75th percentiles";
+	public static final String QUANTILE_90th_FEATURE = "Feature 90th percentiles";
+	public static final String QUANTILE_95th_FEATURE = "Feature 95th percentiles";
+	public static final String QUANTILE_99th_FEATURE = "Feature 99th percentiles";
+	public static final String QUANTILE_99th9_FEATURE = "Feature 99.9th percentiles";
+
+	public static final String COUNT_FEATURE = "Non-null feature count";
+
 	public static final String GROUP_BY_FIELD = "GROUP_BY_FIELD";
 	public static final String SLOT_FIELD = "SLOT_FIELD";
 	public static final String COMPUTED_FEATURE_FIELD = "COMPUTED_FEATURE_FIELD";

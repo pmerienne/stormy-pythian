@@ -15,10 +15,9 @@
  */
 package stormy.pythian.component.analytics;
 
-import static stormy.pythian.component.analytics.Constants.MEAN_FEATURE;
+import static stormy.pythian.component.analytics.Constants.COUNT_FEATURE;
 import static stormy.pythian.model.annotation.ComponentType.ANALYTICS;
 import storm.trident.Stream;
-import stormy.pythian.component.analytics.AggregableMean.MeanState;
 import stormy.pythian.component.analytics.StatisticAggregator.AggregableStatistic;
 import stormy.pythian.model.annotation.Documentation;
 import stormy.pythian.model.annotation.ExpectedFeature;
@@ -26,12 +25,12 @@ import stormy.pythian.model.annotation.Mapper;
 import stormy.pythian.model.annotation.OutputStream;
 import stormy.pythian.model.instance.OutputFeaturesMapper;
 
-@Documentation(name = "Feature mean", type = ANALYTICS)
-public class FeatureMean extends AbstractFeatureStatistic<MeanState> {
+@Documentation(name = "Time window feature count", type = ANALYTICS)
+public class TimeWindowFeatureCount extends AbstractTimeWindowFeatureStatistic<Long> {
 
 	private static final long serialVersionUID = 1L;
 
-	@OutputStream(name = "out", from = "in", newFeatures = { @ExpectedFeature(name = MEAN_FEATURE, type = Double.class) })
+	@OutputStream(name = "out", from = "in", newFeatures = { @ExpectedFeature(name = COUNT_FEATURE, type = Long.class) })
 	private Stream out;
 
 	@Mapper(stream = "out")
@@ -39,7 +38,7 @@ public class FeatureMean extends AbstractFeatureStatistic<MeanState> {
 
 	@Override
 	public void init() {
-		AggregableStatistic<MeanState> aggregableStatistic = new AggregableMean(outputMapper);
+		AggregableStatistic<Long> aggregableStatistic = new AggregableCount(outputMapper);
 		out = initOutputStream(aggregableStatistic);
 	}
 
