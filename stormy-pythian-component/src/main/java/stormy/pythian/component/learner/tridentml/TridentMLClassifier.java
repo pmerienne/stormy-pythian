@@ -23,7 +23,6 @@ import storm.trident.TridentState;
 import storm.trident.operation.BaseFunction;
 import storm.trident.operation.TridentCollector;
 import storm.trident.state.StateFactory;
-import storm.trident.testing.MemoryMapState;
 import storm.trident.tuple.TridentTuple;
 import stormy.pythian.component.common.AddFeature;
 import stormy.pythian.model.annotation.ExpectedFeature;
@@ -47,7 +46,7 @@ public abstract class TridentMLClassifier<L> implements Component {
 
 	private static final long serialVersionUID = 1L;
 
-	private static final String PREDICTION_FEATURE = "Prediction";
+	public static final String PREDICTION_FEATURE = "Prediction";
 
 	private static final String TRIDENT_ML_INSTANCE_FIELD = "TRIDENT_ML_INSTANCE_FIELD";
 	private static final String TRIDENT_ML_PREDICTION_FIELD = "TRIDENT_ML_PREDICTION_FIELD";
@@ -79,7 +78,7 @@ public abstract class TridentMLClassifier<L> implements Component {
 	public void initClassifierStreams(Classifier<L> classifier) {
 		TridentState classifierState = update //
 				.each(new Fields(INSTANCE_FIELD), new TridentMLInstanceCreator<L>(updateInputMapper), new Fields(TRIDENT_ML_INSTANCE_FIELD)) //
-				.partitionPersist(new MemoryMapState.Factory(), new Fields(TRIDENT_ML_INSTANCE_FIELD), new ClassifierUpdater<L>(classifierName, classifier));
+				.partitionPersist(stateFactory, new Fields(TRIDENT_ML_INSTANCE_FIELD), new ClassifierUpdater<L>(classifierName, classifier));
 
 		prediction = query //
 				.each(new Fields(INSTANCE_FIELD), new TridentMLInstanceCreator<L>(queryInputMapper), new Fields(TRIDENT_ML_INSTANCE_FIELD)) //
