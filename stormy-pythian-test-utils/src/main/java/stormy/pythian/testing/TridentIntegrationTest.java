@@ -22,10 +22,11 @@ import storm.trident.TridentTopology;
 import backtype.storm.Config;
 import backtype.storm.LocalCluster;
 import backtype.storm.LocalDRPC;
+import backtype.storm.utils.Utils;
 
 public abstract class TridentIntegrationTest {
 
-	protected LocalDRPC drpc;
+	protected LocalDRPC localDRPC;
 	protected LocalCluster cluster;
 	protected TridentTopology topology;
 	protected Config config;
@@ -33,7 +34,7 @@ public abstract class TridentIntegrationTest {
 	@Before
 	public void init() {
 		cluster = new LocalCluster();
-		drpc = new LocalDRPC();
+		localDRPC = new LocalDRPC();
 		topology = new TridentTopology();
 		config = new Config();
 	}
@@ -41,10 +42,21 @@ public abstract class TridentIntegrationTest {
 	@After
 	public void release() {
 		this.cluster.shutdown();
-		this.drpc.shutdown();
+		this.localDRPC.shutdown();
 	}
 
 	protected void launch() {
 		cluster.submitTopology(this.getClass().getSimpleName(), config, topology.build());
+	}
+
+	protected void launchAndWait(FixedInstanceSpout spout) {
+		this.launch();
+		this.wait(spout);
+	}
+
+	protected void wait(FixedInstanceSpout spout) {
+		while (!spout.allInstancesProcessed()) {
+			Utils.sleep(10);
+		}
 	}
 }
