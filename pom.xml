@@ -27,7 +27,7 @@
 		<storm.version>0.9.0.1</storm.version>
 		<trident-extended-state.version>0.0.2</trident-extended-state.version>
 		<spring.version>3.2.4.RELEASE</spring.version>
-		<trident-ml.version>0.0.3</trident-ml.version>
+		<trident-ml.version>0.0.4</trident-ml.version>
 
 		<!-- Utils -->
 		<mahout-math.version>0.8</mahout-math.version>
@@ -35,7 +35,7 @@
 		<reflections.version>0.9.9-RC1</reflections.version>
 
 		<!-- Logs -->
-		<slf4j.version>1.5.8</slf4j.version>
+		<slf4j.version>1.6.6</slf4j.version>
 
 		<!-- Test -->
 		<junit.version>4.11</junit.version>
@@ -108,12 +108,6 @@
 				<groupId>com.github.pmerienne</groupId>
 				<artifactId>trident-ml</artifactId>
 				<version>${trident-ml.version}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>storm</groupId>
-						<artifactId>storm</artifactId>
-					</exclusion>
-				</exclusions>
 			</dependency>
 
 			<!-- Spring -->
