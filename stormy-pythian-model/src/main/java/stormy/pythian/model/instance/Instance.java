@@ -56,7 +56,7 @@ public class Instance implements Serializable {
 		return new Instance(null, newFeatures);
 	}
 	
-	public static Instance newInstance(OutputUserSelectionFeaturesMapper mapper, List<Object> features) {
+	public static Instance newInstance(OutputUserSelectionFeaturesMapper mapper, List<?> features) {
 		Object[] newFeatures = new Object[mapper.size()];
 
 		for(int i = 0; i < mapper.size(); i++) {

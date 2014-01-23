@@ -214,7 +214,7 @@ public class InstanceTest {
 		assertThat(newInstance).isEqualTo(createUnlabelledInstance("Patrick", "Star", 32));
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({ "rawtypes" })
 	@Test
 	public void should_create_instance_with_user_selection_output_mapper() {
 		// Given
