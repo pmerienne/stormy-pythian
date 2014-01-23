@@ -91,11 +91,11 @@ public class GlobalMeanTest extends TridentIntegrationTest {
 		// Then
 		List<Instance> collected = instanceCollector.getCollected();
 		assertThat(collected).hasSize(6);
-		assertThat((double) collected.get(1).getFeature(outputMapper, MEAN_FEATURE)).isEqualTo((27) / 1.0, delta(10e-6));
-		assertThat((double) collected.get(2).getFeature(outputMapper, MEAN_FEATURE)).isEqualTo((27 + 32) / 2.0, delta(10e-6));
-		assertThat((double) collected.get(3).getFeature(outputMapper, MEAN_FEATURE)).isEqualTo((27 + 32 + 27) / 3.0, delta(10e-6));
-		assertThat((double) collected.get(4).getFeature(outputMapper, MEAN_FEATURE)).isEqualTo((27 + 32 + 27 + 27) / 4.0, delta(10e-6));
-		assertThat((double) collected.get(5).getFeature(outputMapper, MEAN_FEATURE)).isEqualTo((27 + 32 + 27 + 27 + 28) / 5.0, delta(10e-6));
+		assertThat((double) collected.get(1).getOutputFeature(outputMapper, MEAN_FEATURE)).isEqualTo((27) / 1.0, delta(10e-6));
+		assertThat((double) collected.get(2).getOutputFeature(outputMapper, MEAN_FEATURE)).isEqualTo((27 + 32) / 2.0, delta(10e-6));
+		assertThat((double) collected.get(3).getOutputFeature(outputMapper, MEAN_FEATURE)).isEqualTo((27 + 32 + 27) / 3.0, delta(10e-6));
+		assertThat((double) collected.get(4).getOutputFeature(outputMapper, MEAN_FEATURE)).isEqualTo((27 + 32 + 27 + 27) / 4.0, delta(10e-6));
+		assertThat((double) collected.get(5).getOutputFeature(outputMapper, MEAN_FEATURE)).isEqualTo((27 + 32 + 27 + 27 + 28) / 5.0, delta(10e-6));
 	}
 
 	private Values createInputValues(String firstname, String lastName, int age) {

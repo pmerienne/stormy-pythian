@@ -66,7 +66,7 @@ public class ExtractFeatures extends BaseFunction {
 
 			for (int i = 0; i < featureNames.length; i++) {
 				String featureName = featureNames[i];
-				features[i] = instance.getFeature(fixedFeaturesMapper, featureName);
+				features[i] = instance.getInputFeature(fixedFeaturesMapper, featureName);
 			}
 
 			return features;

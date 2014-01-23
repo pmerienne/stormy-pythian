@@ -43,7 +43,7 @@ public class StatisticAggregator<T> implements CombinerAggregator<T> {
 	@Override
 	public T init(TridentTuple tuple) {
 		Instance instance = Instance.from(tuple);
-		Number feature = instance.getFeature(inputMapper, COMPUTED_FEATURE);
+		Number feature = instance.getInputFeature(inputMapper, COMPUTED_FEATURE);
 
 		if (feature != null) {
 			T statistic = aggregableStatistic.init(feature);

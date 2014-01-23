@@ -90,7 +90,7 @@ public class WordCount implements Component {
 		@Override
 		public void execute(TridentTuple tuple, TridentCollector collector) {
 			Instance instance = Instance.from(tuple);
-			Object feature = instance.getFeature(inputMapper, featureName);
+			Object feature = instance.getInputFeature(inputMapper, featureName);
 			collector.emit(new Values(feature));
 		}
 

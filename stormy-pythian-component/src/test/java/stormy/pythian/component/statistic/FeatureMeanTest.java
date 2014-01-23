@@ -114,6 +114,6 @@ public class FeatureMeanTest extends TridentIntegrationTest {
 	}
 
 	private double extractMean(Instance outputInstance, OutputFixedFeaturesMapper outputMapper) {
-		return outputInstance.getFeature(outputMapper, MEAN_FEATURE);
+		return outputInstance.getOutputFeature(outputMapper, MEAN_FEATURE);
 	}
 }
