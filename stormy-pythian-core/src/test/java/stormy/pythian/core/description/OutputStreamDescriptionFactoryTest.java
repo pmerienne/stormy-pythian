@@ -79,6 +79,34 @@ public class OutputStreamDescriptionFactoryTest {
 				);
 	}
 
+	@Test
+	public void should_retrieve_user_selection_output_stream_declarations() {
+		// Given
+		@Documentation(name = "Test component")
+		class TestComponent implements Component {
+
+			@OutputStream(from = "in", name = "out1", type = USER_SELECTION)
+			private Stream out1;
+
+			@OutputStream(name = "out2", type = USER_SELECTION)
+			private Stream out2;
+
+
+			@Override
+			public void init() {
+			}
+		}
+
+		// When
+		List<OutputStreamDescription> actualDeclarations = factory.createOutputStreamDeclarations(TestComponent.class);
+
+		// Then
+		assertThat(actualDeclarations).containsOnly( // 
+			new OutputStreamDescription("out1", "in"), //
+			new OutputStreamDescription("out2") //
+		);
+	}
+
 	@Test(expected = IllegalArgumentException.class)
 	public void should_throw_illegal_argument_exception_when_output_stream_annotation_not_applied_on_stream() {
 		// Given
