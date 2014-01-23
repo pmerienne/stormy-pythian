@@ -71,6 +71,10 @@ public class OutputStreamDescription {
 		return newFeatures;
 	}
 
+	public MappingType getMappingType() {
+		return mappingType;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;

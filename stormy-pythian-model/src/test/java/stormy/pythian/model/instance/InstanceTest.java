@@ -36,7 +36,7 @@ public class InstanceTest {
 	private InputUserSelectionFeaturesMapper inputUserSelectionFeaturesMapper;
 
 	@Mock
-	private OutputFeaturesMapper outputFeaturesMapper;
+	private OutputFixedFeaturesMapper outputFeaturesMapper;
 
 	@Test
 	public void should_get_feature_by_name() {

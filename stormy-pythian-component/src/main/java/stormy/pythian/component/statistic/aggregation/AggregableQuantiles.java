@@ -31,16 +31,16 @@ import org.apache.mahout.common.RandomUtils;
 import stormy.pythian.component.statistic.aggregation.StatisticAggregator.AggregableStatistic;
 import stormy.pythian.component.statistic.tdigest.TDigest;
 import stormy.pythian.model.instance.Instance;
-import stormy.pythian.model.instance.OutputFeaturesMapper;
+import stormy.pythian.model.instance.OutputFixedFeaturesMapper;
 
 public class AggregableQuantiles implements AggregableStatistic<TDigest> {
 
 	private static final long serialVersionUID = 845845674309635484L;
 
-	private final OutputFeaturesMapper mapper;
+	private final OutputFixedFeaturesMapper mapper;
 	private final double compression;
 
-	public AggregableQuantiles(OutputFeaturesMapper mapper, double compression) {
+	public AggregableQuantiles(OutputFixedFeaturesMapper mapper, double compression) {
 		this.mapper = mapper;
 		this.compression = compression;
 	}

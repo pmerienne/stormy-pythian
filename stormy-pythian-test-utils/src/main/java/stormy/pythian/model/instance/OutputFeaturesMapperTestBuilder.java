@@ -46,7 +46,7 @@ public class OutputFeaturesMapperTestBuilder {
 		return this;
 	}
 
-	public OutputFeaturesMapper build() {
-		return new OutputFeaturesMapper(new FeaturesIndex(features), mappings);
+	public OutputFixedFeaturesMapper build() {
+		return new OutputFixedFeaturesMapper(new FeaturesIndex(features), mappings);
 	}
 }

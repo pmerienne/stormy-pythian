@@ -36,7 +36,8 @@ import stormy.pythian.model.component.Component;
 import stormy.pythian.model.instance.FeaturesIndex;
 import stormy.pythian.model.instance.InputFixedFeaturesMapper;
 import stormy.pythian.model.instance.InputUserSelectionFeaturesMapper;
-import stormy.pythian.model.instance.OutputFeaturesMapper;
+import stormy.pythian.model.instance.OutputFixedFeaturesMapper;
+import stormy.pythian.model.instance.OutputUserSelectionFeaturesMapper;
 import backtype.storm.Config;
 
 public class ComponentFactory {
@@ -52,7 +53,8 @@ public class ComponentFactory {
 		this.config = config;
 	}
 
-	public Component createComponent(ComponentConfiguration configuration, Map<String, StateFactory> topologyStateFactories, Map<String, Stream> inputStreams, Map<String, FeaturesIndex> inputFeaturesIndexes, Map<String, FeaturesIndex> outputFeaturesIndexes) {
+	public Component createComponent(ComponentConfiguration configuration, Map<String, StateFactory> topologyStateFactories, Map<String, Stream> inputStreams,
+			Map<String, FeaturesIndex> inputFeaturesIndexes, Map<String, FeaturesIndex> outputFeaturesIndexes) {
 		try {
 			Component component = configuration.descriptor.clazz.newInstance();
 			setProperties(component, configuration.properties);
@@ -71,11 +73,11 @@ public class ComponentFactory {
 	}
 
 	private void setStateFactories(Component component, ComponentConfiguration componentConfiguration, Map<String, StateFactory> topologyStateFactories) {
-		for(Entry<String, String> entry : componentConfiguration.getStateFactories().entrySet()) {
+		for (Entry<String, String> entry : componentConfiguration.getStateFactories().entrySet()) {
 			String stateFactoryName = entry.getKey();
 			String stateFactoryId = entry.getValue();
 			StateFactory stateFactory = topologyStateFactories.get(stateFactoryId);
-			
+
 			setStateFactory(component, stateFactoryName, stateFactory);
 		}
 	}
@@ -106,14 +108,26 @@ public class ComponentFactory {
 			case FIXED_FEATURES:
 				setFeaturesMapper(component, streamName, new InputFixedFeaturesMapper(inputFeaturesIndexes.get(streamName), isConfiguration.getMappings()));
 				break;
+			default:
+				throw new IllegalStateException("Unsupported mapping type : " + isConfiguration.getMappingType());
 			}
-
 		}
 
 		for (OutputStreamConfiguration osConfiguration : configuration.outputStreams) {
 			String streamName = osConfiguration.getStreamName();
-			OutputFeaturesMapper mapper = new OutputFeaturesMapper(outputFeaturesIndexes.get(streamName), osConfiguration.mappings);
-			setFeaturesMapper(component, streamName, mapper);
+
+			switch (osConfiguration.getMappingType()) {
+			case USER_SELECTION:
+				OutputUserSelectionFeaturesMapper outputUserSelectionFeaturesMapper = new OutputUserSelectionFeaturesMapper(outputFeaturesIndexes.get(streamName), osConfiguration.getNewFeatures());
+				setFeaturesMapper(component, streamName, outputUserSelectionFeaturesMapper);
+				break;
+			case FIXED_FEATURES:
+				OutputFixedFeaturesMapper outputFixedFeaturesMapper = new OutputFixedFeaturesMapper(outputFeaturesIndexes.get(streamName), osConfiguration.mappings);
+				setFeaturesMapper(component, streamName, outputFixedFeaturesMapper);
+				break;
+			default:
+				throw new IllegalStateException("Unsupported mapping type : " + osConfiguration.getMappingType());
+			}
 		}
 	}
 }

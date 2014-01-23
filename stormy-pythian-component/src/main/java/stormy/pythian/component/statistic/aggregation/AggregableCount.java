@@ -18,15 +18,15 @@ package stormy.pythian.component.statistic.aggregation;
 import static stormy.pythian.component.statistic.aggregation.Constants.COUNT_FEATURE;
 import stormy.pythian.component.statistic.aggregation.StatisticAggregator.AggregableStatistic;
 import stormy.pythian.model.instance.Instance;
-import stormy.pythian.model.instance.OutputFeaturesMapper;
+import stormy.pythian.model.instance.OutputFixedFeaturesMapper;
 
 public class AggregableCount implements AggregableStatistic<Long> {
 
 	private static final long serialVersionUID = 845845674309635484L;
 
-	private final OutputFeaturesMapper mapper;
+	private final OutputFixedFeaturesMapper mapper;
 
-	public AggregableCount(OutputFeaturesMapper mapper) {
+	public AggregableCount(OutputFixedFeaturesMapper mapper) {
 		this.mapper = mapper;
 	}
 

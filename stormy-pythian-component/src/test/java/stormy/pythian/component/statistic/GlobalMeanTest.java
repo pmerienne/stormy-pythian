@@ -38,7 +38,7 @@ import stormy.pythian.component.statistic.GlobalMean;
 import stormy.pythian.model.instance.FeaturesIndex;
 import stormy.pythian.model.instance.InputFixedFeaturesMapper;
 import stormy.pythian.model.instance.Instance;
-import stormy.pythian.model.instance.OutputFeaturesMapper;
+import stormy.pythian.model.instance.OutputFixedFeaturesMapper;
 import stormy.pythian.testing.InstanceCollector;
 import stormy.pythian.testing.TridentIntegrationTest;
 import backtype.storm.tuple.Fields;
@@ -61,7 +61,7 @@ public class GlobalMeanTest extends TridentIntegrationTest {
 		List<String> outputFeatures = Arrays.asList("firstname", "lastname", "age", "age mean");
 		Map<String, String> mappings = new HashMap<>();
 		mappings.put(MEAN_FEATURE, "age mean");
-		OutputFeaturesMapper outputMapper = new OutputFeaturesMapper(new FeaturesIndex(outputFeatures), mappings);
+		OutputFixedFeaturesMapper outputMapper = new OutputFixedFeaturesMapper(new FeaturesIndex(outputFeatures), mappings);
 
 		FixedBatchSpout spout = new FixedBatchSpout(new Fields(INSTANCE_FIELD), 1, //
 				createInputValues("Pierre", "Merienne", 27), //

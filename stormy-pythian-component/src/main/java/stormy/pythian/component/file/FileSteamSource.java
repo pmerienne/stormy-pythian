@@ -43,7 +43,7 @@ import stormy.pythian.model.annotation.Property;
 import stormy.pythian.model.annotation.Topology;
 import stormy.pythian.model.component.Component;
 import stormy.pythian.model.instance.Instance;
-import stormy.pythian.model.instance.OutputFeaturesMapper;
+import stormy.pythian.model.instance.OutputFixedFeaturesMapper;
 import backtype.storm.Config;
 import backtype.storm.task.TopologyContext;
 import backtype.storm.tuple.Fields;
@@ -62,7 +62,7 @@ public class FileSteamSource implements Component {
 	private Stream out;
 
 	@Mapper(stream = "lines")
-	private OutputFeaturesMapper mapper;
+	private OutputFixedFeaturesMapper mapper;
 
 	@Property(name = "File", description = "The full path of the file to read", mandatory = true)
 	private String filename;
@@ -86,12 +86,12 @@ public class FileSteamSource implements Component {
 		private final static Logger LOGGER = Logger.getLogger(FileSpout.class);
 
 		private final String filename;
-		private final OutputFeaturesMapper mapper;
+		private final OutputFixedFeaturesMapper mapper;
 		private final int maxBatchSize;
 
 		private Long currentPosition = 0L;
 
-		public FileSpout(String filename, OutputFeaturesMapper mapper, int maxBatchSize) {
+		public FileSpout(String filename, OutputFixedFeaturesMapper mapper, int maxBatchSize) {
 			this.filename = filename;
 			this.mapper = mapper;
 			this.maxBatchSize = maxBatchSize;

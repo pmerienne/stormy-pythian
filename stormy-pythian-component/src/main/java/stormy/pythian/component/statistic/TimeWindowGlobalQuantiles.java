@@ -32,7 +32,7 @@ import stormy.pythian.model.annotation.ExpectedFeature;
 import stormy.pythian.model.annotation.Mapper;
 import stormy.pythian.model.annotation.OutputStream;
 import stormy.pythian.model.annotation.Property;
-import stormy.pythian.model.instance.OutputFeaturesMapper;
+import stormy.pythian.model.instance.OutputFixedFeaturesMapper;
 
 @Documentation(name = "Time window global quantiles", type = ANALYTICS)
 public class TimeWindowGlobalQuantiles extends AbstractTimeWindowGlobalStatistic<TDigest> {
@@ -50,7 +50,7 @@ public class TimeWindowGlobalQuantiles extends AbstractTimeWindowGlobalStatistic
 	private Stream out;
 
 	@Mapper(stream = "out")
-	private OutputFeaturesMapper outputMapper;
+	private OutputFixedFeaturesMapper outputMapper;
 
 	@Property(name = "Compression", description = "How should accuracy be traded for size? A value of N here will give quantile errors almost always less than 3/N with considerably smaller errors expected for extreme quantiles. Conversely, you should expect to track about 5 N centroids for this accuracy.")
 	private double compression = 100.0;

@@ -15,33 +15,33 @@
  */
 package stormy.pythian.core.configuration;
 
-import static com.google.common.collect.Iterables.transform;
-import static com.google.common.collect.Lists.newArrayList;
 import static org.apache.commons.lang.StringUtils.isEmpty;
-import static stormy.pythian.core.description.FeatureDescription.EXTRACT_NAME;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import stormy.pythian.core.description.OutputStreamDescription;
+import stormy.pythian.model.annotation.MappingType;
 
 public class OutputStreamConfiguration {
 
 	public OutputStreamDescription descriptor;
 
 	public Map<String, String> mappings = new HashMap<>();
-
-	public OutputStreamConfiguration() {
-	}
-
-	public OutputStreamConfiguration(OutputStreamDescription descriptor) {
-		this.descriptor = descriptor;
-	}
+	private final List<String> selectedFeatures;
 
 	public OutputStreamConfiguration(OutputStreamDescription descriptor, Map<String, String> mappings) {
 		this.descriptor = descriptor;
 		this.mappings = mappings;
+		this.selectedFeatures = null;
+	}
+
+	public OutputStreamConfiguration(OutputStreamDescription descriptor, List<String> selectedFeatures) {
+		this.descriptor = descriptor;
+		this.mappings = null;
+		this.selectedFeatures = selectedFeatures;
 	}
 
 	public String getInputStreamSource() {
@@ -56,11 +56,18 @@ public class OutputStreamConfiguration {
 		return descriptor.getName();
 	}
 
-	public List<String> getNewFeatureNames() {
-		return newArrayList(transform(descriptor.getNewFeatures(), EXTRACT_NAME));
+	public MappingType getMappingType() {
+		return descriptor.getMappingType();
 	}
 
-	public Map<String, String> getMappings() {
-		return mappings;
+	public Collection<String> getNewFeatures() {
+		switch (descriptor.getMappingType()) {
+		case FIXED_FEATURES:
+			return mappings.values();
+		case USER_SELECTION:
+			return selectedFeatures;
+		default:
+			throw new IllegalStateException("Mapping type " + descriptor.getMappingType() + " isn't supported!");
+		}
 	}
 }

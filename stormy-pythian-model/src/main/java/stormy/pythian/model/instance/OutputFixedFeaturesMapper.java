@@ -18,14 +18,14 @@ package stormy.pythian.model.instance;
 import java.io.Serializable;
 import java.util.Map;
 
-public class OutputFeaturesMapper implements Serializable {
+public class OutputFixedFeaturesMapper implements Serializable {
 
 	private static final long serialVersionUID = -1845403070125797936L;
 
 	private Map<String, String> mappings;
 	private FeaturesIndex featuresIndex;
 
-	public OutputFeaturesMapper(FeaturesIndex featuresIndex, Map<String, String> mappings) {
+	public OutputFixedFeaturesMapper(FeaturesIndex featuresIndex, Map<String, String> mappings) {
 		this.featuresIndex = featuresIndex;
 		this.mappings = mappings;
 	}
@@ -61,7 +61,7 @@ public class OutputFeaturesMapper implements Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		OutputFeaturesMapper other = (OutputFeaturesMapper) obj;
+		OutputFixedFeaturesMapper other = (OutputFixedFeaturesMapper) obj;
 		if (featuresIndex == null) {
 			if (other.featuresIndex != null)
 				return false;
