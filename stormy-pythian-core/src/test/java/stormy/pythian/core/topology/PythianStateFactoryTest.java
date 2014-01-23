@@ -19,7 +19,7 @@ import static org.fest.assertions.Assertions.assertThat;
 import static org.fest.assertions.MapAssert.entry;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static stormy.pythian.core.configuration.StateFactoryConfiguration.TransactionType.NONE;
+import static stormy.pythian.core.configuration.PythianStateConfiguration.TransactionType.NONE;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -32,7 +32,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import storm.trident.state.StateFactory;
 import stormy.pythian.core.configuration.InMemoryStateConfiguration;
 import stormy.pythian.core.configuration.PythianToplogyConfiguration;
-import stormy.pythian.core.configuration.StateFactoryConfiguration;
+import stormy.pythian.core.configuration.PythianStateConfiguration;
 import stormy.pythian.core.topology.PythianStateFactory.NoneTransactionalInMemoryStateFactory;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -44,7 +44,7 @@ public class PythianStateFactoryTest {
 	@Test
 	public void should_create_state_factories() {
 		// Given
-		StateFactoryConfiguration expectedStateConfiguration = new InMemoryStateConfiguration(NONE);
+		PythianStateConfiguration expectedStateConfiguration = new InMemoryStateConfiguration(NONE);
 
 		PythianToplogyConfiguration topologyConfiguration = mock(PythianToplogyConfiguration.class);
 		when(topologyConfiguration.getStates()).thenReturn(Arrays.asList(expectedStateConfiguration));

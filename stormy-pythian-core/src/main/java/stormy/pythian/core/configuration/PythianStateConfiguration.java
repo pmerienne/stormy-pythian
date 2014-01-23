@@ -17,20 +17,20 @@ package stormy.pythian.core.configuration;
 
 import static org.apache.commons.lang.RandomStringUtils.randomAlphabetic;
 
-public abstract class StateFactoryConfiguration {
+public abstract class PythianStateConfiguration {
 
 	protected final String id;
 
 	protected final TransactionType transactionType;
 	protected final StateBackend backend;
 
-	public StateFactoryConfiguration(String id, TransactionType transactionType, StateBackend backend) {
+	public PythianStateConfiguration(String id, TransactionType transactionType, StateBackend backend) {
 		this.id = id;
 		this.transactionType = transactionType;
 		this.backend = backend;
 	}
 
-	public StateFactoryConfiguration(TransactionType transactionType, StateBackend backend) {
+	public PythianStateConfiguration(TransactionType transactionType, StateBackend backend) {
 		this.id = randomAlphabetic(6);
 		this.transactionType = transactionType;
 		this.backend = backend;
@@ -62,7 +62,7 @@ public abstract class StateFactoryConfiguration {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		StateFactoryConfiguration other = (StateFactoryConfiguration) obj;
+		PythianStateConfiguration other = (PythianStateConfiguration) obj;
 		if (backend != other.backend)
 			return false;
 		if (transactionType != other.transactionType)

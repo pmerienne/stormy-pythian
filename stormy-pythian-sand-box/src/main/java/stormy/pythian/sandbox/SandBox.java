@@ -16,7 +16,7 @@
 package stormy.pythian.sandbox;
 
 import static org.apache.commons.lang.RandomStringUtils.randomAlphabetic;
-import static stormy.pythian.core.configuration.StateFactoryConfiguration.TransactionType.NONE;
+import static stormy.pythian.core.configuration.PythianStateConfiguration.TransactionType.NONE;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -31,7 +31,7 @@ import stormy.pythian.core.configuration.InMemoryStateConfiguration;
 import stormy.pythian.core.configuration.InputStreamConfiguration;
 import stormy.pythian.core.configuration.OutputStreamConfiguration;
 import stormy.pythian.core.configuration.PythianToplogyConfiguration;
-import stormy.pythian.core.configuration.StateFactoryConfiguration;
+import stormy.pythian.core.configuration.PythianStateConfiguration;
 import stormy.pythian.core.description.ComponentDescription;
 import stormy.pythian.core.description.ComponentDescriptionFactory;
 import stormy.pythian.core.ioc.StormyPythianCoreConfig;
@@ -44,7 +44,7 @@ public class SandBox {
 	public static void main(String[] args) {
 		ApplicationContext context = new AnnotationConfigApplicationContext(StormyPythianCoreConfig.class);
 
-		StateFactoryConfiguration stateFactoryConfiguration = new InMemoryStateConfiguration(NONE);
+		PythianStateConfiguration stateFactoryConfiguration = new InMemoryStateConfiguration(NONE);
 
 		ComponentDescriptionFactory componentDescriptionFactory = context.getBean(ComponentDescriptionFactory.class);
 

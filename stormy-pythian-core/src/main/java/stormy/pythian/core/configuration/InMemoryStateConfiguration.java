@@ -16,7 +16,7 @@
 package stormy.pythian.core.configuration;
 
 
-public class InMemoryStateConfiguration extends StateFactoryConfiguration {
+public class InMemoryStateConfiguration extends PythianStateConfiguration {
 
 	public InMemoryStateConfiguration(TransactionType transactionType) {
 		super(transactionType, StateBackend.IN_MEMORY);
