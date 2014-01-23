@@ -22,26 +22,26 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class OutputFeaturesMapperTestBuilder {
+public class OutputFixedFeaturesMapperTestBuilder {
 
 	private final List<String> features = new ArrayList<>();
 	private final Map<String, String> mappings = new HashMap<>();
 
-	public static OutputFeaturesMapperTestBuilder outputFixedFeaturesMapper() {
-		return new OutputFeaturesMapperTestBuilder();
+	public static OutputFixedFeaturesMapperTestBuilder outputFixedFeaturesMapper() {
+		return new OutputFixedFeaturesMapperTestBuilder();
 	}
 
-	public static OutputFeaturesMapperTestBuilder outputFixedFeaturesMapper(String... features) {
-		OutputFeaturesMapperTestBuilder builder = new OutputFeaturesMapperTestBuilder();
+	public static OutputFixedFeaturesMapperTestBuilder outputFixedFeaturesMapper(String... features) {
+		OutputFixedFeaturesMapperTestBuilder builder = new OutputFixedFeaturesMapperTestBuilder();
 		return builder.with(features);
 	}
 
-	public OutputFeaturesMapperTestBuilder with(String... features) {
+	public OutputFixedFeaturesMapperTestBuilder with(String... features) {
 		this.features.addAll(asList(features));
 		return this;
 	}
 
-	public OutputFeaturesMapperTestBuilder map(String componentFeatureName, String instanceFeatureName) {
+	public OutputFixedFeaturesMapperTestBuilder map(String componentFeatureName, String instanceFeatureName) {
 		this.mappings.put(componentFeatureName, instanceFeatureName);
 		return this;
 	}

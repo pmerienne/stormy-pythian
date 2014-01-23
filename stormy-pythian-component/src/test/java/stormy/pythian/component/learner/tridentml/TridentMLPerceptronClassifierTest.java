@@ -20,7 +20,7 @@ import static org.springframework.test.util.ReflectionTestUtils.getField;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 import static stormy.pythian.model.instance.InputUserSelectionFeaturesMapperTestBuilder.inputUserSelectionFeaturesMapper;
 import static stormy.pythian.model.instance.InstanceTestBuilder.instance;
-import static stormy.pythian.model.instance.OutputFeaturesMapperTestBuilder.outputFixedFeaturesMapper;
+import static stormy.pythian.model.instance.OutputFixedFeaturesMapperTestBuilder.outputFixedFeaturesMapper;
 
 import org.junit.Test;
 
