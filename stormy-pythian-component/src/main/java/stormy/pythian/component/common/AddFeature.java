@@ -19,18 +19,18 @@ import storm.trident.operation.BaseFunction;
 import storm.trident.operation.TridentCollector;
 import storm.trident.tuple.TridentTuple;
 import stormy.pythian.model.instance.Instance;
-import stormy.pythian.model.instance.OutputFeaturesMapper;
+import stormy.pythian.model.instance.OutputFixedFeaturesMapper;
 import backtype.storm.tuple.Values;
 
 public class AddFeature extends BaseFunction {
 
 	private static final long serialVersionUID = 1L;
 
-	private final OutputFeaturesMapper predictionOutputMapper;
+	private final OutputFixedFeaturesMapper predictionOutputMapper;
 	private final String fieldName;
 	private final String featureName;
 
-	public AddFeature(OutputFeaturesMapper predictionOutputMapper, String fieldName, String featureName) {
+	public AddFeature(OutputFixedFeaturesMapper predictionOutputMapper, String fieldName, String featureName) {
 		this.predictionOutputMapper = predictionOutputMapper;
 		this.fieldName = fieldName;
 		this.featureName = featureName;

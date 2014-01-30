@@ -38,7 +38,7 @@ import stormy.pythian.component.statistic.GlobalMean;
 import stormy.pythian.model.instance.FeaturesIndex;
 import stormy.pythian.model.instance.InputFixedFeaturesMapper;
 import stormy.pythian.model.instance.Instance;
-import stormy.pythian.model.instance.OutputFeaturesMapper;
+import stormy.pythian.model.instance.OutputFixedFeaturesMapper;
 import stormy.pythian.testing.InstanceCollector;
 import stormy.pythian.testing.TridentIntegrationTest;
 import backtype.storm.tuple.Fields;
@@ -61,7 +61,7 @@ public class GlobalMeanTest extends TridentIntegrationTest {
 		List<String> outputFeatures = Arrays.asList("firstname", "lastname", "age", "age mean");
 		Map<String, String> mappings = new HashMap<>();
 		mappings.put(MEAN_FEATURE, "age mean");
-		OutputFeaturesMapper outputMapper = new OutputFeaturesMapper(new FeaturesIndex(outputFeatures), mappings);
+		OutputFixedFeaturesMapper outputMapper = new OutputFixedFeaturesMapper(new FeaturesIndex(outputFeatures), mappings);
 
 		FixedBatchSpout spout = new FixedBatchSpout(new Fields(INSTANCE_FIELD), 1, //
 				createInputValues("Pierre", "Merienne", 27), //
@@ -91,11 +91,11 @@ public class GlobalMeanTest extends TridentIntegrationTest {
 		// Then
 		List<Instance> collected = instanceCollector.getCollected();
 		assertThat(collected).hasSize(6);
-		assertThat((double) collected.get(1).getFeature(outputMapper, MEAN_FEATURE)).isEqualTo((27) / 1.0, delta(10e-6));
-		assertThat((double) collected.get(2).getFeature(outputMapper, MEAN_FEATURE)).isEqualTo((27 + 32) / 2.0, delta(10e-6));
-		assertThat((double) collected.get(3).getFeature(outputMapper, MEAN_FEATURE)).isEqualTo((27 + 32 + 27) / 3.0, delta(10e-6));
-		assertThat((double) collected.get(4).getFeature(outputMapper, MEAN_FEATURE)).isEqualTo((27 + 32 + 27 + 27) / 4.0, delta(10e-6));
-		assertThat((double) collected.get(5).getFeature(outputMapper, MEAN_FEATURE)).isEqualTo((27 + 32 + 27 + 27 + 28) / 5.0, delta(10e-6));
+		assertThat((double) collected.get(1).getOutputFeature(outputMapper, MEAN_FEATURE)).isEqualTo((27) / 1.0, delta(10e-6));
+		assertThat((double) collected.get(2).getOutputFeature(outputMapper, MEAN_FEATURE)).isEqualTo((27 + 32) / 2.0, delta(10e-6));
+		assertThat((double) collected.get(3).getOutputFeature(outputMapper, MEAN_FEATURE)).isEqualTo((27 + 32 + 27) / 3.0, delta(10e-6));
+		assertThat((double) collected.get(4).getOutputFeature(outputMapper, MEAN_FEATURE)).isEqualTo((27 + 32 + 27 + 27) / 4.0, delta(10e-6));
+		assertThat((double) collected.get(5).getOutputFeature(outputMapper, MEAN_FEATURE)).isEqualTo((27 + 32 + 27 + 27 + 28) / 5.0, delta(10e-6));
 	}
 
 	private Values createInputValues(String firstname, String lastName, int age) {

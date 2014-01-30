@@ -26,7 +26,7 @@ import stormy.pythian.model.annotation.Documentation;
 import stormy.pythian.model.annotation.ExpectedFeature;
 import stormy.pythian.model.annotation.Mapper;
 import stormy.pythian.model.annotation.OutputStream;
-import stormy.pythian.model.instance.OutputFeaturesMapper;
+import stormy.pythian.model.instance.OutputFixedFeaturesMapper;
 
 @Documentation(name = "Feature mean", type = ANALYTICS)
 public class FeatureMean extends AbstractFeatureStatistic<MeanState> {
@@ -37,7 +37,7 @@ public class FeatureMean extends AbstractFeatureStatistic<MeanState> {
 	private Stream out;
 
 	@Mapper(stream = "out")
-	private OutputFeaturesMapper outputMapper;
+	private OutputFixedFeaturesMapper outputMapper;
 
 	@Override
 	public void init() {

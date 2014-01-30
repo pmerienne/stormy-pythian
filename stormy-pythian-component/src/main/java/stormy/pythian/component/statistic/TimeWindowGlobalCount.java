@@ -25,7 +25,7 @@ import stormy.pythian.model.annotation.Documentation;
 import stormy.pythian.model.annotation.ExpectedFeature;
 import stormy.pythian.model.annotation.Mapper;
 import stormy.pythian.model.annotation.OutputStream;
-import stormy.pythian.model.instance.OutputFeaturesMapper;
+import stormy.pythian.model.instance.OutputFixedFeaturesMapper;
 
 @Documentation(name = "Time window global count", type = ANALYTICS)
 public class TimeWindowGlobalCount extends AbstractTimeWindowGlobalStatistic<Long> {
@@ -36,7 +36,7 @@ public class TimeWindowGlobalCount extends AbstractTimeWindowGlobalStatistic<Lon
 	private Stream out;
 
 	@Mapper(stream = "out")
-	private OutputFeaturesMapper outputMapper;
+	private OutputFixedFeaturesMapper outputMapper;
 
 	@Override
 	public void init() {

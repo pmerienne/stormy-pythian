@@ -22,9 +22,8 @@ import static org.fest.assertions.MapAssert.entry;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static stormy.pythian.model.annotation.MappingType.USER_SELECTION;
 
-import java.util.HashMap;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -96,8 +95,7 @@ public class FeaturesIndexFactoryTest {
 
 		InputStreamConfiguration inputStream = mock(InputStreamConfiguration.class);
 		when(inputStream.getStreamName()).thenReturn(streamName);
-		when(inputStream.getMappingType()).thenReturn(USER_SELECTION);
-		when(inputStream.getSelectedFeatures()).thenReturn(expectedFeatures);
+		when(inputStream.getStreamFeatures()).thenReturn(expectedFeatures);
 
 		when(topologyConfiguration.findConnectionTo(componentId, "in")).thenReturn(null);
 
@@ -120,15 +118,12 @@ public class FeaturesIndexFactoryTest {
 		String componentId = randomUUID().toString();
 		String streamName = "out";
 
-		Map<String, String> expectedMappings = new HashMap<>();
-		expectedMappings.put("uuid", "user id");
-		expectedMappings.put("age", "user age");
-		expectedMappings.put("firstname", "user name");
+		Collection<String> newFeatures = asList("user age", "user name", "user id");
 
 		OutputStreamConfiguration outputStream = mock(OutputStreamConfiguration.class);
 		when(outputStream.getStreamName()).thenReturn(streamName);
 		when(outputStream.hasInputStreamSource()).thenReturn(false);
-		when(outputStream.getMappings()).thenReturn(expectedMappings);
+		when(outputStream.getNewFeatures()).thenReturn(newFeatures);
 
 		ComponentConfiguration component = mock(ComponentConfiguration.class);
 		when(component.getId()).thenReturn(componentId);
@@ -138,7 +133,7 @@ public class FeaturesIndexFactoryTest {
 		Map<String, FeaturesIndex> actualIndexes = factory.createOutputFeaturesIndexes(component);
 
 		// Then
-		FeaturesIndex expectedIndex = new FeaturesIndex(asList("user age", "user name", "user id"));
+		FeaturesIndex expectedIndex = new FeaturesIndex(newFeatures);
 		assertThat(actualIndexes).includes(entry(streamName, expectedIndex));
 		verify(outputFeaturesIndexes).put(componentId, streamName, expectedIndex);
 	}
@@ -153,14 +148,13 @@ public class FeaturesIndexFactoryTest {
 		List<String> inputFeatures = asList("user id", "rating");
 		FeaturesIndex inputIndex = new FeaturesIndex(inputFeatures);
 
-		Map<String, String> expectedMappings = new HashMap<>();
-		expectedMappings.put("mean", "mean rating");
+		Collection<String> newFeatures = asList("mean rating");
 
 		OutputStreamConfiguration outputStream = mock(OutputStreamConfiguration.class);
 		when(outputStream.getStreamName()).thenReturn(streamName);
 		when(outputStream.hasInputStreamSource()).thenReturn(true);
 		when(outputStream.getInputStreamSource()).thenReturn(inputStreamName);
-		when(outputStream.getMappings()).thenReturn(expectedMappings);
+		when(outputStream.getNewFeatures()).thenReturn(newFeatures);
 
 		when(inputFeaturesIndexes.get(componentId, inputStreamName)).thenReturn(inputIndex);
 
@@ -176,4 +170,5 @@ public class FeaturesIndexFactoryTest {
 		assertThat(actualIndexes).includes(entry(streamName, expectedIndex));
 		verify(outputFeaturesIndexes).put(componentId, streamName, expectedIndex);
 	}
+
 }

@@ -27,10 +27,10 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
-public class OutputFeaturesMapperTest {
+public class OutputFixedFeaturesMapperTest {
 
 	@InjectMocks
-	private OutputFeaturesMapper mapper;
+	private OutputFixedFeaturesMapper mapper;
 
 	@Mock
 	private Map<String, String> mappings;

@@ -25,7 +25,7 @@ import stormy.pythian.model.annotation.Documentation;
 import stormy.pythian.model.annotation.ExpectedFeature;
 import stormy.pythian.model.annotation.Mapper;
 import stormy.pythian.model.annotation.OutputStream;
-import stormy.pythian.model.instance.OutputFeaturesMapper;
+import stormy.pythian.model.instance.OutputFixedFeaturesMapper;
 
 @Documentation(name = "Time window global mean", description = "Compute a feature mean during a time period")
 public class TimeWindowGlobalMean extends AbstractTimeWindowGlobalStatistic<MeanState> {
@@ -36,7 +36,7 @@ public class TimeWindowGlobalMean extends AbstractTimeWindowGlobalStatistic<Mean
 	private Stream out;
 
 	@Mapper(stream = "out")
-	private OutputFeaturesMapper outputMapper;
+	private OutputFixedFeaturesMapper outputMapper;
 
 	@Override
 	public void init() {

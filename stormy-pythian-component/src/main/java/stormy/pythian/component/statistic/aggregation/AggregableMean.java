@@ -19,15 +19,15 @@ import static stormy.pythian.component.statistic.aggregation.Constants.MEAN_FEAT
 import stormy.pythian.component.statistic.aggregation.AggregableMean.MeanState;
 import stormy.pythian.component.statistic.aggregation.StatisticAggregator.AggregableStatistic;
 import stormy.pythian.model.instance.Instance;
-import stormy.pythian.model.instance.OutputFeaturesMapper;
+import stormy.pythian.model.instance.OutputFixedFeaturesMapper;
 
 public class AggregableMean implements AggregableStatistic<MeanState> {
 
 	private static final long serialVersionUID = 845845674309635484L;
 
-	private final OutputFeaturesMapper mapper;
+	private final OutputFixedFeaturesMapper mapper;
 
-	public AggregableMean(OutputFeaturesMapper mapper) {
+	public AggregableMean(OutputFixedFeaturesMapper mapper) {
 		this.mapper = mapper;
 	}
 

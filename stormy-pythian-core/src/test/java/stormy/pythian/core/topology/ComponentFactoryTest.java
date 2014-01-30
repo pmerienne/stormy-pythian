@@ -15,6 +15,7 @@
  */
 package stormy.pythian.core.topology;
 
+import static java.util.Arrays.asList;
 import static java.util.Collections.EMPTY_MAP;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Matchers.isA;
@@ -41,6 +42,7 @@ import stormy.pythian.core.configuration.InputStreamConfiguration;
 import stormy.pythian.core.configuration.OutputStreamConfiguration;
 import stormy.pythian.core.configuration.PropertyConfiguration;
 import stormy.pythian.core.description.ComponentDescription;
+import stormy.pythian.core.description.FeatureDescription;
 import stormy.pythian.core.description.InputStreamDescription;
 import stormy.pythian.core.description.OutputStreamDescription;
 import stormy.pythian.model.annotation.Configuration;
@@ -53,7 +55,8 @@ import stormy.pythian.model.annotation.Topology;
 import stormy.pythian.model.component.Component;
 import stormy.pythian.model.instance.FeaturesIndex;
 import stormy.pythian.model.instance.InputUserSelectionFeaturesMapper;
-import stormy.pythian.model.instance.OutputFeaturesMapper;
+import stormy.pythian.model.instance.OutputFixedFeaturesMapper;
+import stormy.pythian.model.instance.OutputUserSelectionFeaturesMapper;
 import backtype.storm.Config;
 
 @SuppressWarnings("serial")
@@ -185,11 +188,11 @@ public class ComponentFactoryTest {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void should_set_output_stream_mapper() {
+	public void should_set_fixed_feature_output_stream_mapper() {
 		// Given
 		Map<String, String> mappings = new HashMap<>();
 		mappings.put("inside", "outside");
-		OutputStreamDescription outputStreamDescription = new OutputStreamDescription("out1", "in1");
+		OutputStreamDescription outputStreamDescription = new OutputStreamDescription("out1", asList(new FeatureDescription("outside", Object.class)));
 
 		FeaturesIndex expectedIndex = mock(FeaturesIndex.class);
 		HashMap<String, FeaturesIndex> outputFeaturesIndexes = new HashMap<String, FeaturesIndex>();
@@ -203,7 +206,29 @@ public class ComponentFactoryTest {
 		TestComponent component = (TestComponent) factory.createComponent(configuration, new HashMap<String, StateFactory>(), EMPTY_MAP, new HashMap<String, FeaturesIndex>(), outputFeaturesIndexes);
 
 		// Then
-		assertThat(component.out1Mapper).isEqualTo(new OutputFeaturesMapper(expectedIndex, mappings));
+		assertThat(component.out1Mapper).isEqualTo(new OutputFixedFeaturesMapper(expectedIndex, mappings));
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public void should_set_user_selection_output_stream_mapper() {
+		// Given
+		List<String> selectedFeatures = asList("path", "response time", "ip");
+		OutputStreamDescription outputStreamDescription = new OutputStreamDescription("out2");
+		
+		FeaturesIndex expectedIndex = mock(FeaturesIndex.class);
+		HashMap<String, FeaturesIndex> outputFeaturesIndexes = new HashMap<String, FeaturesIndex>();
+		outputFeaturesIndexes.put("out2", expectedIndex);
+
+		ComponentConfiguration configuration = new ComponentConfiguration();
+		configuration.descriptor = new ComponentDescription(TestComponent.class);
+		configuration.outputStreams.add(new OutputStreamConfiguration(outputStreamDescription, selectedFeatures));
+
+		// When
+		TestComponent component = (TestComponent) factory.createComponent(configuration, new HashMap<String, StateFactory>(), EMPTY_MAP, new HashMap<String, FeaturesIndex>(), outputFeaturesIndexes);
+
+		// Then
+		assertThat(component.out2Mapper).isEqualTo(new OutputUserSelectionFeaturesMapper(expectedIndex, selectedFeatures));
 	}
 
 	@Test
@@ -249,7 +274,10 @@ public class ComponentFactoryTest {
 		public InputUserSelectionFeaturesMapper in1Mapper;
 
 		@Mapper(stream = "out1")
-		public OutputFeaturesMapper out1Mapper;
+		public OutputFixedFeaturesMapper out1Mapper;
+
+		@Mapper(stream = "out2")
+		public OutputUserSelectionFeaturesMapper out2Mapper;
 
 		@State(name = "Word count")
 		private StateFactory stateFactory;

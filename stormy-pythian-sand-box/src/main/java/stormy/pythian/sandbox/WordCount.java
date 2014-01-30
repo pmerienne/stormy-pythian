@@ -35,7 +35,7 @@ import stormy.pythian.model.annotation.State;
 import stormy.pythian.model.component.Component;
 import stormy.pythian.model.instance.InputFixedFeaturesMapper;
 import stormy.pythian.model.instance.Instance;
-import stormy.pythian.model.instance.OutputFeaturesMapper;
+import stormy.pythian.model.instance.OutputFixedFeaturesMapper;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Values;
 
@@ -57,7 +57,7 @@ public class WordCount implements Component {
 	private InputFixedFeaturesMapper inputMapper;
 
 	@Mapper(stream = "out")
-	private OutputFeaturesMapper outputMapper;
+	private OutputFixedFeaturesMapper outputMapper;
 	
 	@State(name = "count state")
 	private StateFactory stateFactory;
@@ -90,7 +90,7 @@ public class WordCount implements Component {
 		@Override
 		public void execute(TridentTuple tuple, TridentCollector collector) {
 			Instance instance = Instance.from(tuple);
-			Object feature = instance.getFeature(inputMapper, featureName);
+			Object feature = instance.getInputFeature(inputMapper, featureName);
 			collector.emit(new Values(feature));
 		}
 
@@ -99,9 +99,9 @@ public class WordCount implements Component {
 	@SuppressWarnings("serial")
 	private static class AddCountFeature extends BaseFunction {
 
-		private final OutputFeaturesMapper outMapper;
+		private final OutputFixedFeaturesMapper outMapper;
 
-		public AddCountFeature(OutputFeaturesMapper outMapper) {
+		public AddCountFeature(OutputFixedFeaturesMapper outMapper) {
 			this.outMapper = outMapper;
 		}
 

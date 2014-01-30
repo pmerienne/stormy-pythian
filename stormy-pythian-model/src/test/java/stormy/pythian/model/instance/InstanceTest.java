@@ -15,10 +15,12 @@
  */
 package stormy.pythian.model.instance;
 
+import static java.util.Arrays.asList;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
@@ -36,7 +38,10 @@ public class InstanceTest {
 	private InputUserSelectionFeaturesMapper inputUserSelectionFeaturesMapper;
 
 	@Mock
-	private OutputFeaturesMapper outputFeaturesMapper;
+	private OutputFixedFeaturesMapper outputFixedFeaturesMapper;
+
+	@Mock
+	private OutputUserSelectionFeaturesMapper outputUserSelectionFeaturesMapper;
 
 	@Test
 	public void should_get_feature_by_name() {
@@ -47,7 +52,7 @@ public class InstanceTest {
 		when(inputFixedFeaturesMapper.getFeatureIndex("age")).thenReturn(2);
 
 		// When
-		Integer age = instance.getFeature(inputFixedFeaturesMapper, featureName);
+		Integer age = instance.getInputFeature(inputFixedFeaturesMapper, featureName);
 
 		// Then
 		assertThat(age).isEqualTo(32);
@@ -62,7 +67,7 @@ public class InstanceTest {
 		when(inputFixedFeaturesMapper.getFeatureIndex("age")).thenReturn(-1);
 
 		// When
-		Integer age = instance.getFeature(inputFixedFeaturesMapper, featureName);
+		Integer age = instance.getInputFeature(inputFixedFeaturesMapper, featureName);
 
 		// Then
 		assertThat(age).isNull();
@@ -78,7 +83,7 @@ public class InstanceTest {
 		Object[] selectedFeatures = instance.getSelectedFeatures(inputUserSelectionFeaturesMapper);
 
 		// Then
-		assertThat(selectedFeatures).isEqualTo(new Object[]{"Patrick", 32});
+		assertThat(selectedFeatures).isEqualTo(new Object[] { "Patrick", 32 });
 
 	}
 
@@ -157,56 +162,85 @@ public class InstanceTest {
 	}
 
 	@Test
-	public void should_set_feature_with_output_mapper() {
+	public void should_set_feature_with_fixed_output_mapper() {
 		// Given
 		Instance instance = createUnlabelledInstance("Patrick", "Star");
-		when(outputFeaturesMapper.size()).thenReturn(3);
-		when(outputFeaturesMapper.getFeatureIndex("age")).thenReturn(2);
+		when(outputFixedFeaturesMapper.size()).thenReturn(3);
+		when(outputFixedFeaturesMapper.getFeatureIndex("age")).thenReturn(2);
 
 		// When
-		Instance newInstance = instance.withFeature(outputFeaturesMapper, "age", 32);
+		Instance newInstance = instance.withFeature(outputFixedFeaturesMapper, "age", 32);
 
 		// Then
 		assertThat(newInstance).isEqualTo(createUnlabelledInstance("Patrick", "Star", 32));
 	}
 
 	@Test
-	public void should_set_features_with_output_mapper() {
+	public void should_set_features_with_fixed_output_mapper() {
 		// Given
 		Instance instance = createUnlabelledInstance("Patrick");
-		when(outputFeaturesMapper.size()).thenReturn(3);
-		when(outputFeaturesMapper.getFeatureIndex("name")).thenReturn(1);
-		when(outputFeaturesMapper.getFeatureIndex("age")).thenReturn(2);
+		when(outputFixedFeaturesMapper.size()).thenReturn(3);
+		when(outputFixedFeaturesMapper.getFeatureIndex("name")).thenReturn(1);
+		when(outputFixedFeaturesMapper.getFeatureIndex("age")).thenReturn(2);
 
 		Map<String, Object> features = new HashMap<>();
 		features.put("age", 32);
 		features.put("name", "Star");
 
 		// When
-		Instance newInstance = instance.withFeatures(outputFeaturesMapper, features);
+		Instance newInstance = instance.withFeatures(outputFixedFeaturesMapper, features);
 
 		// Then
 		assertThat(newInstance).isEqualTo(createUnlabelledInstance("Patrick", "Star", 32));
 	}
 
 	@Test
-	public void should_create_instance_with_output_mapper() {
+	public void should_create_instance_with_fixed_output_mapper() {
 		// Given
-		when(outputFeaturesMapper.size()).thenReturn(3);
-		when(outputFeaturesMapper.getFeatureIndex("firstname")).thenReturn(0);
-		when(outputFeaturesMapper.getFeatureIndex("name")).thenReturn(1);
-		when(outputFeaturesMapper.getFeatureIndex("age")).thenReturn(2);
+		when(outputFixedFeaturesMapper.size()).thenReturn(3);
+		when(outputFixedFeaturesMapper.getFeatureIndex("firstname")).thenReturn(0);
+		when(outputFixedFeaturesMapper.getFeatureIndex("name")).thenReturn(1);
+		when(outputFixedFeaturesMapper.getFeatureIndex("age")).thenReturn(2);
 
 		Map<String, Object> features = new HashMap<>();
 		features.put("age", 32);
 		features.put("firstname", "Patrick");
 		features.put("name", "Star");
-		
+
 		// When
-		Instance newInstance = Instance.newInstance(outputFeaturesMapper, features);
+		Instance newInstance = Instance.newInstance(outputFixedFeaturesMapper, features);
 
 		// Then
 		assertThat(newInstance).isEqualTo(createUnlabelledInstance("Patrick", "Star", 32));
+	}
+
+	@SuppressWarnings({ "rawtypes" })
+	@Test
+	public void should_create_instance_with_user_selection_output_mapper() {
+		// Given
+		when(outputUserSelectionFeaturesMapper.size()).thenReturn(3);
+
+		List features = asList(32, "Patrick", "Star");
+
+		// When
+		Instance newInstance = Instance.newInstance(outputUserSelectionFeaturesMapper, features);
+
+		// Then
+		assertThat(newInstance).isEqualTo(createUnlabelledInstance(32, "Patrick", "Star"));
+	}
+	
+	@Test
+	public void should_add_features_with_user_selection_output_mapper() {
+		// Given
+		Instance instance = createUnlabelledInstance("Patrick", "Star");
+		when(outputUserSelectionFeaturesMapper.size()).thenReturn(4);
+		when(outputUserSelectionFeaturesMapper.getNewFeatureIndexes()).thenReturn(new int[] {2, 3});
+
+		// When
+		Instance newInstance = instance.withFeatures(outputUserSelectionFeaturesMapper, "Male", 32);
+
+		// Then
+		assertThat(newInstance).isEqualTo(createUnlabelledInstance("Patrick", "Star", "Male", 32));
 	}
 	
 	@Test
@@ -216,9 +250,9 @@ public class InstanceTest {
 		assertThat(createUnlabelledInstance("Patrick", "Star", 32).hashCode()).isEqualTo(createUnlabelledInstance("Patrick", "Star", 32).hashCode());
 		assertThat(createUnlabelledInstance("Patrick", "Star", 27).hashCode()).isNotEqualTo(createUnlabelledInstance("Patrick", "Star", 32).hashCode());
 	}
-	
+
 	private Instance createUnlabelledInstance(Object... features) {
 		return new Instance(null, features);
-		
+
 	}
 }

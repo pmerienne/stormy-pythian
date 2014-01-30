@@ -43,7 +43,7 @@ import stormy.pythian.component.statistic.TimeWindowGlobalMean;
 import stormy.pythian.model.instance.FeaturesIndex;
 import stormy.pythian.model.instance.InputFixedFeaturesMapper;
 import stormy.pythian.model.instance.Instance;
-import stormy.pythian.model.instance.OutputFeaturesMapper;
+import stormy.pythian.model.instance.OutputFixedFeaturesMapper;
 import stormy.pythian.testing.InstanceCollector;
 import stormy.pythian.testing.TridentIntegrationTest;
 import backtype.storm.tuple.Fields;
@@ -71,7 +71,7 @@ public class TimeWindowGlobalMeanTest extends TridentIntegrationTest {
 		List<String> outputFeatures = Arrays.asList("username", "call date", "call duration", "last day call's duration mean");
 		Map<String, String> mappings = new HashMap<>();
 		mappings.put(MEAN_FEATURE, "last day call's duration mean");
-		OutputFeaturesMapper outputMapper = new OutputFeaturesMapper(new FeaturesIndex(outputFeatures), mappings);
+		OutputFixedFeaturesMapper outputMapper = new OutputFixedFeaturesMapper(new FeaturesIndex(outputFeatures), mappings);
 
 		Date now = new Date();
 		long thirtyHoursAgo = addHours(now, -30).getTime();

@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import storm.trident.Stream;
+import stormy.pythian.model.annotation.MappingType;
 import stormy.pythian.model.annotation.OutputStream;
 
 import com.google.common.base.Function;
@@ -51,13 +52,29 @@ public class OutputStreamDescriptionFactory {
 			}
 
 			OutputStream annotation = field.getAnnotation(OutputStream.class);
-			List<FeatureDescription> newFeatures = featureDescriptorFactory.createDescriptions(annotation);
-			OutputStreamDescription declaration = new OutputStreamDescription(annotation.name(), annotation.from(), newFeatures);
+			OutputStreamDescription declaration = createDescription(annotation);
 			declarations.add(declaration);
 		}
 
 		ensureNoDuplicatedOutputStream(declarations);
 		return declarations;
+	}
+
+	private OutputStreamDescription createDescription(OutputStream annotation) {
+		OutputStreamDescription declaration;
+		switch (annotation.type()) {
+		case FIXED_FEATURES:
+			List<FeatureDescription> newFeatures = featureDescriptorFactory.createDescriptions(annotation);
+			declaration = new OutputStreamDescription(annotation.name(), annotation.from(), newFeatures);
+			break;
+		case USER_SELECTION:
+			declaration = new OutputStreamDescription(annotation.name(), annotation.from());
+			break;
+		default:
+			throw new IllegalStateException("@OutputStream supports only type like : " + MappingType.values());
+		}
+
+		return declaration;
 	}
 
 	private void ensureNoDuplicatedOutputStream(List<OutputStreamDescription> declarations) {

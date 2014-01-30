@@ -16,16 +16,17 @@
 package stormy.pythian.component.file;
 
 import static com.google.common.base.Objects.firstNonNull;
+import static com.google.common.collect.Lists.newArrayList;
 import static org.apache.commons.io.FilenameUtils.getName;
 import static org.apache.commons.lang.RandomStringUtils.randomAlphabetic;
 import static stormy.pythian.model.annotation.ComponentType.STREAM_SOURCE;
+import static stormy.pythian.model.annotation.MappingType.USER_SELECTION;
 import static stormy.pythian.model.instance.Instance.NEW_INSTANCE_FIELD;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -36,21 +37,22 @@ import storm.trident.TridentTopology;
 import storm.trident.operation.TridentCollector;
 import storm.trident.spout.IBatchSpout;
 import stormy.pythian.model.annotation.Documentation;
-import stormy.pythian.model.annotation.ExpectedFeature;
 import stormy.pythian.model.annotation.Mapper;
 import stormy.pythian.model.annotation.OutputStream;
 import stormy.pythian.model.annotation.Property;
 import stormy.pythian.model.annotation.Topology;
 import stormy.pythian.model.component.Component;
 import stormy.pythian.model.instance.Instance;
-import stormy.pythian.model.instance.OutputFixedFeaturesMapper;
+import stormy.pythian.model.instance.OutputUserSelectionFeaturesMapper;
 import backtype.storm.Config;
 import backtype.storm.task.TopologyContext;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Values;
 
-@Documentation(name = "File stream source", description = "Read and parse a given file", type = STREAM_SOURCE)
-public class FileSteamSource implements Component {
+import com.google.common.base.Splitter;
+
+@Documentation(name = "Csv stream source", description = "Read and parse a given csv file", type = STREAM_SOURCE)
+public class CsvSteamSource implements Component {
 
 	private static final long serialVersionUID = -1157270927374405269L;
 
@@ -58,11 +60,11 @@ public class FileSteamSource implements Component {
 
 	private static final int DEFAULT_MAX_BATCH_SIZE = 500;
 
-	@OutputStream(name = "lines", newFeatures = { @ExpectedFeature(name = LINE_FEATURE, type = String.class) })
+	@OutputStream(name = "lines", type = USER_SELECTION)
 	private Stream out;
 
 	@Mapper(stream = "lines")
-	private OutputFixedFeaturesMapper mapper;
+	private OutputUserSelectionFeaturesMapper mapper;
 
 	@Property(name = "File", description = "The full path of the file to read", mandatory = true)
 	private String filename;
@@ -86,12 +88,12 @@ public class FileSteamSource implements Component {
 		private final static Logger LOGGER = Logger.getLogger(FileSpout.class);
 
 		private final String filename;
-		private final OutputFixedFeaturesMapper mapper;
+		private final OutputUserSelectionFeaturesMapper mapper;
 		private final int maxBatchSize;
 
 		private Long currentPosition = 0L;
 
-		public FileSpout(String filename, OutputFixedFeaturesMapper mapper, int maxBatchSize) {
+		public FileSpout(String filename, OutputUserSelectionFeaturesMapper mapper, int maxBatchSize) {
 			this.filename = filename;
 			this.mapper = mapper;
 			this.maxBatchSize = maxBatchSize;
@@ -163,8 +165,7 @@ public class FileSteamSource implements Component {
 				String line;
 				while (instances.size() < maxBatchSize && (line = file.readLine()) != null) {
 					try {
-						Map<String, Object> features = new HashMap<>();
-						features.put(LINE_FEATURE, line);
+						List<?> features = newArrayList(Splitter.on(",").limit(mapper.size()).trimResults().split(line));
 						
 						Instance instance = Instance.newInstance(mapper, features);
 						instances.add(instance);

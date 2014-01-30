@@ -34,7 +34,7 @@ import stormy.pythian.model.annotation.State;
 import stormy.pythian.model.component.Component;
 import stormy.pythian.model.instance.InputUserSelectionFeaturesMapper;
 import stormy.pythian.model.instance.Instance;
-import stormy.pythian.model.instance.OutputFeaturesMapper;
+import stormy.pythian.model.instance.OutputFixedFeaturesMapper;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Values;
 
@@ -67,7 +67,7 @@ public abstract class TridentMLClassifier<L> implements Component {
 	private Stream prediction;
 
 	@Mapper(stream = "prediction")
-	private OutputFeaturesMapper predictionOutputMapper;
+	private OutputFixedFeaturesMapper predictionOutputMapper;
 
 	@State(name = "Classifier's state")
 	private StateFactory stateFactory;

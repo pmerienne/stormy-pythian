@@ -45,7 +45,8 @@ import stormy.pythian.model.annotation.Topology;
 import stormy.pythian.model.component.Component;
 import stormy.pythian.model.instance.InputFixedFeaturesMapper;
 import stormy.pythian.model.instance.InputUserSelectionFeaturesMapper;
-import stormy.pythian.model.instance.OutputFeaturesMapper;
+import stormy.pythian.model.instance.OutputFixedFeaturesMapper;
+import stormy.pythian.model.instance.OutputUserSelectionFeaturesMapper;
 import backtype.storm.Config;
 
 import com.google.common.base.Predicate;
@@ -161,7 +162,20 @@ public class ReflectionHelper {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static void setFeaturesMapper(Component component, String streamName, OutputFeaturesMapper mapper) {
+	public static void setFeaturesMapper(Component component, String streamName, OutputFixedFeaturesMapper mapper) {
+		try {
+			Set<Field> fields = getFields(component.getClass(), withFeaturesMapper(streamName));
+			if (fields != null && !fields.isEmpty()) {
+				Field field = fields.iterator().next();
+				writeField(field, component, mapper, true);
+			}
+		} catch (Exception e) {
+			throw new IllegalArgumentException("Unable to set features mapper for " + streamName, e);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public static void setFeaturesMapper(Component component, String streamName, OutputUserSelectionFeaturesMapper mapper) {
 		try {
 			Set<Field> fields = getFields(component.getClass(), withFeaturesMapper(streamName));
 			if (fields != null && !fields.isEmpty()) {

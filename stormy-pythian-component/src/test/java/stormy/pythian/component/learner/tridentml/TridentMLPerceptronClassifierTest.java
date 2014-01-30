@@ -20,14 +20,14 @@ import static org.springframework.test.util.ReflectionTestUtils.getField;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 import static stormy.pythian.model.instance.InputUserSelectionFeaturesMapperTestBuilder.inputUserSelectionFeaturesMapper;
 import static stormy.pythian.model.instance.InstanceTestBuilder.instance;
-import static stormy.pythian.model.instance.OutputFeaturesMapperTestBuilder.outputFixedFeaturesMapper;
+import static stormy.pythian.model.instance.OutputFixedFeaturesMapperTestBuilder.outputFixedFeaturesMapper;
 
 import org.junit.Test;
 
 import storm.trident.Stream;
 import storm.trident.testing.MemoryMapState;
 import stormy.pythian.model.instance.InputUserSelectionFeaturesMapper;
-import stormy.pythian.model.instance.OutputFeaturesMapper;
+import stormy.pythian.model.instance.OutputFixedFeaturesMapper;
 import stormy.pythian.testing.FixedInstanceSpout;
 import stormy.pythian.testing.InstanceCollector;
 import stormy.pythian.testing.TridentIntegrationTest;
@@ -39,7 +39,7 @@ public class TridentMLPerceptronClassifierTest extends TridentIntegrationTest {
 		// Given
 		InputUserSelectionFeaturesMapper updateInputMapper = inputUserSelectionFeaturesMapper("bias", "val1", "val2").select("bias", "val1", "val2").build();
 		InputUserSelectionFeaturesMapper queryInputMapper = inputUserSelectionFeaturesMapper("bias", "val1", "val2").select("bias", "val1", "val2").build();
-		OutputFeaturesMapper predictionOutputMapper = outputFixedFeaturesMapper("bias", "val1", "val2", "prediction").map(TridentMLClassifier.PREDICTION_FEATURE, "prediction").build();
+		OutputFixedFeaturesMapper predictionOutputMapper = outputFixedFeaturesMapper("bias", "val1", "val2", "prediction").map(TridentMLClassifier.PREDICTION_FEATURE, "prediction").build();
 
 		FixedInstanceSpout updateSpout = new FixedInstanceSpout(//
 				instance().with(1.0).with(1.0).with(1.0).label(false).build(), //

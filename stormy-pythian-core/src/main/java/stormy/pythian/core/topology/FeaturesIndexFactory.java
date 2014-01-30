@@ -60,14 +60,7 @@ public class FeaturesIndexFactory {
 		ConnectionConfiguration connection = topologyConfiguration.findConnectionTo(componentId, streamName);
 
 		if (connection == null) {
-			switch (inputStream.getMappingType()) {
-			case FIXED_FEATURES:
-				index = new FeaturesIndex(inputStream.getMappings().values());
-				break;
-			case USER_SELECTION:
-				index = new FeaturesIndex(inputStream.getSelectedFeatures());
-				break;
-			}
+			index = new FeaturesIndex(inputStream.getStreamFeatures());
 		} else {
 			index = outputFeaturesIndexes.get(connection.from, connection.fromStreamName);
 		}
@@ -92,7 +85,7 @@ public class FeaturesIndexFactory {
 	private FeaturesIndex createFeaturesIndex(String componentId, OutputStreamConfiguration outputStream) {
 		FeaturesIndex index = null;
 
-		Collection<String> newFeatures = outputStream.getMappings().values();
+		Collection<String> newFeatures = outputStream.getNewFeatures();
 
 		if (!outputStream.hasInputStreamSource()) {
 			index = new FeaturesIndex(newFeatures);

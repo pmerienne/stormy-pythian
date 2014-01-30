@@ -15,6 +15,7 @@
  */
 package stormy.pythian.core.configuration;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -50,6 +51,17 @@ public class InputStreamConfiguration {
 
 	public List<String> getSelectedFeatures() {
 		return selectedFeatures;
+	}
+	
+	public Collection<String> getStreamFeatures() {
+		switch (description.getType()) {
+		case FIXED_FEATURES:
+			return mappings.values();
+		case USER_SELECTION:
+			return selectedFeatures;
+		default:
+			throw new IllegalStateException("Mapping type " + description.getType() + " isn't supported!");
+		}
 	}
 
 	public String getStreamName() {

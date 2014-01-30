@@ -17,6 +17,7 @@ package stormy.pythian.model.instance;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import storm.trident.tuple.TridentTuple;
@@ -39,7 +40,7 @@ public class Instance implements Serializable {
 		}
 	}
 
-	public static Instance newInstance(OutputFeaturesMapper mapper, Map<String, Object> newFeaturesWithName) {
+	public static Instance newInstance(OutputFixedFeaturesMapper mapper, Map<String, Object> newFeaturesWithName) {
 		Object[] newFeatures = new Object[mapper.size()];
 
 		for (String featureName : newFeaturesWithName.keySet()) {
@@ -54,8 +55,18 @@ public class Instance implements Serializable {
 
 		return new Instance(null, newFeatures);
 	}
+	
+	public static Instance newInstance(OutputUserSelectionFeaturesMapper mapper, List<?> features) {
+		Object[] newFeatures = new Object[mapper.size()];
 
-	public static Instance newInstance(OutputFeaturesMapper mapper, Object label, Map<String, Object> newFeaturesWithName) {
+		for(int i = 0; i < mapper.size(); i++) {
+			newFeatures[i] = features.get(i);
+		}
+
+		return new Instance(null, newFeatures);
+	}
+
+	public static Instance newInstance(OutputFixedFeaturesMapper mapper, Object label, Map<String, Object> newFeaturesWithName) {
 		Object[] newFeatures = new Object[mapper.size()];
 
 		for (String featureName : newFeaturesWithName.keySet()) {
@@ -87,12 +98,12 @@ public class Instance implements Serializable {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T getFeature(InputFixedFeaturesMapper inputFixedFeaturesMapper, String featureName) {
+	public <T> T getInputFeature(InputFixedFeaturesMapper inputFixedFeaturesMapper, String featureName) {
 		int index = inputFixedFeaturesMapper.getFeatureIndex(featureName);
 		return (T) (index < 0 ? null : features[index]);
 	}
 	@SuppressWarnings("unchecked")
-	public <T> T getFeature(OutputFeaturesMapper outputMapper, String featureName) {
+	public <T> T getOutputFeature(OutputFixedFeaturesMapper outputMapper, String featureName) {
 		int index = outputMapper.getFeatureIndex(featureName);
 		return (T) (index < 0 ? null : features[index]);
 	}
@@ -129,7 +140,7 @@ public class Instance implements Serializable {
 		return new Instance(this.label, newFeatures);
 	}
 
-	public <T> Instance withFeature(OutputFeaturesMapper mapper, String featureName, T feature) {
+	public <T> Instance withFeature(OutputFixedFeaturesMapper mapper, String featureName, T feature) {
 		int index = mapper.getFeatureIndex(featureName);
 		if (index < 0) {
 			throw new IllegalArgumentException("Feature " + featureName + " does not exist");
@@ -143,7 +154,7 @@ public class Instance implements Serializable {
 		return new Instance(this.label, newFeatures);
 	}
 
-	public Instance withFeatures(OutputFeaturesMapper mapper, Map<String, Object> newFeaturesWithName) {
+	public Instance withFeatures(OutputFixedFeaturesMapper mapper, Map<String, Object> newFeaturesWithName) {
 		Object[] newFeatures = new Object[mapper.size()];
 		System.arraycopy(features, 0, newFeatures, 0, features.length);
 
@@ -158,6 +169,20 @@ public class Instance implements Serializable {
 		}
 
 		return new Instance(this.label, newFeatures);
+	}
+
+	public Instance withFeatures(OutputUserSelectionFeaturesMapper mapper,Object... newFeatures) {
+		Object[] newFeaturesArray = new Object[mapper.size()];
+		System.arraycopy(features, 0, newFeaturesArray, 0, features.length);
+		
+		int[] newFeatureIndexes = mapper.getNewFeatureIndexes();
+		for(int i = 0; i < newFeatureIndexes.length; i++) {
+			int index = newFeatureIndexes[i];
+			Object newFeature = newFeatures[i];
+			newFeaturesArray[index] = newFeature;
+		}
+
+		return new Instance(this.label, newFeaturesArray);
 	}
 	
 	public Instance withLabel(Object label) {
