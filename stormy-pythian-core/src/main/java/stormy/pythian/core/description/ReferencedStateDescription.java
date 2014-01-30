@@ -15,17 +15,17 @@
  */
 package stormy.pythian.core.description;
 
-public class PythianStateDescription {
+public class ReferencedStateDescription {
 
 	private final String name;
 	private final String description;
 
-	public PythianStateDescription(String name, String description) {
+	public ReferencedStateDescription(String name, String description) {
 		this.name = name;
 		this.description = description;
 	}
 
-	public PythianStateDescription(String name) {
+	public ReferencedStateDescription(String name) {
 		this.name = name;
 		this.description = null;
 	}
@@ -55,7 +55,7 @@ public class PythianStateDescription {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		PythianStateDescription other = (PythianStateDescription) obj;
+		ReferencedStateDescription other = (ReferencedStateDescription) obj;
 		if (description == null) {
 			if (other.description != null)
 				return false;

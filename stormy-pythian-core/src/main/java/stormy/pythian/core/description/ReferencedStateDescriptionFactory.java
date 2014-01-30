@@ -29,11 +29,11 @@ import com.google.common.collect.Lists;
 import storm.trident.state.StateFactory;
 import stormy.pythian.model.annotation.State;
 
-public class PythianStateDescriptionFactory {
+public class ReferencedStateDescriptionFactory {
 
 	@SuppressWarnings("unchecked")
-	public List<PythianStateDescription> createDescriptions(Class<?> componentClass) {
-		List<PythianStateDescription> descriptions = new ArrayList<>();
+	public List<ReferencedStateDescription> createDescriptions(Class<?> componentClass) {
+		List<ReferencedStateDescription> descriptions = new ArrayList<>();
 
 		Set<Field> fields = getFields(componentClass, withAnnotation(State.class));
 
@@ -42,7 +42,7 @@ public class PythianStateDescriptionFactory {
 
 			State annotation = field.getAnnotation(State.class);
 
-			PythianStateDescription description = new PythianStateDescription(annotation.name(), annotation.description());
+			ReferencedStateDescription description = new ReferencedStateDescription(annotation.name(), annotation.description());
 			descriptions.add(description);
 		}
 
@@ -50,11 +50,11 @@ public class PythianStateDescriptionFactory {
 		return descriptions;
 	}
 
-	private void ensureNoDuplicatedStateName(List<PythianStateDescription> descriptions) {
+	private void ensureNoDuplicatedStateName(List<ReferencedStateDescription> descriptions) {
 		Set<String> duplicatedNames = new HashSet<>();
 		Set<String> uniqueNames = new HashSet<>();
 
-		for (PythianStateDescription description : descriptions) {
+		for (ReferencedStateDescription description : descriptions) {
 			if (uniqueNames.contains(description.getName())) {
 				duplicatedNames.add(description.getName());
 			} else {

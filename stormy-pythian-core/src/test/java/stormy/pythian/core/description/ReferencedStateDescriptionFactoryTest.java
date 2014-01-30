@@ -30,10 +30,10 @@ import stormy.pythian.model.component.Component;
 
 @SuppressWarnings("serial")
 @RunWith(MockitoJUnitRunner.class)
-public class PythianStateDescriptionFactoryTest {
+public class ReferencedStateDescriptionFactoryTest {
 
 	@InjectMocks
-	private PythianStateDescriptionFactory factory;
+	private ReferencedStateDescriptionFactory factory;
 
 	@Test
 	public void should_create_descriptions() {
@@ -49,10 +49,10 @@ public class PythianStateDescriptionFactoryTest {
 		}
 
 		// When
-		List<PythianStateDescription> actualDescriptions = factory.createDescriptions(TestComponent.class);
+		List<ReferencedStateDescription> actualDescriptions = factory.createDescriptions(TestComponent.class);
 
 		// Then
-		assertThat(actualDescriptions).containsOnly(new PythianStateDescription("Word count", "State containing count by word"));
+		assertThat(actualDescriptions).containsOnly(new ReferencedStateDescription("Word count", "State containing count by word"));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
