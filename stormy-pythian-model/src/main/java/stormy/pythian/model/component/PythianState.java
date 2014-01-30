@@ -15,9 +15,11 @@
  */
 package stormy.pythian.model.component;
 
+import java.io.Serializable;
+
 import storm.trident.state.StateFactory;
 
-public interface PythianState {
+public interface PythianState extends Serializable {
 
 	StateFactory createStateFactory();
 }

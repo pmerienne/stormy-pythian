@@ -31,6 +31,7 @@ import storm.trident.state.StateFactory;
 import stormy.pythian.model.annotation.Documentation;
 import stormy.pythian.model.component.PythianState;
 
+@SuppressWarnings("serial")
 @RunWith(MockitoJUnitRunner.class)
 public class PythianStateDescriptionFactoryTest {
 
