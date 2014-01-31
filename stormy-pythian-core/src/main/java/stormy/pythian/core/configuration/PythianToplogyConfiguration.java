@@ -54,10 +54,11 @@ public class PythianToplogyConfiguration {
 		this.states = new ArrayList<>();
 	}
 
-	public void ensureId() {
+	public String ensureId() {
 		if (this.id == null) {
 			this.id = UUID.randomUUID().toString();
 		}
+		return this.id;
 	}
 
 	public void setId(String id) {

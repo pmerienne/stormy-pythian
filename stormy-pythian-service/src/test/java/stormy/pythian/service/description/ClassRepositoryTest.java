@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package stormy.pythian.service.reflect;
+package stormy.pythian.service.description;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
@@ -26,18 +26,19 @@ import org.mockito.InjectMocks;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import stormy.pythian.model.component.Component;
+import stormy.pythian.service.description.ClassRepository;
 
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("serial")
-public class ReflectionServiceTest {
+public class ClassRepositoryTest {
 
 	@InjectMocks
-	private ReflectionService service;
+	private ClassRepository service;
 
 	@Test
 	public void should_retieve_components() {
 		// Given
-		setField(service, "basePackage", ReflectionServiceTest.class.getPackage().getName());
+		setField(service, "basePackage", ClassRepositoryTest.class.getPackage().getName());
 		service.loadReflections();
 
 		// When
@@ -50,7 +51,7 @@ public class ReflectionServiceTest {
 	@Test
 	public void should_not_retrieve_abstract_components() {
 		// Given
-		setField(service, "basePackage", ReflectionServiceTest.class.getPackage().getName());
+		setField(service, "basePackage", ClassRepositoryTest.class.getPackage().getName());
 		service.loadReflections();
 
 		// When

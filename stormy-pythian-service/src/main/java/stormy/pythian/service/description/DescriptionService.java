@@ -26,7 +26,6 @@ import stormy.pythian.core.description.ComponentDescription;
 import stormy.pythian.core.description.ComponentDescriptionFactory;
 import stormy.pythian.model.annotation.ComponentType;
 import stormy.pythian.model.component.Component;
-import stormy.pythian.service.reflect.ReflectionService;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -38,10 +37,10 @@ public class DescriptionService {
 	private ComponentDescriptionFactory descriptionFactory;
 
 	@Autowired
-	private ReflectionService reflectionService;
+	private ClassRepository classRepository;
 
 	public Map<ComponentType, Collection<ComponentDescription>> findAllComponentDescriptions() {
-		Set<Class<? extends Component>> componentClasses = reflectionService.getComponentClasses();
+		Set<Class<? extends Component>> componentClasses = classRepository.getComponentClasses();
 		Multimap<ComponentType, ComponentDescription> componentDescriptions = HashMultimap.create();
 
 		for (Class<? extends Component> componentClass : componentClasses) {

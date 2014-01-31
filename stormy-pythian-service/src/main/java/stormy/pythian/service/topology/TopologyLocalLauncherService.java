@@ -29,7 +29,7 @@ import backtype.storm.LocalCluster;
 public class TopologyLocalLauncherService {
 
 	@Autowired
-	private TopologyService topologyService;
+	private TopologyRepository topologyRepository;
 
 	private LocalCluster cluster;
 
@@ -46,7 +46,7 @@ public class TopologyLocalLauncherService {
 	public void launch(String topologyId) {
 		cluster.killTopology(topologyId);
 
-		PythianToplogyConfiguration configuration = topologyService.findById(topologyId);
+		PythianToplogyConfiguration configuration = topologyRepository.findById(topologyId);
 
 		PythianTopology pythianTopology = new PythianTopology();
 		pythianTopology.build(configuration);

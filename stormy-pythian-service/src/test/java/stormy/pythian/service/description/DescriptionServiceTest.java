@@ -35,7 +35,6 @@ import stormy.pythian.core.description.ComponentDescription;
 import stormy.pythian.core.description.ComponentDescriptionFactory;
 import stormy.pythian.model.annotation.ComponentType;
 import stormy.pythian.model.component.Component;
-import stormy.pythian.service.reflect.ReflectionService;
 
 @SuppressWarnings({ "serial", "unchecked" })
 @RunWith(MockitoJUnitRunner.class)
@@ -48,12 +47,12 @@ public class DescriptionServiceTest {
 	private ComponentDescriptionFactory descriptionFactory;
 
 	@Mock
-	private ReflectionService reflectionService;
+	private ClassRepository classRepository;
 
 	@Test
 	public void should_load_component_descriptions() {
 		// Given
-		when(reflectionService.getComponentClasses()).thenReturn(newHashSet(TestAnalytics.class, TestLearner1.class, TestLearner2.class));
+		when(classRepository.getComponentClasses()).thenReturn(newHashSet(TestAnalytics.class, TestLearner1.class, TestLearner2.class));
 
 		ComponentDescription testAnalyticsDescription = mock(ComponentDescription.class);
 		when(testAnalyticsDescription.getType()).thenReturn(ANALYTICS);
