@@ -45,6 +45,11 @@
 			<artifactId>spring-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.github.pmerienne</groupId>
+			<artifactId>stormy-pythian-test-utils</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 </project>
