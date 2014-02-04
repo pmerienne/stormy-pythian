@@ -24,7 +24,15 @@
 		</dependency>
 		<dependency>
 			<groupId>com.github.pmerienne</groupId>
+			<artifactId>stormy-pythian-test-utils</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.github.pmerienne</groupId>
 			<artifactId>stormy-pythian-component</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.github.pmerienne</groupId>
+			<artifactId>stormy-pythian-state</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.github.pmerienne</groupId>
@@ -84,11 +92,6 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.github.pmerienne</groupId>
-			<artifactId>stormy-pythian-test-utils</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

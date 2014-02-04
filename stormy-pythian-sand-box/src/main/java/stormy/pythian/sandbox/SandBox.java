@@ -16,7 +16,8 @@
 package stormy.pythian.sandbox;
 
 import static org.apache.commons.lang.RandomStringUtils.randomAlphabetic;
-import static stormy.pythian.core.configuration.PythianStateConfiguration.TransactionType.NONE;
+import static stormy.pythian.core.configuration.PythianStateConfigurationTestBuilder.stateConfiguration;
+import static stormy.pythian.state.TransactionMode.NONE;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -27,26 +28,31 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 
 import stormy.pythian.core.configuration.ComponentConfiguration;
 import stormy.pythian.core.configuration.ConnectionConfiguration;
-import stormy.pythian.core.configuration.InMemoryStateConfiguration;
 import stormy.pythian.core.configuration.InputStreamConfiguration;
 import stormy.pythian.core.configuration.OutputStreamConfiguration;
-import stormy.pythian.core.configuration.PythianToplogyConfiguration;
 import stormy.pythian.core.configuration.PythianStateConfiguration;
+import stormy.pythian.core.configuration.PythianToplogyConfiguration;
 import stormy.pythian.core.description.ComponentDescription;
 import stormy.pythian.core.description.ComponentDescriptionFactory;
+import stormy.pythian.core.description.PythianStateDescription;
+import stormy.pythian.core.description.PythianStateDescriptionFactory;
 import stormy.pythian.core.ioc.CoreConfiguration;
 import stormy.pythian.core.topology.PythianTopology;
+import stormy.pythian.state.memory.InMemoryPythianState;
 import backtype.storm.LocalCluster;
 import backtype.storm.utils.Utils;
 
+@SuppressWarnings("resource")
 public class SandBox {
 
 	public static void main(String[] args) {
 		ApplicationContext context = new AnnotationConfigApplicationContext(CoreConfiguration.class);
-
-		PythianStateConfiguration stateFactoryConfiguration = new InMemoryStateConfiguration(NONE);
-
 		ComponentDescriptionFactory componentDescriptionFactory = context.getBean(ComponentDescriptionFactory.class);
+		PythianStateDescriptionFactory stateDescriptionFactory = context.getBean(PythianStateDescriptionFactory.class);
+		
+		PythianStateDescription inMemoryDescription = stateDescriptionFactory.createDescription(InMemoryPythianState.class);
+		PythianStateConfiguration stateFactoryConfiguration = stateConfiguration(inMemoryDescription).with("Transaction mode", NONE).with("Name", "Word count").build();
+
 
 		ComponentDescription randomWordSource = componentDescriptionFactory.createDeclaration(RandomWordSource.class);
 		ComponentConfiguration randomWordSourceConfiguration = new ComponentConfiguration(randomAlphabetic(6), randomWordSource);

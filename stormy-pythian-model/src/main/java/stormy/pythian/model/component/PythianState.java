@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package stormy.pythian.core.configuration;
+package stormy.pythian.model.component;
 
+import java.io.Serializable;
 
-public class InMemoryStateConfiguration extends PythianStateConfiguration {
+import storm.trident.state.StateFactory;
 
-	public InMemoryStateConfiguration(TransactionType transactionType) {
-		super(transactionType, StateBackend.IN_MEMORY);
-	}
+public interface PythianState extends Serializable {
 
+	StateFactory createStateFactory();
 }

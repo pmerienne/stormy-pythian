@@ -15,38 +15,19 @@
  */
 package stormy.pythian.core.description;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import stormy.pythian.model.component.PythianState;
-
-public class PythianStateDescription {
-
-	private final Class<? extends PythianState> clazz;
+public class ReferencedStateDescription {
 
 	private final String name;
 	private final String description;
 
-	private final List<PropertyDescription> properties = new ArrayList<>();
-
-	public PythianStateDescription(Class<? extends PythianState> clazz, String name, String description) {
-		this.clazz = clazz;
+	public ReferencedStateDescription(String name, String description) {
 		this.name = name;
 		this.description = description;
 	}
 
-	public PythianStateDescription(Class<? extends PythianState> clazz, String name) {
-		this.clazz = clazz;
+	public ReferencedStateDescription(String name) {
 		this.name = name;
 		this.description = null;
-	}
-
-	public void addProperties(List<PropertyDescription> descriptions) {
-		this.properties.addAll(descriptions);
-	}
-
-	public Class<? extends PythianState> getClazz() {
-		return clazz;
 	}
 
 	public String getName() {
@@ -57,18 +38,12 @@ public class PythianStateDescription {
 		return description;
 	}
 
-	public List<PropertyDescription> getProperties() {
-		return properties;
-	}
-
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((clazz == null) ? 0 : clazz.hashCode());
 		result = prime * result + ((description == null) ? 0 : description.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + ((properties == null) ? 0 : properties.hashCode());
 		return result;
 	}
 
@@ -80,12 +55,7 @@ public class PythianStateDescription {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		PythianStateDescription other = (PythianStateDescription) obj;
-		if (clazz == null) {
-			if (other.clazz != null)
-				return false;
-		} else if (!clazz.equals(other.clazz))
-			return false;
+		ReferencedStateDescription other = (ReferencedStateDescription) obj;
 		if (description == null) {
 			if (other.description != null)
 				return false;
@@ -96,17 +66,12 @@ public class PythianStateDescription {
 				return false;
 		} else if (!name.equals(other.name))
 			return false;
-		if (properties == null) {
-			if (other.properties != null)
-				return false;
-		} else if (!properties.equals(other.properties))
-			return false;
 		return true;
 	}
 
 	@Override
 	public String toString() {
-		return "PythianStateDescription [clazz=" + clazz + ", name=" + name + ", description=" + description + ", properties=" + properties + "]";
+		return "StateDescription [name=" + name + ", description=" + description + "]";
 	}
 
 }

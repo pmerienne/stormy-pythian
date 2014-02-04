@@ -16,17 +16,20 @@
 package stormy.pythian.core.description;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import storm.trident.state.StateFactory;
-import stormy.pythian.model.annotation.State;
-import stormy.pythian.model.component.Component;
+import stormy.pythian.model.annotation.Documentation;
+import stormy.pythian.model.component.PythianState;
 
 @SuppressWarnings("serial")
 @RunWith(MockitoJUnitRunner.class)
@@ -35,60 +38,46 @@ public class PythianStateDescriptionFactoryTest {
 	@InjectMocks
 	private PythianStateDescriptionFactory factory;
 
+	@Mock
+	private PropertyDescriptionFactory propertyDescriptionFactory;
+
 	@Test
-	public void should_create_descriptions() {
+	public void should_create_description() {
 		// Given
-		class TestComponent implements Component {
+		@Documentation(name = "Name", description = "Description")
+		class TestState implements PythianState {
 
-			@State(name = "Word count", description = "State containing count by word")
-			private StateFactory stateFactory;
-
-			@Override
-			public void init() {
+			public StateFactory createStateFactory() {
+				return null;
 			}
+
 		}
 
+		List<PropertyDescription> expectedProperties = new ArrayList<>();
+		given(propertyDescriptionFactory.createPropertyDeclarations(TestState.class)).willReturn(expectedProperties);
+
 		// When
-		List<PythianStateDescription> actualDescriptions = factory.createDescriptions(TestComponent.class);
+		PythianStateDescription description = factory.createDescription(TestState.class);
 
 		// Then
-		assertThat(actualDescriptions).containsOnly(new PythianStateDescription("Word count", "State containing count by word"));
+		assertThat(description.getName()).isEqualTo("Name");
+		assertThat(description.getDescription()).isEqualTo("Description");
+		assertThat(description.getProperties()).isEqualTo(expectedProperties);
+		assertThat(description.getClazz()).isEqualTo(TestState.class);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void should_fail_if_state_annotation_is_not_on_a_state_factory_field() {
+	public void should_fail_without_documentation() {
 		// Given
-		class TestComponent implements Component {
+		class TestState implements PythianState {
 
-			@State(name = "Word count")
-			private Object stateFactory;
-
-			@Override
-			public void init() {
+			public StateFactory createStateFactory() {
+				return null;
 			}
+
 		}
 
 		// When
-		factory.createDescriptions(TestComponent.class);
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void should_fail_with_duplicated_state_names() {
-		// Given
-		class TestComponent implements Component {
-
-			@State(name = "Word count")
-			private StateFactory stateFactory1;
-
-			@State(name = "Word count")
-			private StateFactory stateFactory2;
-
-			@Override
-			public void init() {
-			}
-		}
-
-		// When
-		factory.createDescriptions(TestComponent.class);
+		factory.createDescription(TestState.class);
 	}
 }

@@ -58,7 +58,7 @@ public class PropertyDescriptionFactory {
 	private void checkSupportedPropertyDeclarationType(Field field) {
 		Class<?> type = field.getType();
 
-		boolean isSupported = isStringOrPrimitive(type) || isArrayOfStringOrPrimitive(type);
+		boolean isSupported = isStringOrPrimitive(type) || isArrayOfStringOrPrimitive(type) || type.isEnum();
 
 		if (!isSupported) {
 			throw new IllegalArgumentException(type + " isn't supported as property type");

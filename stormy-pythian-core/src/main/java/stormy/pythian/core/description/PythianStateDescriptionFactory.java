@@ -15,63 +15,29 @@
  */
 package stormy.pythian.core.description;
 
-import static org.reflections.ReflectionUtils.getFields;
-import static org.reflections.ReflectionUtils.withAnnotation;
+import static com.google.common.base.Preconditions.checkArgument;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-import com.google.common.collect.Lists;
+import stormy.pythian.model.annotation.Documentation;
+import stormy.pythian.model.component.PythianState;
 
-import storm.trident.state.StateFactory;
-import stormy.pythian.model.annotation.State;
-
+@Component
 public class PythianStateDescriptionFactory {
 
-	@SuppressWarnings("unchecked")
-	public List<PythianStateDescription> createDescriptions(Class<?> componentClass) {
-		List<PythianStateDescription> descriptions = new ArrayList<>();
+	@Autowired
+	private PropertyDescriptionFactory propertyDeclarationFactory;
 
-		Set<Field> fields = getFields(componentClass, withAnnotation(State.class));
+	public PythianStateDescription createDescription(Class<? extends PythianState> clazz) {
+		checkArgument(clazz != null, "PythianState class is mandatory");
 
-		for (Field field : fields) {
-			checkSupportedType(field);
+		Documentation documentation = clazz.getAnnotation(Documentation.class);
+		checkArgument(documentation != null, "No documentation found for " + clazz + " but documentation is mandatory!");
 
-			State annotation = field.getAnnotation(State.class);
+		PythianStateDescription description = new PythianStateDescription(clazz, documentation.name(), documentation.description());
+		description.addProperties(propertyDeclarationFactory.createPropertyDeclarations(clazz));
 
-			PythianStateDescription description = new PythianStateDescription(annotation.name(), annotation.description());
-			descriptions.add(description);
-		}
-
-		ensureNoDuplicatedStateName(descriptions);
-		return descriptions;
+		return description;
 	}
-
-	private void ensureNoDuplicatedStateName(List<PythianStateDescription> descriptions) {
-		Set<String> duplicatedNames = new HashSet<>();
-		Set<String> uniqueNames = new HashSet<>();
-
-		for (PythianStateDescription description : descriptions) {
-			if (uniqueNames.contains(description.getName())) {
-				duplicatedNames.add(description.getName());
-			} else {
-				uniqueNames.add(description.getName());
-			}
-		}
-
-		if (!duplicatedNames.isEmpty()) {
-			throw new IllegalArgumentException("@State should have unique name. Found duplicates : " + Lists.newArrayList(duplicatedNames));
-		}
-	}
-
-	private void checkSupportedType(Field field) {
-		Class<?> type = field.getType();
-		if (!StateFactory.class.equals(type)) {
-			throw new IllegalArgumentException(State.class + " annotation must be used on a " + StateFactory.class + " class");
-		}
-	}
-
 }

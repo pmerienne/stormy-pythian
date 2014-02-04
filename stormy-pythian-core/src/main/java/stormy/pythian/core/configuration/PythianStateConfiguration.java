@@ -15,80 +15,38 @@
  */
 package stormy.pythian.core.configuration;
 
-import static org.apache.commons.lang.RandomStringUtils.randomAlphabetic;
+import java.util.List;
 
-public abstract class PythianStateConfiguration {
+import stormy.pythian.core.description.PythianStateDescription;
+import stormy.pythian.model.component.PythianState;
 
-	protected final String id;
+public class PythianStateConfiguration {
 
-	protected final TransactionType transactionType;
-	protected final StateBackend backend;
+	private final String id;
 
-	public PythianStateConfiguration(String id, TransactionType transactionType, StateBackend backend) {
+	private final PythianStateDescription description;
+	private final List<PropertyConfiguration> properties;
+
+	public PythianStateConfiguration(String id, PythianStateDescription description, List<PropertyConfiguration> properties) {
 		this.id = id;
-		this.transactionType = transactionType;
-		this.backend = backend;
-	}
-
-	public PythianStateConfiguration(TransactionType transactionType, StateBackend backend) {
-		this.id = randomAlphabetic(6);
-		this.transactionType = transactionType;
-		this.backend = backend;
+		this.description = description;
+		this.properties = properties;
 	}
 
 	public String getId() {
 		return id;
 	}
 
-	public StateBackend getBackend() {
-		return backend;
+	public PythianStateDescription getDescription() {
+		return description;
 	}
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((backend == null) ? 0 : backend.hashCode());
-		result = prime * result + ((transactionType == null) ? 0 : transactionType.hashCode());
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		return result;
+	public List<PropertyConfiguration> getProperties() {
+		return properties;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		PythianStateConfiguration other = (PythianStateConfiguration) obj;
-		if (backend != other.backend)
-			return false;
-		if (transactionType != other.transactionType)
-			return false;
-		if (id == null) {
-			if (other.id != null)
-				return false;
-		} else if (!id.equals(other.id))
-			return false;
-		return true;
+	public Class<? extends PythianState> getImplementation() {
+		return description.getClazz();
 	}
 
-	@Override
-	public String toString() {
-		return "StateFactoryConfiguration [id=" + id + ", transactionType=" + transactionType + ", backend=" + backend + "]";
-	}
-
-	public TransactionType getTransactionType() {
-		return transactionType;
-	}
-
-	public static enum StateBackend {
-		IN_MEMORY;
-	}
-
-	public static enum TransactionType {
-		TRANSACTIONAL, NONE, OPAQUE;
-	}
 }

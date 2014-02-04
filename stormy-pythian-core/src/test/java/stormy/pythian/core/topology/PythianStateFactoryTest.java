@@ -15,13 +15,12 @@
  */
 package stormy.pythian.core.topology;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.EMPTY_LIST;
 import static org.fest.assertions.Assertions.assertThat;
-import static org.fest.assertions.MapAssert.entry;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static stormy.pythian.core.configuration.PythianStateConfiguration.TransactionType.NONE;
 
-import java.util.Arrays;
 import java.util.Map;
 
 import org.junit.Test;
@@ -30,42 +29,44 @@ import org.mockito.InjectMocks;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import storm.trident.state.StateFactory;
-import stormy.pythian.core.configuration.InMemoryStateConfiguration;
-import stormy.pythian.core.configuration.PythianToplogyConfiguration;
 import stormy.pythian.core.configuration.PythianStateConfiguration;
-import stormy.pythian.core.topology.PythianStateFactory.NoneTransactionalInMemoryStateFactory;
+import stormy.pythian.core.configuration.PythianToplogyConfiguration;
+import stormy.pythian.core.description.PythianStateDescription;
+import stormy.pythian.model.component.PythianState;
 
+@SuppressWarnings("unchecked")
 @RunWith(MockitoJUnitRunner.class)
 public class PythianStateFactoryTest {
+
+	public static final StateFactory EXPECTED_STATE_FACTORY = mock(StateFactory.class);
 
 	@InjectMocks
 	private PythianStateFactory factory;
 
 	@Test
-	public void should_create_state_factories() {
+	public void should_create_state_factory() {
 		// Given
-		PythianStateConfiguration expectedStateConfiguration = new InMemoryStateConfiguration(NONE);
+		final PythianStateDescription description = new PythianStateDescription(TestPythianState.class, "test");
+		final PythianStateConfiguration expectedStateConfiguration = new PythianStateConfiguration("uuid", description, EMPTY_LIST);
 
-		PythianToplogyConfiguration topologyConfiguration = mock(PythianToplogyConfiguration.class);
-		when(topologyConfiguration.getStates()).thenReturn(Arrays.asList(expectedStateConfiguration));
+		final PythianToplogyConfiguration topologyConfiguration = mock(PythianToplogyConfiguration.class);
+		given(topologyConfiguration.getStates()).willReturn(asList(expectedStateConfiguration));
 
 		// When
-		Map<String, StateFactory> actualStateFactories = factory.createStateFactories(topologyConfiguration);
-		assertThat(actualStateFactories).includes(entry( //
-				expectedStateConfiguration.getId(), //
-				new NoneTransactionalInMemoryStateFactory(expectedStateConfiguration.getId()) //
-				));
-	}
-
-	@Test
-	public void should_create_in_memory_state_factory() {
-		// Given
-		InMemoryStateConfiguration configuration = new InMemoryStateConfiguration(NONE);
-
-		// When
-		StateFactory stateFactory = factory.createStateFactory(configuration);
+		Map<String, StateFactory> stateFactories = factory.createStateFactories(topologyConfiguration);
 
 		// Then
-		assertThat(stateFactory).isEqualTo(new NoneTransactionalInMemoryStateFactory(configuration.getId()));
+		StateFactory actualStateFactory = stateFactories.get("uuid");
+		assertThat(actualStateFactory).isSameAs(EXPECTED_STATE_FACTORY);
+	}
+
+	@SuppressWarnings("serial")
+	public static class TestPythianState implements PythianState {
+
+		@Override
+		public StateFactory createStateFactory() {
+			return EXPECTED_STATE_FACTORY;
+		}
+
 	}
 }
