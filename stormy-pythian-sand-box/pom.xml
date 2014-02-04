@@ -28,6 +28,10 @@
 		</dependency>
 		<dependency>
 			<groupId>com.github.pmerienne</groupId>
+			<artifactId>stormy-pythian-state</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.github.pmerienne</groupId>
 			<artifactId>stormy-pythian-service</artifactId>
 		</dependency>
 
