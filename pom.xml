@@ -47,6 +47,8 @@
 		<fest-assert.version>1.4</fest-assert.version>
 	</properties>
 
+	<url>https://github.com/pmerienne/stormy-pythian</url>
+
 	<developers>
 		<developer>
 			<id>pmerienne</id>
@@ -56,17 +58,36 @@
 	</developers>
 
 	<repositories>
-		<!-- For storm and trident-extended-state -->
 		<repository>
 			<id>clojars.org</id>
 			<url>http://clojars.org/repo</url>
 		</repository>
 	</repositories>
 
+	<licenses>
+		<license>
+			<name>Apache 2</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<scm>
+		<connection>scm:git:git@github.com:pmerienne/stormy-pythian.git</connection>
+		<developerConnection>scm:git:git@github.com:pmerienne/stormy-pythian.git</developerConnection>
+		<url>scm:git:git@github.com:pmerienne/stormy-pythian.git</url>
+	</scm>
+
+	<distributionManagement>
+		<repository>
+			<id>clojars</id>
+			<name>Clojars repository</name>
+			<url>https://clojars.org/repo</url>
+		</repository>
+	</distributionManagement>
 
 	<dependencyManagement>
 		<dependencies>
-
 			<!-- Stormy-Pythian -->
 			<dependency>
 				<groupId>com.github.pmerienne</groupId>
@@ -290,23 +311,5 @@
 			</plugin>
 		</plugins>
 	</build>
-
-
-	<licenses>
-		<license>
-			<name>Apache 2</name>
-			<url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
-			<distribution>repo</distribution>
-		</license>
-	</licenses>
-
-	<url>https://github.com/pmerienne/stormy-pythian</url>
-
-
-	<scm>
-		<connection>scm:git:git@github.com:pmerienne/stormy-pythian.git</connection>
-		<developerConnection>scm:git:git@github.com:pmerienne/stormy-pythian.git</developerConnection>
-		<url>scm:git:git@github.com:pmerienne/stormy-pythian.git</url>
-	</scm>
 
 </project>
