@@ -15,6 +15,7 @@
  */
 package stormy.pythian.service.topology;
 
+import static org.apache.commons.lang.RandomStringUtils.randomAlphabetic;
 import static org.fest.assertions.Assertions.assertThat;
 import java.util.Collection;
 import org.junit.After;
@@ -22,6 +23,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -42,7 +44,9 @@ public class TopologyRepositoryIntegrationTest {
     @After
     @Before
     public void cleanRedisDB() {
-        redisTemplate.getConnectionFactory().getConnection().flushDb();
+        RedisConnection connection = redisTemplate.getConnectionFactory().getConnection();
+        connection.flushDb();
+        connection.close();
     }
 
     @Test
@@ -69,10 +73,38 @@ public class TopologyRepositoryIntegrationTest {
         // When
         repository.save(topology1);
         repository.save(topology2);
-        
+
         Collection<PythianToplogyConfiguration> actualTopologies = repository.findAll();
 
         // Then
         assertThat(actualTopologies).containsOnly(topology1, topology2);
     }
+
+    @Test
+    public void should_save_and_delete() {
+        // Given
+        PythianToplogyConfiguration expectedTopology = new PythianToplogyConfiguration("test");
+
+        // When
+        repository.save(expectedTopology);
+        repository.delete("test");
+
+        // Then
+        assertThat(repository.findById("test")).isNull();
+    }
+
+    @Test
+    public void should_not_fail__when_deleting_not_existing_topology() {
+        repository.delete("test");
+    }
+
+    @Test
+    public void should_return_null_when_finding_not_existing_topology() {
+        // When
+        PythianToplogyConfiguration actualTopology = repository.findById(randomAlphabetic(6));
+
+        // Then
+        assertThat(actualTopology).isNull();
+    }
+
 }
