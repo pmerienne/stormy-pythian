@@ -40,7 +40,7 @@ public class TopologyLocalLauncherServiceTest {
 	private TopologyLocalLauncherService service;
 
 	@Mock
-	private TopologyService topologyService;
+	private TopologyRepository topologyRepository;
 
 	@Mock
 	private LocalCluster cluster;
@@ -55,7 +55,7 @@ public class TopologyLocalLauncherServiceTest {
 		when(configuration.getConnections()).thenReturn(EMPTY_LIST);
 
 		// When
-		when(topologyService.findById(topologyId)).thenReturn(configuration);
+		when(topologyRepository.findById(topologyId)).thenReturn(configuration);
 
 		// When
 		service.launch(topologyId);

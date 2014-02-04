@@ -34,7 +34,7 @@ import stormy.pythian.core.configuration.PythianToplogyConfiguration;
 import stormy.pythian.core.configuration.PythianStateConfiguration;
 import stormy.pythian.core.description.ComponentDescription;
 import stormy.pythian.core.description.ComponentDescriptionFactory;
-import stormy.pythian.core.ioc.StormyPythianCoreConfig;
+import stormy.pythian.core.ioc.CoreConfiguration;
 import stormy.pythian.core.topology.PythianTopology;
 import backtype.storm.LocalCluster;
 import backtype.storm.utils.Utils;
@@ -42,7 +42,7 @@ import backtype.storm.utils.Utils;
 public class SandBox {
 
 	public static void main(String[] args) {
-		ApplicationContext context = new AnnotationConfigApplicationContext(StormyPythianCoreConfig.class);
+		ApplicationContext context = new AnnotationConfigApplicationContext(CoreConfiguration.class);
 
 		PythianStateConfiguration stateFactoryConfiguration = new InMemoryStateConfiguration(NONE);
 

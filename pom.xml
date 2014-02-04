@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.pmerienne</groupId>
 	<artifactId>stormy-pythian</artifactId>
@@ -27,6 +28,9 @@
 		<storm.version>0.9.0.1</storm.version>
 		<trident-extended-state.version>0.0.2</trident-extended-state.version>
 		<spring.version>3.2.4.RELEASE</spring.version>
+		<spring-data-redis.version>1.1.1.RELEASE</spring-data-redis.version>
+		<jedis.version>2.1.0</jedis.version>
+		<jackson.version>1.8.8</jackson.version>
 		<trident-ml.version>0.0.4</trident-ml.version>
 
 		<!-- Utils -->
@@ -141,6 +145,21 @@
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-web</artifactId>
 				<version>${spring.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.data</groupId>
+				<artifactId>spring-data-redis</artifactId>
+				<version>${spring-data-redis.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>redis.clients</groupId>
+				<artifactId>jedis</artifactId>
+				<version>${jedis.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.codehaus.jackson</groupId>
+				<artifactId>jackson-mapper-asl</artifactId>
+				<version>${jackson.version}</version>
 			</dependency>
 
 			<!-- Utils -->
