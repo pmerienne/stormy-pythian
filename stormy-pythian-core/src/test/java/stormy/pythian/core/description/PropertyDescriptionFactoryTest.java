@@ -112,6 +112,27 @@ public class PropertyDescriptionFactoryTest {
 	}
 
 	@Test
+	public void should_retrieve_enum_property_declaration() {
+		// Given
+		@Documentation(name = "Test component")
+		class TestComponent implements Component {
+
+			@Property(name = "expected enum")
+			public TestEnum expectedEnum;
+
+			@Override
+			public void init() {
+			}
+		}
+
+		// When
+		List<PropertyDescription> actualDeclarations = factory.createPropertyDeclarations(TestComponent.class);
+
+		// Then
+		assertThat(actualDeclarations).containsOnly(new PropertyDescription("expected enum", "", true, TestEnum.class));
+	}
+
+	@Test
 	public void should_retrieve_array_property_declaration() {
 		// Given
 		@Documentation(name = "Test component")
@@ -195,4 +216,7 @@ public class PropertyDescriptionFactoryTest {
 		factory.createPropertyDeclarations(TestComponent.class);
 	}
 
+	private static enum TestEnum {
+		YES, NO;
+	}
 }
