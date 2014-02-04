@@ -15,7 +15,6 @@
  */
 package stormy.pythian.service.topology;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -33,15 +32,10 @@ public class TopologyRepository {
     private RedisTemplate<String, PythianToplogyConfiguration> redisTemplate;
 
     public void save(PythianToplogyConfiguration configuration) {
-        checkNotNull(configuration, "topology's is mandatory");
-        String id = configuration.ensureId();
-
-        redisTemplate.opsForHash().put(TOPOLOGY_RAW_KEY, id, configuration);
+        redisTemplate.opsForHash().put(TOPOLOGY_RAW_KEY, configuration.getId(), configuration);
     }
 
     public void delete(String configurationId) {
-        checkNotNull(configurationId, "topology's id is mandatory");
-
         redisTemplate.opsForHash().delete(TOPOLOGY_RAW_KEY, configurationId);
     }
 
@@ -51,11 +45,11 @@ public class TopologyRepository {
         for (Object topology : redisTemplate.opsForHash().values(TOPOLOGY_RAW_KEY)) {
             topologies.add((PythianToplogyConfiguration) topology);
         }
+
         return topologies;
     }
 
     public PythianToplogyConfiguration findById(String configurationId) {
-        checkNotNull(configurationId, "topology's is mandatory");
         return (PythianToplogyConfiguration) redisTemplate.opsForHash().get(TOPOLOGY_RAW_KEY, configurationId);
     }
 }
