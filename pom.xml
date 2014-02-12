@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.pmerienne</groupId>
 	<artifactId>stormy-pythian</artifactId>
@@ -14,6 +15,7 @@
 		<module>stormy-pythian-state</module>
 		<module>stormy-pythian-service</module>
 		<module>stormy-pythian-sand-box</module>
+		<module>stormy-pythian-web</module>
 	</modules>
 
 	<properties>
@@ -27,10 +29,11 @@
 		<!-- Version dependencies -->
 		<storm.version>0.9.0.1</storm.version>
 		<trident-extended-state.version>0.0.2</trident-extended-state.version>
+		<jersey.version>2.5.1</jersey.version>
 		<spring.version>3.2.4.RELEASE</spring.version>
 		<spring-data-redis.version>1.1.1.RELEASE</spring-data-redis.version>
 		<jedis.version>2.1.0</jedis.version>
-		<jackson.version>1.8.8</jackson.version>
+		<jackson.version>1.9.13</jackson.version>
 		<trident-ml.version>0.0.4</trident-ml.version>
 
 		<!-- Utils -->
@@ -126,6 +129,12 @@
 				<groupId>storm</groupId>
 				<artifactId>storm</artifactId>
 				<version>${storm.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.ow2.asm</groupId>
+						<artifactId>asm</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>com.github.pmerienne</groupId>
@@ -186,6 +195,30 @@
 				<groupId>org.codehaus.jackson</groupId>
 				<artifactId>jackson-mapper-asl</artifactId>
 				<version>${jackson.version}</version>
+			</dependency>
+
+			<!-- Jersey -->
+			<dependency>
+				<groupId>org.glassfish.jersey.containers</groupId>
+				<artifactId>jersey-container-servlet</artifactId>
+				<version>${jersey.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.glassfish.jersey.ext</groupId>
+				<artifactId>jersey-spring3</artifactId>
+				<version>${jersey.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.glassfish.jersey.media</groupId>
+				<artifactId>jersey-media-json-jackson</artifactId>
+				<version>${jersey.version}</version>
+			</dependency>
+
+			<!-- ASM -->
+			<dependency>
+				<groupId>asm</groupId>
+				<artifactId>asm</artifactId>
+				<version>3.3.1</version>
 			</dependency>
 
 			<!-- Utils -->

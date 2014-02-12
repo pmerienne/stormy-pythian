@@ -25,7 +25,7 @@ import org.springframework.core.io.Resource;
 public class PyhtianProperties {
 
     @Bean
-    public PropertyPlaceholderConfigurer propertyPlaceholderConfigurer() {
+    public static PropertyPlaceholderConfigurer propertyPlaceholderConfigurer() {
         PropertyPlaceholderConfigurer propertyPlaceholderConfigurer = new PropertyPlaceholderConfigurer();
         propertyPlaceholderConfigurer.setLocations(new Resource[] { //
                 new ClassPathResource("redis-config.properties"), //
