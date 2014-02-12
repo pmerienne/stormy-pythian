@@ -116,4 +116,39 @@ public class InputStreamDescriptionFactoryTest {
 		factory.createInputStreamDeclarations(TestComponent.class);
 	}
 
+	@Test
+	public void should_retrieve_inherited_input_stream_declarations() {
+		// Given
+		@Documentation(name = "Test component")
+		class AbstractTestComponent implements Component {
+
+			@InputStream(name = "in1", type = USER_SELECTION)
+			private Stream in1;
+
+			@InputStream(name = "in2", type = FIXED_FEATURES, expectedFeatures = {})
+			private Stream in2;
+
+			@Override
+			public void init() {
+			}
+		}
+		
+		class TestComponent extends AbstractTestComponent {
+			
+		}
+
+		List<FeatureDescription> expectedFeatures = new ArrayList<>();
+
+		when(featureDescriptorFactory.createDescriptions(Mockito.isA(InputStream.class))) //
+				.thenReturn(expectedFeatures);
+
+		// When
+		List<InputStreamDescription> actualDeclarations = factory.createInputStreamDeclarations(TestComponent.class);
+
+		// Then
+		assertThat(actualDeclarations).containsOnly( //
+				new InputStreamDescription("in1", USER_SELECTION), //
+				new InputStreamDescription("in2", FIXED_FEATURES, expectedFeatures) //
+				);
+	}
 }
