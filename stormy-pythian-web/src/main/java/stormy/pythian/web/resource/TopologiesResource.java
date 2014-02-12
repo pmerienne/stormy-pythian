@@ -1,7 +1,6 @@
 package stormy.pythian.web.resource;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static javax.ws.rs.core.MediaType.APPLICATION_XML;
 import java.util.Collection;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
