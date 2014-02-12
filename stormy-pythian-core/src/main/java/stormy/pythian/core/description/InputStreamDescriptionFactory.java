@@ -15,7 +15,7 @@
  */
 package stormy.pythian.core.description;
 
-import static org.reflections.ReflectionUtils.getFields;
+import static org.reflections.ReflectionUtils.getAllFields;
 import static org.reflections.ReflectionUtils.withAnnotation;
 
 import java.lang.reflect.Field;
@@ -42,7 +42,7 @@ public class InputStreamDescriptionFactory {
 	public List<InputStreamDescription> createInputStreamDeclarations(Class<?> componentClass) {
 		List<InputStreamDescription> inputStreamDeclarations = new ArrayList<>();
 
-		Set<Field> inputStreamFields = getFields(componentClass, withAnnotation(InputStream.class));
+		Set<Field> inputStreamFields = getAllFields(componentClass, withAnnotation(InputStream.class));
 		for (Field inputStreamField : inputStreamFields) {
 			if (inputStreamField.getType() != Stream.class) {
 				throw new IllegalArgumentException(InputStream.class + " can only be applied to " + Stream.class);

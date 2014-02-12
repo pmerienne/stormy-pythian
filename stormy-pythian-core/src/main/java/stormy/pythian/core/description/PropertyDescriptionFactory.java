@@ -15,7 +15,7 @@
  */
 package stormy.pythian.core.description;
 
-import static org.reflections.ReflectionUtils.getFields;
+import static org.reflections.ReflectionUtils.getAllFields;
 import static org.reflections.ReflectionUtils.withAnnotation;
 
 import java.lang.reflect.Field;
@@ -37,7 +37,7 @@ public class PropertyDescriptionFactory {
 	public List<PropertyDescription> createPropertyDeclarations(Class<?> componentClass) {
 		List<PropertyDescription> propertyDeclarations = new ArrayList<>();
 
-		Set<Field> propertyFields = getFields(componentClass, withAnnotation(Property.class));
+		Set<Field> propertyFields = getAllFields(componentClass, withAnnotation(Property.class));
 		for (Field propertyField : propertyFields) {
 			checkSupportedPropertyDeclarationType(propertyField);
 

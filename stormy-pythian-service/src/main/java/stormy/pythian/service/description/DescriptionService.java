@@ -15,8 +15,8 @@
  */
 package stormy.pythian.service.description;
 
-import java.util.Collection;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,30 +24,54 @@ import org.springframework.stereotype.Service;
 
 import stormy.pythian.core.description.ComponentDescription;
 import stormy.pythian.core.description.ComponentDescriptionFactory;
-import stormy.pythian.model.annotation.ComponentType;
+import stormy.pythian.core.description.PythianStateDescription;
+import stormy.pythian.core.description.PythianStateDescriptionFactory;
 import stormy.pythian.model.component.Component;
-
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
+import stormy.pythian.model.component.PythianState;
 
 @Service
 public class DescriptionService {
 
 	@Autowired
-	private ComponentDescriptionFactory descriptionFactory;
+	private ComponentDescriptionFactory componentDescriptionFactory;
+
+	@Autowired
+	private PythianStateDescriptionFactory stateDescriptionFactory;
 
 	@Autowired
 	private ClassRepository classRepository;
 
-	public Map<ComponentType, Collection<ComponentDescription>> findAllComponentDescriptions() {
-		Set<Class<? extends Component>> componentClasses = classRepository.getComponentClasses();
-		Multimap<ComponentType, ComponentDescription> componentDescriptions = HashMultimap.create();
+	public List<ComponentDescription> findAllComponentDescriptions() {
+		Set<Class<? extends Component>> classes = classRepository.getComponentClasses();
+		List<ComponentDescription> descriptions = new ArrayList<>();
 
-		for (Class<? extends Component> componentClass : componentClasses) {
-			ComponentDescription description = descriptionFactory.createDeclaration(componentClass);
-			componentDescriptions.put(description.getType(), description);
+		for (Class<? extends Component> componentClass : classes) {
+			try {
+				ComponentDescription description = componentDescriptionFactory.createDeclaration(componentClass);
+				descriptions.add(description);
+			} catch (Exception ex) {
+				// TODO log it, lazy bastard !!
+				ex.printStackTrace();
+			}
 		}
 
-		return componentDescriptions.asMap();
+		return descriptions;
+	}
+
+	public List<PythianStateDescription> findAllStateDescriptions() {
+		Set<Class<? extends PythianState>> classes = classRepository.getStateClasses();
+		List<PythianStateDescription> descriptions = new ArrayList<>();
+
+		for (Class<? extends PythianState> clazz : classes) {
+			try {
+				PythianStateDescription description = stateDescriptionFactory.createDescription(clazz);
+				descriptions.add(description);
+			} catch (Exception ex) {
+				// TODO log it, lazy bastard !!
+				ex.printStackTrace();
+			}
+		}
+
+		return descriptions;
 	}
 }

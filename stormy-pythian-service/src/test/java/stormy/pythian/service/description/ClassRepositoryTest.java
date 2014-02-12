@@ -16,7 +16,6 @@
 package stormy.pythian.service.description;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 import java.util.Set;
 
@@ -26,7 +25,6 @@ import org.mockito.InjectMocks;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import stormy.pythian.model.component.Component;
-import stormy.pythian.service.description.ClassRepository;
 
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("serial")
@@ -38,7 +36,6 @@ public class ClassRepositoryTest {
 	@Test
 	public void should_retieve_components() {
 		// Given
-		setField(service, "basePackage", ClassRepositoryTest.class.getPackage().getName());
 		service.loadReflections();
 
 		// When
@@ -51,7 +48,6 @@ public class ClassRepositoryTest {
 	@Test
 	public void should_not_retrieve_abstract_components() {
 		// Given
-		setField(service, "basePackage", ClassRepositoryTest.class.getPackage().getName());
 		service.loadReflections();
 
 		// When
