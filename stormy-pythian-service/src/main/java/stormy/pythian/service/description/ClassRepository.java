@@ -16,26 +16,29 @@
 package stormy.pythian.service.description;
 
 import static com.google.common.collect.Sets.filter;
+
 import java.lang.reflect.Modifier;
 import java.util.Set;
+
 import javax.annotation.PostConstruct;
+
 import org.reflections.Reflections;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
+
 import stormy.pythian.model.component.Component;
+import stormy.pythian.model.component.PythianState;
+
 import com.google.common.base.Predicate;
 
 @Repository
 public class ClassRepository {
 
-    private Reflections reflections;
-
-    @Value("${component.base.package:stormy.pyhtian}")
-    private String basePackage;
+    private static final String STORMY_PYTHIAN_PACKAGE = "stormy.pythian";
+	private Reflections reflections;
 
     @PostConstruct
     public void loadReflections() {
-        reflections = new Reflections(basePackage);
+        reflections = new Reflections(STORMY_PYTHIAN_PACKAGE);
     }
 
     public Set<Class<? extends Component>> getComponentClasses() {
@@ -45,4 +48,12 @@ public class ClassRepository {
             }
         });
     }
+
+	public Set<Class<? extends PythianState>> getStateClasses() {
+        return filter(reflections.getSubTypesOf(PythianState.class), new Predicate<Class<?>>() {
+            public boolean apply(Class<?> input) {
+                return !Modifier.isAbstract(input.getModifiers());
+            }
+        });
+	}
 }
