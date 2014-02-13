@@ -1,0 +1,50 @@
+<div>
+	<div class="row">
+		<div class="pull-left">
+			<h2>{{topology.name}}</h2>
+		</div>
+		<div class="pull-right btn-group">
+			<div class="btn-group">
+				<button class="btn dropdown-toggle" data-toggle="dropdown">
+					<i class="fa fa-download fa-2x"></i>
+					<span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu">
+					<li ng-repeat="description in streamSourceDescriptions">
+						<a ng-click="addNewComponent(description)">{{description.name}}</a>
+					</li>
+				</ul>
+			</div>
+			
+			<div class="btn-group">
+				<button class="btn dropdown-toggle" data-toggle="dropdown">
+					<i class="fa fa-bolt fa-2x"></i>
+					<span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu">
+					<li ng-repeat="description in componentDescriptions">
+						<a ng-click="addNewComponent(description)">{{description.name}}</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+		
+		<div id="jsplumb-container" class="jsplumb-container">
+			<div diagram-component="{{component}}" ng-repeat="component in topology.components" class="diagram-component">
+				<div class="diagram-component-title" ng-click="editComponent(component)">
+					 {{component.name}} 
+				</div>
+			</div>
+		</div>
+		
+		<div class="well">
+			<div class="pull-right">
+				<button class="btn" ng-click="revert()"><i class="icon-refresh"></i> Revert</button>
+				<button class="btn btn-primary" ng-click="save()">
+					<i class="fa fa-save fa-lg"></i>
+					Save
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
