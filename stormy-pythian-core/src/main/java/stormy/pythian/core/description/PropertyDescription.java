@@ -18,6 +18,7 @@ package stormy.pythian.core.description;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import stormy.pythian.model.annotation.PropertyType;
 
 public class PropertyDescription {
 
@@ -25,12 +26,12 @@ public class PropertyDescription {
 	public String description;
 
 	public boolean mandatory;
-	public Class<?> type;
+	public PropertyType type;
 
 	public PropertyDescription() {
 	}
 
-	public PropertyDescription(String name, String description, boolean mandatory, Class<?> type) {
+	public PropertyDescription(String name, String description, boolean mandatory, PropertyType type) {
 		this.name = name;
 		this.description = description;
 		this.mandatory = mandatory;

@@ -27,6 +27,7 @@ import java.util.Set;
 import org.springframework.stereotype.Component;
 
 import stormy.pythian.model.annotation.Property;
+import stormy.pythian.model.annotation.PropertyType;
 
 import com.google.common.collect.Lists;
 
@@ -39,38 +40,18 @@ public class PropertyDescriptionFactory {
 
 		Set<Field> propertyFields = getAllFields(componentClass, withAnnotation(Property.class));
 		for (Field propertyField : propertyFields) {
-			checkSupportedPropertyDeclarationType(propertyField);
-
 			Property property = propertyField.getAnnotation(Property.class);
 			PropertyDescription propertyDeclaration = new PropertyDescription();
 			propertyDeclaration.name = property.name();
 			propertyDeclaration.description = property.description();
 			propertyDeclaration.mandatory = property.mandatory();
-			propertyDeclaration.type = propertyField.getType();
+			propertyDeclaration.type = PropertyType.fromType(propertyField.getType());
 
 			propertyDeclarations.add(propertyDeclaration);
 		}
 
 		ensureNoDuplicatedProperty(propertyDeclarations);
 		return propertyDeclarations;
-	}
-
-	private void checkSupportedPropertyDeclarationType(Field field) {
-		Class<?> type = field.getType();
-
-		boolean isSupported = isStringOrPrimitive(type) || isArrayOfStringOrPrimitive(type) || type.isEnum();
-
-		if (!isSupported) {
-			throw new IllegalArgumentException(type + " isn't supported as property type");
-		}
-	}
-
-	private boolean isStringOrPrimitive(Class<?> type) {
-		return type == String.class || type.isPrimitive();
-	}
-
-	private boolean isArrayOfStringOrPrimitive(Class<?> type) {
-		return type.isArray() && isStringOrPrimitive(type.getComponentType());
 	}
 
 	private void ensureNoDuplicatedProperty(List<PropertyDescription> declarations) {

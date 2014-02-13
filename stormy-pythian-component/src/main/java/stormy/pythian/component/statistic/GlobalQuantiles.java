@@ -53,7 +53,7 @@ public class GlobalQuantiles extends AbstractGlobalStatistic<TDigest> {
 	private OutputFixedFeaturesMapper outputMapper;
 
 	@Property(name = "Compression", description = "How should accuracy be traded for size? A value of N here will give quantile errors almost always less than 3/N with considerably smaller errors expected for extreme quantiles. Conversely, you should expect to track about 5 N centroids for this accuracy.")
-	private double compression = 100.0;
+	private Double compression = 100.0;
 
 	@Override
 	public void init() {
