@@ -64,10 +64,10 @@ public abstract class AbstractTimeWindowFeatureStatistic<T> implements Component
 	private StateFactory stateFactory;
 
 	@Property(name = "Window length (in ms)")
-	private long windowLengthMs;
+	private Long windowLengthMs;
 
 	@Property(name = "Slot precision (in ms)")
-	private long slotLengthMs;
+	private Long slotLengthMs;
 
 	private static final long serialVersionUID = -5312700259983804231L;
 

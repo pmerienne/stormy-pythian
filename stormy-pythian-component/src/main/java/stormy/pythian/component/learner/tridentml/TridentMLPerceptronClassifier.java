@@ -25,13 +25,13 @@ public class TridentMLPerceptronClassifier extends TridentMLClassifier<Boolean> 
 	private static final long serialVersionUID = 1L;
 
 	@Property(name = "Bias")
-	public double bias = 0.0;
+	public Double bias = 0.0;
 
 	@Property(name = "Threshold")
-	public double threshold = 0.5;
+	public Double threshold = 0.5;
 
 	@Property(name = "Learning rate")
-	public double learningRate = 0.1;
+	public Double learningRate = 0.1;
 
 	@Override
 	public void init() {
