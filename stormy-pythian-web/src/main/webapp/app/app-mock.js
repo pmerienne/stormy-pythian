@@ -165,4 +165,8 @@ app.run(function($httpBackend, DescriptionService, ComponentService) {
 	$httpBackend.whenPUT('api/topologies').respond({
 		id: 3
 	});
+
+	$httpBackend.whenDELETE('api/topologies/0').respond(503);
+	$httpBackend.whenDELETE('api/topologies/1').respond(404);
+	$httpBackend.whenDELETE('api/topologies/2').respond(200);
 });
