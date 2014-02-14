@@ -56,7 +56,7 @@ app.controller('EditTopologyCtrl', function (
 			$scope.diagram.reset();
 		}
 
-		TopologyResource.findById({id: $routeParams.topologyId}, function(topology) {
+		TopologyResource.get({topologyId: $routeParams.topologyId}, function(topology) {
 			$scope.displayTopology(topology);
 		});
 	};
@@ -77,7 +77,7 @@ app.controller('EditTopologyCtrl', function (
 		}
 	};
 	
-	TopologyResource.findById({id: $routeParams.topologyId}, function(topology) {
+	TopologyResource.get({topologyId: $routeParams.topologyId}, function(topology) {
 		$scope.displayTopology(topology);
 	});
 	

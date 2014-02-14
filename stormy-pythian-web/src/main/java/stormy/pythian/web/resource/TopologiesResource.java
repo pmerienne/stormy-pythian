@@ -31,8 +31,6 @@ import stormy.pythian.service.topology.TopologyService;
 
 @Component
 @Path("topologies")
-@Consumes(APPLICATION_JSON)
-@Produces(APPLICATION_JSON)
 public class TopologiesResource {
 
     @Autowired
@@ -40,6 +38,7 @@ public class TopologiesResource {
 
     @GET
     @Path("/{topology-id}")
+    @Produces(APPLICATION_JSON)
     public PythianToplogyConfiguration getTopology(@PathParam("topology-id") String topologyId) {
         return topologyService.findById(topologyId);
     }
@@ -51,11 +50,14 @@ public class TopologiesResource {
     }
 
     @PUT
+    @Consumes(APPLICATION_JSON)
+    @Produces(APPLICATION_JSON)
     public PythianToplogyConfiguration save(PythianToplogyConfiguration topology) {
         return topologyService.save(topology);
     }
 
     @GET
+    @Produces(APPLICATION_JSON)
     public Collection<PythianToplogyConfiguration> findAll() {
         return topologyService.findAll();
     }
