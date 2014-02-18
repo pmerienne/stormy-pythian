@@ -15,38 +15,38 @@
  */
 package stormy.pythian.core.configuration;
 
+import java.util.ArrayList;
 import java.util.List;
-
 import stormy.pythian.core.description.PythianStateDescription;
 import stormy.pythian.model.component.PythianState;
 
 public class PythianStateConfiguration {
 
-	private final String id;
+    private String id;
 
-	private final PythianStateDescription description;
-	private final List<PropertyConfiguration> properties;
+    private PythianStateDescription description;
+    private List<PropertyConfiguration> properties = new ArrayList<>();
 
-	public PythianStateConfiguration(String id, PythianStateDescription description, List<PropertyConfiguration> properties) {
-		this.id = id;
-		this.description = description;
-		this.properties = properties;
-	}
+    public PythianStateConfiguration(String id, PythianStateDescription description, List<PropertyConfiguration> properties) {
+        this.id = id;
+        this.description = description;
+        this.properties = properties;
+    }
 
-	public String getId() {
-		return id;
-	}
+    public String getId() {
+        return id;
+    }
 
-	public PythianStateDescription getDescription() {
-		return description;
-	}
+    public PythianStateDescription getDescription() {
+        return description;
+    }
 
-	public List<PropertyConfiguration> getProperties() {
-		return properties;
-	}
+    public List<PropertyConfiguration> getProperties() {
+        return properties;
+    }
 
-	public Class<? extends PythianState> getImplementation() {
-		return description.getClazz();
-	}
+    public Class<? extends PythianState> getImplementation() {
+        return description.getClazz();
+    }
 
 }

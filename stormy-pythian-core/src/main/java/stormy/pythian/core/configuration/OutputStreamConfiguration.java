@@ -17,6 +17,7 @@ package stormy.pythian.core.configuration;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -27,47 +28,57 @@ import stormy.pythian.model.annotation.MappingType;
 
 public class OutputStreamConfiguration {
 
-	public OutputStreamDescription descriptor;
+        private OutputStreamDescription description;
 
-	public Map<String, String> mappings = new HashMap<>();
-	private final List<String> selectedFeatures;
+	private Map<String, String> mappings = new HashMap<>();
+	private List<String> selectedFeatures = new ArrayList<>();
+	
+	public OutputStreamConfiguration() {
+            this.description = null;
+            this.mappings = null;
+            this.selectedFeatures = null;
+        }
 
-	public OutputStreamConfiguration(OutputStreamDescription descriptor, Map<String, String> mappings) {
-		this.descriptor = descriptor;
+	public OutputStreamConfiguration(OutputStreamDescription description, Map<String, String> mappings) {
+		this.description = description;
 		this.mappings = mappings;
 		this.selectedFeatures = null;
 	}
 
-	public OutputStreamConfiguration(OutputStreamDescription descriptor, List<String> selectedFeatures) {
-		this.descriptor = descriptor;
+	public OutputStreamConfiguration(OutputStreamDescription description, List<String> selectedFeatures) {
+		this.description = description;
 		this.mappings = null;
 		this.selectedFeatures = selectedFeatures;
 	}
 
 	public String getInputStreamSource() {
-		return descriptor.getFrom();
+		return description.getFrom();
 	}
 
 	public boolean hasInputStreamSource() {
-		return !isEmpty(descriptor.getFrom());
+		return !isEmpty(description.getFrom());
 	}
 
 	public String getStreamName() {
-		return descriptor.getName();
+		return description.getName();
 	}
 
 	public MappingType getMappingType() {
-		return descriptor.getMappingType();
+		return description.getMappingType();
 	}
+	
+	public Map<String, String> getMappings() {
+            return mappings;
+        }
 
 	public Collection<String> getNewFeatures() {
-		switch (descriptor.getMappingType()) {
+		switch (description.getMappingType()) {
 		case FIXED_FEATURES:
 			return mappings.values();
 		case USER_SELECTION:
 			return selectedFeatures;
 		default:
-			throw new IllegalStateException("Mapping type " + descriptor.getMappingType() + " isn't supported!");
+			throw new IllegalStateException("Mapping type " + description.getMappingType() + " isn't supported!");
 		}
 	}
 }

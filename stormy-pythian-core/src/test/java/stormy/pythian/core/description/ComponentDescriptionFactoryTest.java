@@ -79,7 +79,7 @@ public class ComponentDescriptionFactoryTest {
 		ComponentDescription actualDeclaration = factory.createDeclaration(TestComponent.class);
 
 		// Then
-		assertThat(actualDeclaration.name).isEqualTo("Test component");
+		assertThat(actualDeclaration.getName()).isEqualTo("Test component");
 	}
 
 	@Test
@@ -97,7 +97,7 @@ public class ComponentDescriptionFactoryTest {
 		ComponentDescription actualDeclaration = factory.createDeclaration(TestComponent.class);
 
 		// Then
-		assertThat(actualDeclaration.description).isEqualTo("Only for test purpose");
+		assertThat(actualDeclaration.getDescription()).isEqualTo("Only for test purpose");
 	}
 
 	@Test
@@ -115,7 +115,7 @@ public class ComponentDescriptionFactoryTest {
 		ComponentDescription actualDeclaration = factory.createDeclaration(TestComponent.class);
 
 		// Then
-		assertThat(actualDeclaration.description).isEmpty();
+		assertThat(actualDeclaration.getDescription()).isEmpty();
 	}
 
 	@Test
@@ -169,7 +169,7 @@ public class ComponentDescriptionFactoryTest {
 		ComponentDescription actualDeclaration = factory.createDeclaration(TestComponent.class);
 
 		// Then
-		assertThat(actualDeclaration.clazz).isEqualTo(TestComponent.class);
+		assertThat(actualDeclaration.getClazz()).isEqualTo(TestComponent.class);
 	}
 
 }

@@ -17,57 +17,30 @@ package stormy.pythian.core.description;
 
 import static org.reflections.ReflectionUtils.getAllFields;
 import static org.reflections.ReflectionUtils.withAnnotation;
-
+import static stormy.pythian.model.annotation.PropertyType.fromType;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import org.springframework.stereotype.Component;
-
 import stormy.pythian.model.annotation.Property;
-import stormy.pythian.model.annotation.PropertyType;
-
-import com.google.common.collect.Lists;
 
 @Component
 public class PropertyDescriptionFactory {
 
-	@SuppressWarnings("unchecked")
-	public List<PropertyDescription> createPropertyDeclarations(Class<?> componentClass) {
-		List<PropertyDescription> propertyDeclarations = new ArrayList<>();
+    @SuppressWarnings("unchecked")
+    public List<PropertyDescription> createPropertyDeclarations(Class<?> componentClass) {
+        List<PropertyDescription> propertyDeclarations = new ArrayList<>();
 
-		Set<Field> propertyFields = getAllFields(componentClass, withAnnotation(Property.class));
-		for (Field propertyField : propertyFields) {
-			Property property = propertyField.getAnnotation(Property.class);
-			PropertyDescription propertyDeclaration = new PropertyDescription();
-			propertyDeclaration.name = property.name();
-			propertyDeclaration.description = property.description();
-			propertyDeclaration.mandatory = property.mandatory();
-			propertyDeclaration.type = PropertyType.fromType(propertyField.getType());
+        Set<Field> propertyFields = getAllFields(componentClass, withAnnotation(Property.class));
+        for (Field propertyField : propertyFields) {
+            Property property = propertyField.getAnnotation(Property.class);
+            PropertyDescription propertyDeclaration = new PropertyDescription(property.name(), property.description(), property.mandatory(), fromType(propertyField.getType()));
 
-			propertyDeclarations.add(propertyDeclaration);
-		}
+            propertyDeclarations.add(propertyDeclaration);
+        }
 
-		ensureNoDuplicatedProperty(propertyDeclarations);
-		return propertyDeclarations;
-	}
+        return propertyDeclarations;
+    }
 
-	private void ensureNoDuplicatedProperty(List<PropertyDescription> declarations) {
-		Set<String> duplicatedNames = new HashSet<>();
-		Set<String> uniqueNames = new HashSet<>();
-
-		for (PropertyDescription declaration : declarations) {
-			if (uniqueNames.contains(declaration.name)) {
-				duplicatedNames.add(declaration.name);
-			} else {
-				uniqueNames.add(declaration.name);
-			}
-		}
-
-		if (!duplicatedNames.isEmpty()) {
-			throw new IllegalArgumentException("Property should have unique name. Found duplicates : " + Lists.newArrayList(duplicatedNames));
-		}
-	}
 }

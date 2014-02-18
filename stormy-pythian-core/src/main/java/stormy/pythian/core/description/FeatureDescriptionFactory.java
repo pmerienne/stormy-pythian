@@ -17,9 +17,7 @@ package stormy.pythian.core.description;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.springframework.stereotype.Component;
-
 import stormy.pythian.model.annotation.ExpectedFeature;
 import stormy.pythian.model.annotation.InputStream;
 import stormy.pythian.model.annotation.OutputStream;
@@ -27,33 +25,33 @@ import stormy.pythian.model.annotation.OutputStream;
 @Component
 public class FeatureDescriptionFactory {
 
-	public FeatureDescription createDescription(ExpectedFeature feature) {
-		return new FeatureDescription(feature.name(), feature.type());
-	}
+    public FeatureDescription createDescription(ExpectedFeature feature) {
+        return new FeatureDescription(feature.name(), feature.type());
+    }
 
-	public List<FeatureDescription> createDescriptions(InputStream inputStream) {
-		List<FeatureDescription> descriptors = new ArrayList<>();
+    public List<FeatureDescription> createDescriptions(InputStream inputStream) {
+        List<FeatureDescription> descriptors = new ArrayList<>();
 
-		ExpectedFeature[] expectedFeatures = inputStream.expectedFeatures();
-		if (expectedFeatures != null) {
-			for (ExpectedFeature feature : expectedFeatures) {
-				descriptors.add(createDescription(feature));
-			}
-		}
+        ExpectedFeature[] expectedFeatures = inputStream.expectedFeatures();
+        if (expectedFeatures != null) {
+            for (ExpectedFeature feature : expectedFeatures) {
+                descriptors.add(createDescription(feature));
+            }
+        }
 
-		return descriptors;
-	}
+        return descriptors;
+    }
 
-	public List<FeatureDescription> createDescriptions(OutputStream outputStream) {
-		List<FeatureDescription> descriptors = new ArrayList<>();
+    public List<FeatureDescription> createDescriptions(OutputStream outputStream) {
+        List<FeatureDescription> descriptors = new ArrayList<>();
 
-		ExpectedFeature[] expectedFeatures = outputStream.newFeatures();
-		if (expectedFeatures != null) {
-			for (ExpectedFeature feature : expectedFeatures) {
-				descriptors.add(createDescription(feature));
-			}
-		}
+        ExpectedFeature[] expectedFeatures = outputStream.newFeatures();
+        if (expectedFeatures != null) {
+            for (ExpectedFeature feature : expectedFeatures) {
+                descriptors.add(createDescription(feature));
+            }
+        }
 
-		return descriptors;
-	}
+        return descriptors;
+    }
 }

@@ -16,128 +16,214 @@
 package stormy.pythian.core.description;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-
+import java.util.Set;
+import org.apache.commons.lang.StringUtils;
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 import stormy.pythian.model.annotation.ComponentType;
 import stormy.pythian.model.component.Component;
 
 public class ComponentDescription {
 
-	public final Class<? extends Component> clazz;
+    private Class<? extends Component> clazz;
 
-	public final String name;
-	public final String description;
-	public final ComponentType type;
+    private String name;
+    private String description;
+    private ComponentType type;
 
-	public final List<PropertyDescription> propertyDeclarations = new ArrayList<>();
+    private List<PropertyDescription> properties = new ArrayList<>();
 
-	public final List<OutputStreamDescription> outputStreamDescriptions = new ArrayList<>();
-	public final List<InputStreamDescription> inputStreamDescriptions = new ArrayList<>();
+    private List<OutputStreamDescription> outputStreams = new ArrayList<>();
+    private List<InputStreamDescription> inputStreams = new ArrayList<>();
 
-	public ComponentDescription(Class<? extends Component> clazz) {
-		this.name = "";
-		this.description = "";
-		this.clazz = clazz;
-		this.type = ComponentType.NO_TYPE;
-	}
+    public ComponentDescription() {
+    }
 
-	public ComponentDescription(Class<? extends Component> clazz, String name, String description, ComponentType type) {
-		this.clazz = clazz;
-		this.name = name;
-		this.description = description;
-		this.type = type;
-	}
+    public ComponentDescription(Class<? extends Component> clazz) {
+        this.name = "";
+        this.description = "";
+        this.clazz = clazz;
+        this.type = ComponentType.NO_TYPE;
+    }
 
-	public Class<? extends Component> getClazz() {
-		return clazz;
-	}
+    public ComponentDescription(Class<? extends Component> clazz, String name, String description, ComponentType type) {
+        this.clazz = clazz;
+        this.name = name;
+        this.description = description;
+        this.type = type;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public Class<? extends Component> getClazz() {
+        return clazz;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public ComponentType getType() {
-		return type;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public List<PropertyDescription> getPropertyDeclarations() {
-		return propertyDeclarations;
-	}
+    public ComponentType getType() {
+        return type;
+    }
 
-	public List<OutputStreamDescription> getOutputStreamDescriptions() {
-		return outputStreamDescriptions;
-	}
+    public void addProperties(List<PropertyDescription> properties) {
+        this.properties.addAll(properties);
+    }
 
-	public List<InputStreamDescription> getInputStreamDescriptions() {
-		return inputStreamDescriptions;
-	}
+    public void addInputStreams(List<InputStreamDescription> inputStreams) {
+        this.inputStreams.addAll(inputStreams);
+    }
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((clazz == null) ? 0 : clazz.hashCode());
-		result = prime * result + ((description == null) ? 0 : description.hashCode());
-		result = prime * result + ((inputStreamDescriptions == null) ? 0 : inputStreamDescriptions.hashCode());
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + ((outputStreamDescriptions == null) ? 0 : outputStreamDescriptions.hashCode());
-		result = prime * result + ((propertyDeclarations == null) ? 0 : propertyDeclarations.hashCode());
-		result = prime * result + ((type == null) ? 0 : type.hashCode());
-		return result;
-	}
+    public void addOutputStreams(List<OutputStreamDescription> outputStreams) {
+        this.outputStreams.addAll(outputStreams);
+    }
+    
+    public List<InputStreamDescription> getInputStreams() {
+        return inputStreams;
+    }
+    
+    public List<OutputStreamDescription> getOutputStreams() {
+        return outputStreams;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		ComponentDescription other = (ComponentDescription) obj;
-		if (clazz == null) {
-			if (other.clazz != null)
-				return false;
-		} else if (!clazz.equals(other.clazz))
-			return false;
-		if (description == null) {
-			if (other.description != null)
-				return false;
-		} else if (!description.equals(other.description))
-			return false;
-		if (inputStreamDescriptions == null) {
-			if (other.inputStreamDescriptions != null)
-				return false;
-		} else if (!inputStreamDescriptions.equals(other.inputStreamDescriptions))
-			return false;
-		if (name == null) {
-			if (other.name != null)
-				return false;
-		} else if (!name.equals(other.name))
-			return false;
-		if (outputStreamDescriptions == null) {
-			if (other.outputStreamDescriptions != null)
-				return false;
-		} else if (!outputStreamDescriptions.equals(other.outputStreamDescriptions))
-			return false;
-		if (propertyDeclarations == null) {
-			if (other.propertyDeclarations != null)
-				return false;
-		} else if (!propertyDeclarations.equals(other.propertyDeclarations))
-			return false;
-		if (type != other.type)
-			return false;
-		return true;
-	}
+    public void ensureOutputStreamReference() {
+        for (OutputStreamDescription outputStreamDeclaration : outputStreams) {
+            if (!StringUtils.isEmpty(outputStreamDeclaration.getFrom())) {
+                ensureInputStreamReference(outputStreamDeclaration.getFrom());
+            }
+        }
+    }
 
-	@Override
-	public String toString() {
-		return "ComponentDescription [clazz=" + clazz + ", name=" + name + ", description=" + description + ", type=" + type + ", propertyDeclarations=" + propertyDeclarations
-				+ ", outputStreamDescriptions=" + outputStreamDescriptions + ", inputStreamDescriptions=" + inputStreamDescriptions + "]";
-	}
+    public void ensureNoDuplicatedOutputStreams() {
+        Set<String> duplicatedNames = new HashSet<>();
+        Set<String> uniqueNames = new HashSet<>();
+
+        for (OutputStreamDescription outputStream : outputStreams) {
+            if (uniqueNames.contains(outputStream.getName())) {
+                duplicatedNames.add(outputStream.getName());
+            } else {
+                uniqueNames.add(outputStream.getName());
+            }
+        }
+
+        if (!duplicatedNames.isEmpty()) {
+            throw new IllegalArgumentException("OutputStream should have unique name. Found duplicates : " + Lists.newArrayList(duplicatedNames));
+        }
+    }
+
+    public void ensureNoDuplicatedInputStreams() {
+        Set<String> duplicatedNames = new HashSet<>();
+        Set<String> uniqueNames = new HashSet<>();
+
+        for (InputStreamDescription inputStream : inputStreams) {
+            if (uniqueNames.contains(inputStream.getName())) {
+                duplicatedNames.add(inputStream.getName());
+            } else {
+                uniqueNames.add(inputStream.getName());
+            }
+        }
+
+        if (!duplicatedNames.isEmpty()) {
+            throw new IllegalArgumentException("InputStream should have unique name. Found duplicates : " + Lists.newArrayList(duplicatedNames));
+        }
+    }
+
+    public void ensureNoDuplicatedProperties() {
+        Set<String> duplicatedNames = new HashSet<>();
+        Set<String> uniqueNames = new HashSet<>();
+
+        for (PropertyDescription property : properties) {
+            if (uniqueNames.contains(property.getName())) {
+                duplicatedNames.add(property.getName());
+            } else {
+                uniqueNames.add(property.getName());
+            }
+        }
+
+        if (!duplicatedNames.isEmpty()) {
+            throw new IllegalArgumentException("Property should have unique name. Found duplicates : " + Lists.newArrayList(duplicatedNames));
+        }
+    }
+
+    private void ensureInputStreamReference(String name) {
+        boolean inputStreamExists = Lists.transform(inputStreams, new Function<InputStreamDescription, String>() {
+            public String apply(InputStreamDescription declaration) {
+                return declaration.getName();
+            }
+        }).contains(name);
+
+        if (!inputStreamExists) {
+            throw new IllegalArgumentException("Output stream reference a not existing input stream : \"" + name + "\"");
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((clazz == null) ? 0 : clazz.hashCode());
+        result = prime * result + ((description == null) ? 0 : description.hashCode());
+        result = prime * result + ((inputStreams == null) ? 0 : inputStreams.hashCode());
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result + ((outputStreams == null) ? 0 : outputStreams.hashCode());
+        result = prime * result + ((properties == null) ? 0 : properties.hashCode());
+        result = prime * result + ((type == null) ? 0 : type.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        ComponentDescription other = (ComponentDescription) obj;
+        if (clazz == null) {
+            if (other.clazz != null)
+                return false;
+        } else if (!clazz.equals(other.clazz))
+            return false;
+        if (description == null) {
+            if (other.description != null)
+                return false;
+        } else if (!description.equals(other.description))
+            return false;
+        if (inputStreams == null) {
+            if (other.inputStreams != null)
+                return false;
+        } else if (!inputStreams.equals(other.inputStreams))
+            return false;
+        if (name == null) {
+            if (other.name != null)
+                return false;
+        } else if (!name.equals(other.name))
+            return false;
+        if (outputStreams == null) {
+            if (other.outputStreams != null)
+                return false;
+        } else if (!outputStreams.equals(other.outputStreams))
+            return false;
+        if (properties == null) {
+            if (other.properties != null)
+                return false;
+        } else if (!properties.equals(other.properties))
+            return false;
+        if (type != other.type)
+            return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "ComponentDescription [clazz=" + clazz + ", name=" + name + ", description=" + description + ", type=" + type + ", propertyDeclarations=" + properties
+                + ", outputStreamDescriptions=" + outputStreams + ", inputStreamDescriptions=" + inputStreams + "]";
+    }
 
 }

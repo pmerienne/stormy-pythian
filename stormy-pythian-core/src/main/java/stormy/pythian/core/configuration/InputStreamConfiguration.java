@@ -18,100 +18,103 @@ package stormy.pythian.core.configuration;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-
 import stormy.pythian.core.description.InputStreamDescription;
 import stormy.pythian.model.annotation.MappingType;
 
 public class InputStreamConfiguration {
 
-	private final InputStreamDescription description;
+    private InputStreamDescription description;
 
-	private final Map<String, String> mappings;
-	private final List<String> selectedFeatures;
+    private Map<String, String> mappings;
+    private List<String> selectedFeatures;
 
-	public InputStreamConfiguration(InputStreamDescription description, List<String> selectedFeatures) {
-		this.description = description;
-		this.selectedFeatures = selectedFeatures;
-		this.mappings = null;
-	}
+    public InputStreamConfiguration() {
+    }
 
-	public InputStreamConfiguration(InputStreamDescription description, Map<String, String> mappings) {
-		this.description = description;
-		this.mappings = mappings;
-		this.selectedFeatures = null;
-	}
+    public InputStreamConfiguration(InputStreamDescription description, List<String> selectedFeatures) {
+        this.description = description;
+        this.selectedFeatures = selectedFeatures;
+        this.mappings = null;
+    }
 
-	public InputStreamDescription getDescription() {
-		return description;
-	}
+    public InputStreamConfiguration(InputStreamDescription description, Map<String, String> mappings) {
+        this.description = description;
+        this.mappings = mappings;
+        this.selectedFeatures = null;
+    }
 
-	public Map<String, String> getMappings() {
-		return mappings;
-	}
+    public InputStreamDescription getDescription() {
+        return description;
+    }
 
-	public List<String> getSelectedFeatures() {
-		return selectedFeatures;
-	}
-	
-	public Collection<String> getStreamFeatures() {
-		switch (description.getType()) {
-		case FIXED_FEATURES:
-			return mappings.values();
-		case USER_SELECTION:
-			return selectedFeatures;
-		default:
-			throw new IllegalStateException("Mapping type " + description.getType() + " isn't supported!");
-		}
-	}
+    public Map<String, String> getMappings() {
+        return mappings;
+    }
 
-	public String getStreamName() {
-		return description.getName();
-	}
+    public List<String> getSelectedFeatures() {
+        return selectedFeatures;
+    }
 
-	public MappingType getMappingType() {
-		return description.getType();
-	}
+    public Collection<String> getStreamFeatures() {
+        switch (description.getType()) {
+            case FIXED_FEATURES:
+                return mappings.values();
+            case USER_SELECTION:
+                return selectedFeatures;
+            default:
+                throw new IllegalStateException("Mapping type " + description.getType() + " isn't supported!");
+        }
+    }
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((description == null) ? 0 : description.hashCode());
-		result = prime * result + ((mappings == null) ? 0 : mappings.hashCode());
-		result = prime * result + ((selectedFeatures == null) ? 0 : selectedFeatures.hashCode());
-		return result;
-	}
+    public String getStreamName() {
+        return description.getName();
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		InputStreamConfiguration other = (InputStreamConfiguration) obj;
-		if (description == null) {
-			if (other.description != null)
-				return false;
-		} else if (!description.equals(other.description))
-			return false;
-		if (mappings == null) {
-			if (other.mappings != null)
-				return false;
-		} else if (!mappings.equals(other.mappings))
-			return false;
-		if (selectedFeatures == null) {
-			if (other.selectedFeatures != null)
-				return false;
-		} else if (!selectedFeatures.equals(other.selectedFeatures))
-			return false;
-		return true;
-	}
+    public MappingType getMappingType() {
+        return description.getType();
+    }
 
-	@Override
-	public String toString() {
-		return "InputStreamConfiguration [description=" + description + ", mappings=" + mappings + ", selectedFeatures=" + selectedFeatures + "]";
-	}
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((description == null) ? 0 : description.hashCode());
+        result = prime * result + ((mappings == null) ? 0 : mappings.hashCode());
+        result = prime * result + ((selectedFeatures == null) ? 0 : selectedFeatures.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        InputStreamConfiguration other = (InputStreamConfiguration) obj;
+        if (description == null) {
+            if (other.description != null)
+                return false;
+        } else if (!description.equals(other.description))
+            return false;
+        if (mappings == null) {
+            if (other.mappings != null)
+                return false;
+        } else if (!mappings.equals(other.mappings))
+            return false;
+        if (selectedFeatures == null) {
+            if (other.selectedFeatures != null)
+                return false;
+        } else if (!selectedFeatures.equals(other.selectedFeatures))
+            return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "InputStreamConfiguration [description=" + description + ", mappings=" + mappings
+                + ", selectedFeatures=" + selectedFeatures + "]";
+    }
 
 }

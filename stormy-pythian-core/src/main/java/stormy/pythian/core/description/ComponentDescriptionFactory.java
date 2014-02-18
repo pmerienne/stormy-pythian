@@ -41,12 +41,17 @@ public class ComponentDescriptionFactory {
 		checkArgument(documentation != null, "No documentation found for " + componentClass + " but documentation is mandatory!");
 
 		ComponentDescription description = new ComponentDescription(componentClass, documentation.name(), documentation.description(), documentation.type());
-		description.propertyDeclarations.addAll(propertyDeclarationFactory.createPropertyDeclarations(componentClass));
-		description.inputStreamDescriptions.addAll(inputStreamDeclarationFactory.createInputStreamDeclarations(componentClass));
-		description.outputStreamDescriptions.addAll(outputStreamDeclarationFactory.createOutputStreamDeclarations(componentClass));
+		description.addProperties(propertyDeclarationFactory.createPropertyDeclarations(componentClass));
+		description.addInputStreams(inputStreamDeclarationFactory.createInputStreamDeclarations(componentClass));
+		description.addOutputStreams(outputStreamDeclarationFactory.createOutputStreamDeclarations(componentClass));
 
-		outputStreamDeclarationFactory.ensureInputStreamReference(description.outputStreamDescriptions, description.inputStreamDescriptions);
+		description.ensureNoDuplicatedInputStreams();
 
+		description.ensureOutputStreamReference();
+		description.ensureNoDuplicatedOutputStreams();
+		
+		description.ensureNoDuplicatedProperties();
+		
 		return description;
 	}
 

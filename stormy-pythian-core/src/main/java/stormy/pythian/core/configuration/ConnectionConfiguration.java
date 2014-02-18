@@ -20,46 +20,82 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 public class ConnectionConfiguration {
 
-	public String from;
-	public String fromStreamName;
+    private String from;
+    private String fromStreamName;
 
-	public String to;
-	public String toStreamName;
+    private String to;
+    private String toStreamName;
 
-	public ConnectionConfiguration() {
-	}
+    public ConnectionConfiguration() {
+    }
 
-	public ConnectionConfiguration(String from, String fromStreamName, String to, String toStreamName) {
-		this.from = from;
-		this.fromStreamName = fromStreamName;
-		this.to = to;
-		this.toStreamName = toStreamName;
-	}
+    public ConnectionConfiguration(String from, String fromStreamName, String to, String toStreamName) {
+        this.from = from;
+        this.fromStreamName = fromStreamName;
+        this.to = to;
+        this.toStreamName = toStreamName;
+    }
 
-	@Override
-	public int hashCode() {
-		return new HashCodeBuilder().append(from).append(fromStreamName).append(to).append(toStreamName).toHashCode();
-	}
+    public String getFrom() {
+        return from;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (!(obj instanceof ConnectionConfiguration)) {
-			return false;
-		}
+    public void setFrom(String from) {
+        this.from = from;
+    }
 
-		ConnectionConfiguration other = (ConnectionConfiguration) obj;
+    public String getFromStreamName() {
+        return fromStreamName;
+    }
 
-		return new EqualsBuilder() //
-				.append(this.from, other.from) //
-				.append(this.fromStreamName, other.fromStreamName) //
-				.append(this.to, other.to) //
-				.append(this.toStreamName, other.toStreamName) //
-				.isEquals();
-	}
+    public void setFromStreamName(String fromStreamName) {
+        this.fromStreamName = fromStreamName;
+    }
 
-	@Override
-	public String toString() {
-		return "ConnectionConfiguration [from=" + from + ", fromStreamName=" + fromStreamName + ", to=" + to + ", toStreamName=" + toStreamName + "]";
-	}
+    public String getTo() {
+        return to;
+    }
+
+    public void setTo(String to) {
+        this.to = to;
+    }
+
+    public String getToStreamName() {
+        return toStreamName;
+    }
+
+    public void setToStreamName(String toStreamName) {
+        this.toStreamName = toStreamName;
+    }
+
+    public boolean isFrom(ComponentConfiguration component) {
+        return this.from.equals(component.getId());
+    }
+    
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder().append(from).append(fromStreamName).append(to).append(toStreamName).toHashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof ConnectionConfiguration)) {
+            return false;
+        }
+
+        ConnectionConfiguration other = (ConnectionConfiguration) obj;
+
+        return new EqualsBuilder() //
+                .append(this.from, other.from) //
+                .append(this.fromStreamName, other.fromStreamName) //
+                .append(this.to, other.to) //
+                .append(this.toStreamName, other.toStreamName) //
+                .isEquals();
+    }
+
+    @Override
+    public String toString() {
+        return "ConnectionConfiguration [from=" + from + ", fromStreamName=" + fromStreamName + ", to=" + to + ", toStreamName=" + toStreamName + "]";
+    }
 
 }

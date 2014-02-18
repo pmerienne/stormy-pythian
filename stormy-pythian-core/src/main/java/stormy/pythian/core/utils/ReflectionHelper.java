@@ -216,10 +216,10 @@ public class ReflectionHelper {
 	@SuppressWarnings("unchecked")
 	private static void setProperty(Object obj, PropertyConfiguration property) {
 		try {
-			Set<Field> propertyFields = getFields(obj.getClass(), withProperty(property.name));
+			Set<Field> propertyFields = getFields(obj.getClass(), withProperty(property.getName()));
 			if (propertyFields != null && !propertyFields.isEmpty()) {
 				Field propertyField = propertyFields.iterator().next();
-				FieldUtils.writeField(propertyField, obj, property.value, true);
+				FieldUtils.writeField(propertyField, obj, property.getValue(), true);
 			}
 		} catch (Exception e) {
 			throw new IllegalArgumentException("Unable to set property " + property, e);

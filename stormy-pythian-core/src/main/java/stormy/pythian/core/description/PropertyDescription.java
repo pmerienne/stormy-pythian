@@ -15,47 +15,98 @@
  */
 package stormy.pythian.core.description;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
 import stormy.pythian.model.annotation.PropertyType;
 
 public class PropertyDescription {
 
-	public String name;
-	public String description;
+    private String name;
+    private String description;
 
-	public boolean mandatory;
-	public PropertyType type;
+    private boolean mandatory;
+    private PropertyType type;
 
-	public PropertyDescription() {
-	}
+    public PropertyDescription() {
+    }
 
-	public PropertyDescription(String name, String description, boolean mandatory, PropertyType type) {
-		this.name = name;
-		this.description = description;
-		this.mandatory = mandatory;
-		this.type = type;
-	}
+    public PropertyDescription(String name, String description, boolean mandatory, PropertyType type) {
+        this.name = name;
+        this.description = description;
+        this.mandatory = mandatory;
+        this.type = type;
+    }
 
-	@Override
-	public int hashCode() {
-		return new HashCodeBuilder().append(name).append(description).append(mandatory).append(type).toHashCode();
-	}
+    public String getName() {
+        return name;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (!(obj instanceof PropertyDescription)) {
-			return false;
-		}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-		PropertyDescription that = (PropertyDescription) obj;
-		return new EqualsBuilder().append(this.name, that.name).append(this.description, that.description).append(this.mandatory, that.mandatory).append(this.type, that.type).isEquals();
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	@Override
-	public String toString() {
-		return new ToStringBuilder(this).append(name).append(description).append(mandatory).append(type).toString();
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public boolean isMandatory() {
+        return mandatory;
+    }
+
+    public void setMandatory(boolean mandatory) {
+        this.mandatory = mandatory;
+    }
+
+    public PropertyType getType() {
+        return type;
+    }
+
+    public void setType(PropertyType type) {
+        this.type = type;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((description == null) ? 0 : description.hashCode());
+        result = prime * result + (mandatory ? 1231 : 1237);
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result + ((type == null) ? 0 : type.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        PropertyDescription other = (PropertyDescription) obj;
+        if (description == null) {
+            if (other.description != null)
+                return false;
+        } else if (!description.equals(other.description))
+            return false;
+        if (mandatory != other.mandatory)
+            return false;
+        if (name == null) {
+            if (other.name != null)
+                return false;
+        } else if (!name.equals(other.name))
+            return false;
+        if (type != other.type)
+            return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "PropertyDescription [name=" + name + ", description=" + description + ", mandatory=" + mandatory + ", type=" + type + "]";
+    }
 
 }

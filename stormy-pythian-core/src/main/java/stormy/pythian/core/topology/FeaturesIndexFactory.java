@@ -62,7 +62,7 @@ public class FeaturesIndexFactory {
 		if (connection == null) {
 			index = new FeaturesIndex(inputStream.getStreamFeatures());
 		} else {
-			index = outputFeaturesIndexes.get(connection.from, connection.fromStreamName);
+			index = outputFeaturesIndexes.get(connection.getFrom(), connection.getFromStreamName());
 		}
 
 		inputFeaturesIndexes.put(componentId, streamName, index);
