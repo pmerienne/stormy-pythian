@@ -15,87 +15,164 @@
  */
 package stormy.pythian.core.configuration;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-
 public class ConnectionConfiguration {
 
-    private String from;
-    private String fromStreamName;
-
-    private String to;
-    private String toStreamName;
+    private final ConnectionPoint from;
+    private final ConnectionPoint to;
 
     public ConnectionConfiguration() {
+        this.from = new ConnectionPoint();
+        this.to = new ConnectionPoint();
     }
 
     public ConnectionConfiguration(String from, String fromStreamName, String to, String toStreamName) {
-        this.from = from;
-        this.fromStreamName = fromStreamName;
-        this.to = to;
-        this.toStreamName = toStreamName;
-    }
-
-    public String getFrom() {
-        return from;
-    }
-
-    public void setFrom(String from) {
-        this.from = from;
-    }
-
-    public String getFromStreamName() {
-        return fromStreamName;
-    }
-
-    public void setFromStreamName(String fromStreamName) {
-        this.fromStreamName = fromStreamName;
-    }
-
-    public String getTo() {
-        return to;
-    }
-
-    public void setTo(String to) {
-        this.to = to;
-    }
-
-    public String getToStreamName() {
-        return toStreamName;
-    }
-
-    public void setToStreamName(String toStreamName) {
-        this.toStreamName = toStreamName;
+        this.from = new ConnectionPoint(from, fromStreamName);
+        this.to = new ConnectionPoint(to, toStreamName);
     }
 
     public boolean isFrom(ComponentConfiguration component) {
-        return this.from.equals(component.getId());
+        return this.from.hasId(component.getId());
     }
-    
+
+    public boolean isFrom(String componentId) {
+        return this.from.hasId(componentId);
+    }
+
+    public boolean isTo(String componentId, String streamName) {
+        return this.to.equals(new ConnectionPoint(componentId, streamName));
+    }
+
+    public ConnectionPoint getFrom() {
+        return from;
+    }
+
+    public ConnectionPoint getTo() {
+        return to;
+    }
+
+    public String retrieveFromComponent() {
+        return from.id;
+    }
+
+    public String retrieveFromStreamName() {
+        return from.stream;
+    }
+
+    public String retrieveToStreamName() {
+        return to.stream;
+    }
+
+    public String retrieveToComponent() {
+        return to.id;
+    }
+
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(from).append(fromStreamName).append(to).append(toStreamName).toHashCode();
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((from == null) ? 0 : from.hashCode());
+        result = prime * result + ((to == null) ? 0 : to.hashCode());
+        return result;
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof ConnectionConfiguration)) {
+        if (this == obj)
+            return true;
+        if (obj == null)
             return false;
-        }
-
+        if (getClass() != obj.getClass())
+            return false;
         ConnectionConfiguration other = (ConnectionConfiguration) obj;
-
-        return new EqualsBuilder() //
-                .append(this.from, other.from) //
-                .append(this.fromStreamName, other.fromStreamName) //
-                .append(this.to, other.to) //
-                .append(this.toStreamName, other.toStreamName) //
-                .isEquals();
+        if (from == null) {
+            if (other.from != null)
+                return false;
+        } else if (!from.equals(other.from))
+            return false;
+        if (to == null) {
+            if (other.to != null)
+                return false;
+        } else if (!to.equals(other.to))
+            return false;
+        return true;
     }
 
     @Override
     public String toString() {
-        return "ConnectionConfiguration [from=" + from + ", fromStreamName=" + fromStreamName + ", to=" + to + ", toStreamName=" + toStreamName + "]";
+        return "ConnectionConfiguration [from=" + from + ", to=" + to + "]";
     }
+
+    public static class ConnectionPoint {
+
+        private String id;
+        private String stream;
+
+        public ConnectionPoint() {
+        }
+
+        public boolean hasId(String id) {
+            return this.id.equals(id);
+        }
+
+        public ConnectionPoint(String id, String stream) {
+            super();
+            this.id = id;
+            this.stream = stream;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
+
+        public String getStream() {
+            return stream;
+        }
+
+        public void setStream(String stream) {
+            this.stream = stream;
+        }
+
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + ((id == null) ? 0 : id.hashCode());
+            result = prime * result + ((stream == null) ? 0 : stream.hashCode());
+            return result;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            ConnectionPoint other = (ConnectionPoint) obj;
+            if (id == null) {
+                if (other.id != null)
+                    return false;
+            } else if (!id.equals(other.id))
+                return false;
+            if (stream == null) {
+                if (other.stream != null)
+                    return false;
+            } else if (!stream.equals(other.stream))
+                return false;
+            return true;
+        }
+
+        @Override
+        public String toString() {
+            return "ConnectionPoint [id=" + id + ", stream=" + stream + "]";
+        }
+
+    }
+
 
 }

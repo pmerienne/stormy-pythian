@@ -90,11 +90,6 @@ app.factory('JsPlumbService', function() {
 		return streamId.replace(id + "-in-", "");
 	};
 	
-
-	JsPlumbDiagram.prototype.reset = function() {
-		this.jsPlumbInstance.deleteEveryEndpoint();
-	};
-	
 	JsPlumbDiagram.prototype.clearComponent = function(component) {
 		this.jsPlumbInstance.removeAllEndpoints(component.id);
 	};

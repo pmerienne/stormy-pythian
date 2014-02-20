@@ -27,41 +27,41 @@ public class OutputStreamDescription {
     private final String from;
     private final List<FeatureDescription> newFeatures;
 
-    private final MappingType mappingType;
+    private final MappingType type;
 
     public OutputStreamDescription() {
         this.name = null;
         this.from = null;
         this.newFeatures = null;
-        this.mappingType = null;
+        this.type = null;
     }
 
     public OutputStreamDescription(String name, String from, List<FeatureDescription> newFeatures) {
         this.name = name;
         this.from = isBlank(from) ? null : from;
         this.newFeatures = newFeatures;
-        this.mappingType = FIXED_FEATURES;
+        this.type = FIXED_FEATURES;
     }
 
     public OutputStreamDescription(String name, String from) {
         this.name = name;
         this.from = isBlank(from) ? null : from;
         this.newFeatures = null;
-        this.mappingType = USER_SELECTION;
+        this.type = USER_SELECTION;
     }
 
     public OutputStreamDescription(String name) {
         this.name = name;
         this.from = null;
         this.newFeatures = null;
-        this.mappingType = USER_SELECTION;
+        this.type = USER_SELECTION;
     }
 
     public OutputStreamDescription(String name, List<FeatureDescription> newFeatures) {
         this.name = name;
         this.from = null;
         this.newFeatures = newFeatures;
-        this.mappingType = FIXED_FEATURES;
+        this.type = FIXED_FEATURES;
     }
 
     public String getName() {
@@ -76,8 +76,8 @@ public class OutputStreamDescription {
         return newFeatures;
     }
 
-    public MappingType getMappingType() {
-        return mappingType;
+    public MappingType getType() {
+        return type;
     }
 
     @Override
@@ -85,7 +85,7 @@ public class OutputStreamDescription {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((isBlank(from)) ? 0 : from.hashCode());
-        result = prime * result + ((mappingType == null) ? 0 : mappingType.hashCode());
+        result = prime * result + ((type == null) ? 0 : type.hashCode());
         result = prime * result + ((isBlank(name)) ? 0 : name.hashCode());
         result = prime * result + ((newFeatures == null) ? 0 : newFeatures.hashCode());
         return result;
@@ -105,7 +105,7 @@ public class OutputStreamDescription {
                 return false;
         } else if (!from.equals(other.from))
             return false;
-        if (mappingType != other.mappingType)
+        if (type != other.type)
             return false;
         if (isBlank(name)) {
             if (!isBlank(other.name))
@@ -122,8 +122,7 @@ public class OutputStreamDescription {
 
     @Override
     public String toString() {
-        return "OutputStreamDescription [name=" + name + ", from=" + from + ", newFeatures=" + newFeatures
-                + ", mappingType=" + mappingType + "]";
+        return "OutputStreamDescription [name=" + name + ", from=" + from + ", newFeatures=" + newFeatures + ", mappingType=" + type + "]";
     }
 
 }

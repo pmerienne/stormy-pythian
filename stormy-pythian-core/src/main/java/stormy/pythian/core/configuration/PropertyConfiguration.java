@@ -43,6 +43,8 @@ public class PropertyConfiguration {
     public void setValue(Object value) {
         this.value = value;
     }
+    
+    
 
     @Override
     public int hashCode() {

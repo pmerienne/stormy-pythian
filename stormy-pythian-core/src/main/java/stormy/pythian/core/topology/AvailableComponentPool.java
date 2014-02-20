@@ -43,7 +43,7 @@ public class AvailableComponentPool {
     private Predicate<ComponentConfiguration> IS_AVAILABLE = new Predicate<ComponentConfiguration>() {
         @Override
         public boolean apply(ComponentConfiguration component) {
-            List<String> mandatoryInputStreams = getInputStreamNames(component.getImplementationClass());
+            List<String> mandatoryInputStreams = getInputStreamNames(component.retrieveImplementationClass());
             List<String> availableInputStreams = newArrayList(transform(availableStreams.get(component.getId()), EXTRACT_NAME));
             return availableInputStreams.containsAll(mandatoryInputStreams);
         }
@@ -84,8 +84,8 @@ public class AvailableComponentPool {
 
         for (ConnectionConfiguration connection : connections) {
             if (connection.isFrom(configuration)) {
-                Stream stream = getOutputStream(component, connection.getFromStreamName());
-                availableStreams.put(connection.getTo(), new AvailableStream(connection.getToStreamName(), stream));
+                Stream stream = getOutputStream(component, connection.retrieveFromStreamName());
+                availableStreams.put(connection.retrieveToComponent(), new AvailableStream(connection.retrieveToStreamName(), stream));
             }
         }
     }

@@ -49,4 +49,17 @@ public class PythianStateConfiguration {
         return description.getClazz();
     }
 
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setDescription(PythianStateDescription description) {
+        this.description = description;
+    }
+
+    public void setProperties(List<PropertyConfiguration> properties) {
+        this.properties = properties;
+    }
+
+    
 }

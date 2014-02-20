@@ -15,7 +15,9 @@
  */
 package stormy.pythian.core.configuration;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import stormy.pythian.core.description.InputStreamDescription;
@@ -25,8 +27,8 @@ public class InputStreamConfiguration {
 
     private InputStreamDescription description;
 
-    private Map<String, String> mappings;
-    private List<String> selectedFeatures;
+    private Map<String, String> mappings = new HashMap<>();
+    private List<String> selectedFeatures = new ArrayList<>();
 
     public InputStreamConfiguration() {
     }
@@ -55,7 +57,7 @@ public class InputStreamConfiguration {
         return selectedFeatures;
     }
 
-    public Collection<String> getStreamFeatures() {
+    public Collection<String> retrieveStreamFeatures() {
         switch (description.getType()) {
             case FIXED_FEATURES:
                 return mappings.values();
@@ -66,11 +68,11 @@ public class InputStreamConfiguration {
         }
     }
 
-    public String getStreamName() {
+    public String retrieveStreamName() {
         return description.getName();
     }
 
-    public MappingType getMappingType() {
+    public MappingType retrieveMappingType() {
         return description.getType();
     }
 
@@ -113,8 +115,7 @@ public class InputStreamConfiguration {
 
     @Override
     public String toString() {
-        return "InputStreamConfiguration [description=" + description + ", mappings=" + mappings
-                + ", selectedFeatures=" + selectedFeatures + "]";
+        return "InputStreamConfiguration [description=" + description + ", mappings=" + mappings + ", selectedFeatures=" + selectedFeatures + "]";
     }
 
 }

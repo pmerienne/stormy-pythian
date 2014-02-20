@@ -1,6 +1,6 @@
 app.factory('TopologiesResource', function ($resource) {
     return $resource('api/topologies', {}, {
-        create: { method: 'PUT' }
+        save: { method: 'PUT' }
     });
 });
 

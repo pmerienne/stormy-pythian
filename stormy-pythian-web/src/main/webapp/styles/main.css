@@ -1,4 +1,4 @@
-body  {
+body {
 	/* 60px to make the container go all the way to the bottom of the topbar */
 	padding-top: 60px;
 }
@@ -6,7 +6,7 @@ body  {
 [tab-heading-transclude] {
 	cursor: pointer;
 }
-	
+
 ._jsPlumb_endpoint {
 	cursor: pointer;
 }
@@ -15,9 +15,8 @@ body  {
 	position: relative;
 	overflow: auto;
 	width: 100%;
-	height: 480px;
+	height: 750px;
 	border: 1px solid #e3e3e3;
-	border-bottom: none;
 }
 
 /** DISABLE TEXT SELECTION (SET ON BODY WHEN DRAGGING IS OCCURRING) **/
@@ -28,6 +27,12 @@ body  {
 	-moz-user-select: -moz-none;
 	-ms-user-select: none;
 	user-select: none
+}
+
+.diagram-toolbar {
+	position: absolute;
+	top: 5px;
+	left: 5px;
 }
 
 .diagram-component {
@@ -49,7 +54,7 @@ body  {
 	-o-transition: -o-box-shadow 0.15s ease-in;
 	transition: box-shadow 0.15s ease-in;
 	opacity: 0.9;
-	filter: alpha(opacity =    90);
+	filter: alpha(opacity =      90);
 }
 
 .diagram-stream-source {
@@ -71,7 +76,7 @@ body  {
 	-o-transition: -o-box-shadow 0.15s ease-in;
 	transition: box-shadow 0.15s ease-in;
 	opacity: 0.9;
-	filter: alpha(opacity =    90);
+	filter: alpha(opacity =      90);
 }
 
 .diagram-component:hover {
@@ -81,7 +86,7 @@ body  {
 	-webkit-box-shadow: 2px 2px 19px #444;
 	-moz-box-shadow: 2px 2px 19px #fff;
 	opacity: 0.8;
-	filter: alpha(opacity =    80);
+	filter: alpha(opacity =      80);
 }
 
 .diagram-stream-source:hover {
@@ -91,8 +96,9 @@ body  {
 	-webkit-box-shadow: 2px 2px 19px #444;
 	-moz-box-shadow: 2px 2px 19px #fff;
 	opacity: 0.8;
-	filter: alpha(opacity =    80);
+	filter: alpha(opacity =      80);
 }
+
 .diagram-output-label {
 	text-align: right;
 	font-size: 10px;

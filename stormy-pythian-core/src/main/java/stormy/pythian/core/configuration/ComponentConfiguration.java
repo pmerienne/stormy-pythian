@@ -35,6 +35,9 @@ public class ComponentConfiguration {
     private List<OutputStreamConfiguration> outputStreams = new ArrayList<>();
     private Map<String, String> stateFactories = new HashMap<>();
 
+    private int x = 0;
+    private int y = 0;
+
     public ComponentConfiguration() {
     }
 
@@ -63,9 +66,41 @@ public class ComponentConfiguration {
     public void setId(String id) {
         this.id = id;
     }
-    
-    public String getName() {
+
+    public int getX() {
+        return x;
+    }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
+
+    public String retrieveName() {
         return description.getName();
+    }
+
+    public ComponentDescription getDescription() {
+        return description;
+    }
+
+    public void setDescription(ComponentDescription description) {
+        this.description = description;
+    }
+
+    public void setProperties(List<PropertyConfiguration> properties) {
+        this.properties = properties;
+    }
+
+    public void setStateFactories(Map<String, String> stateFactories) {
+        this.stateFactories = stateFactories;
     }
 
     public List<InputStreamConfiguration> getInputStreams() {
@@ -79,7 +114,7 @@ public class ComponentConfiguration {
     public List<OutputStreamConfiguration> getOutputStreams() {
         return outputStreams;
     }
-    
+
     public List<PropertyConfiguration> getProperties() {
         return properties;
     }
@@ -107,7 +142,7 @@ public class ComponentConfiguration {
     public void add(OutputStreamConfiguration outputStream) {
         this.outputStreams.add(outputStream);
     }
-    
+
     public Map<String, String> getStateFactories() {
         return stateFactories;
     }
@@ -115,14 +150,13 @@ public class ComponentConfiguration {
     public OutputStreamConfiguration findOutputStreamByName(final String name) {
         return tryFind(outputStreams, new Predicate<OutputStreamConfiguration>() {
             public boolean apply(OutputStreamConfiguration candidate) {
-                return name.equals(candidate.getStreamName());
+                return name.equals(candidate.retrieveStreamName());
             }
         }).orNull();
     }
 
-    public Class<? extends Component> getImplementationClass() {
+    public Class<? extends Component> retrieveImplementationClass() {
         return description.getClazz();
     }
-
 
 }

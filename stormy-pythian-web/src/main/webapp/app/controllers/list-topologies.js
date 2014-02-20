@@ -18,7 +18,7 @@ app.controller('ListTopologiesCtrl', function ($scope, $location, TopologiesReso
     };
     
     $scope.createNewTopology = function() {
-    	TopologiesResource.create({}, function(topology) {
+    	TopologiesResource.save({}, function(topology) {
     		$location.path("topologies/" + topology.id);
 		});
     };

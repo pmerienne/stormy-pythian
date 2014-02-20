@@ -7,6 +7,13 @@ app.factory('DescriptionService', function() {
 		this.outputStreams = outputStreams;
 		this.properties = properties;
 	};
+
+	function StateDescription(clazz, name, description, properties) {
+		this.clazz =  clazz;
+		this.name = name;
+		this.description = description;
+		this.properties = properties;
+	};
 	
 	function DescriptionBuilder() {
 		this._id = Math.random().toString(36).substr(2) + Math.random().toString(36).substr(2);
@@ -59,4 +66,5 @@ app.factory('DescriptionService', function() {
 			return new DescriptionBuilder();
 		}
 	};
+	
 });

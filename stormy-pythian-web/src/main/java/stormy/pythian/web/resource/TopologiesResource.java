@@ -20,6 +20,7 @@ import java.util.Collection;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -40,7 +41,11 @@ public class TopologiesResource {
     @Path("/{topology-id}")
     @Produces(APPLICATION_JSON)
     public PythianToplogyConfiguration getTopology(@PathParam("topology-id") String topologyId) {
-        return topologyService.findById(topologyId);
+        PythianToplogyConfiguration topology = topologyService.findById(topologyId);
+        if (topology == null) {
+            throw new NotFoundException("Topology with id " + topologyId + " was not found");
+        }
+        return topology;
     }
 
     @DELETE

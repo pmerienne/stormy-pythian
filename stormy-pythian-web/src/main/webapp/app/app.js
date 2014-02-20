@@ -1,7 +1,6 @@
 'use strict';
 
 var app = angular.module('app', [ 'ngRoute', 'ngResource', 'ui.include', 'ui.bootstrap'])
-//var app = angular.module('app', [ 'ngRoute', 'ngResource', 'ui.include', 'ui.bootstrap'])
 	.config(function($routeProvider, $httpProvider) {
 		$httpProvider.defaults.headers.common = {
 			'Accept' : 'application/json',

@@ -1,27 +1,44 @@
-app.directive('diagramComponent', function() {
+app.directive('component', function() {    
 	var COMPONENT_BASE_SIZE = 20;
 	var ENDPOINT_SIZE = 20;
 	
-	return {
-		replace: true,
-		link: function (scope, element, attrs) {
-			var component = JSON.parse(attrs.diagramComponent);
-			element.attr("id", component.id);
+    return {
+        restrict: "E",
+        replace : true,
+        template: "<div class='diagram-component'><div class='diagram-component-title'>{{model.description.name}}</div></div>",
+        scope: {
+            model: "="
+        },
+        link: function (scope, element, attrs) {
+        	var component = scope.model;
+        	var diagram = scope.$parent.diagram;
+        	
+        	element.attr("id", component.id);
+        	element.css('top', component.y);
+        	element.css('left', component.x);
 
-			scope.diagram.jsPlumbInstance.draggable(element);
+        	element.draggable({
+        		drag : function() {
+        			diagram.jsPlumbInstance.repaint(component.id);
+        			scope.$apply(function read() {
+        				component.x = parseInt(element.css('left'), 10);
+        				component.y = parseInt(element.css('top'), 10);
+        			});
+        		}, stop: function() {
+        			diagram.jsPlumbInstance.repaint(component.id);
+        		}
+        	});
 
 			var inputStreamsCount = component.description.inputStreams.length;
 			var outputStreamsCount = component.description.outputStreams.length;
-			element.css("left", component.x);
-			element.css("top", component.y);
 			element.css("height", COMPONENT_BASE_SIZE + Math.max(inputStreamsCount, outputStreamsCount) * ENDPOINT_SIZE);
 
 			// Create endpoints for input streams
 			for(var i = 0; i < inputStreamsCount; i++) {
 				var inputStream = component.description.inputStreams[i];
 				var yOffset =  (i + 1) / (inputStreamsCount + 1);
-				scope.diagram.jsPlumbInstance.addEndpoint(element, {
-					uuid: scope.diagram.getInputStreamId(component.id, inputStream.name),
+				diagram.jsPlumbInstance.addEndpoint(element, {
+					uuid: diagram.getInputStreamId(component.id, inputStream.name),
 					isTarget: true,
 					maxConnections: 1,
 					overlays:[ [ "Label", { label: inputStream.name, location: [2, 0.5], cssClass: "diagram-input-label"}]],
@@ -33,15 +50,14 @@ app.directive('diagramComponent', function() {
 			for(var i = 0; i < outputStreamsCount; i++) {
 				var outputStream = component.description.outputStreams[i];
 				var yOffset =  (i + 1) / (outputStreamsCount + 1);
-				scope.diagram.jsPlumbInstance.addEndpoint(element, {
-					uuid:  scope.diagram.getOutputStreamId(component.id, outputStream.name),
+				diagram.jsPlumbInstance.addEndpoint(element, {
+					uuid:  diagram.getOutputStreamId(component.id, outputStream.name),
 					isSource: true,
 					maxConnections: -1,
 					overlays:[ [ "Label", { label: outputStream.name, location: [-1, 0.5], cssClass: "diagram-output-label"}]],
 					anchor : [ [ 1, yOffset, 1, 0] ]
 				});
 			}
-			
-		}
-	};
+        }
+    };
 });

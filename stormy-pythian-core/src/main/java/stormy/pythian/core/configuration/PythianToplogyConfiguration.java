@@ -26,6 +26,7 @@ import com.google.common.collect.Iterables;
 public class PythianToplogyConfiguration {
 
     private String id;
+    private String name;
 
     private List<ComponentConfiguration> components = new ArrayList<>();
     private List<ConnectionConfiguration> connections = new ArrayList<>();
@@ -63,6 +64,14 @@ public class PythianToplogyConfiguration {
         return id;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public List<ComponentConfiguration> getComponents() {
         return components;
     }
@@ -78,7 +87,7 @@ public class PythianToplogyConfiguration {
     public void add(PythianStateConfiguration stateFactoryConfiguration) {
         this.states.add(stateFactoryConfiguration);
     }
-    
+
     public void add(ComponentConfiguration component) {
         this.components.add(component);
     }
@@ -90,7 +99,7 @@ public class PythianToplogyConfiguration {
     public List<ConnectionConfiguration> findConnectionsFrom(final String componentId) {
         return newArrayList(filter(connections, new Predicate<ConnectionConfiguration>() {
             public boolean apply(ConnectionConfiguration input) {
-                return componentId.equals(input.getFrom());
+                return input.isFrom(componentId);
             }
         }));
     }
@@ -98,9 +107,21 @@ public class PythianToplogyConfiguration {
     public ConnectionConfiguration findConnectionTo(final String componentId, final String streamName) {
         return Iterables.tryFind(connections, new Predicate<ConnectionConfiguration>() {
             public boolean apply(ConnectionConfiguration input) {
-                return componentId.equals(input.getTo()) && streamName.equals(input.getToStreamName());
+                return input.isTo(componentId, streamName);
             }
         }).orNull();
+    }
+
+    public void setComponents(List<ComponentConfiguration> components) {
+        this.components = components;
+    }
+
+    public void setConnections(List<ConnectionConfiguration> connections) {
+        this.connections = connections;
+    }
+
+    public void setStates(List<PythianStateConfiguration> states) {
+        this.states = states;
     }
 
     @Override

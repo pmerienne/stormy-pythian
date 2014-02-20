@@ -16,69 +16,87 @@
 package stormy.pythian.core.configuration;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import stormy.pythian.core.description.OutputStreamDescription;
 import stormy.pythian.model.annotation.MappingType;
 
 public class OutputStreamConfiguration {
 
-        private OutputStreamDescription description;
+    private OutputStreamDescription description;
 
-	private Map<String, String> mappings = new HashMap<>();
-	private List<String> selectedFeatures = new ArrayList<>();
-	
-	public OutputStreamConfiguration() {
-            this.description = null;
-            this.mappings = null;
-            this.selectedFeatures = null;
+    private Map<String, String> mappings = new HashMap<>();
+    private List<String> selectedFeatures = new ArrayList<>();
+
+    public OutputStreamConfiguration() {
+        this.description = null;
+        this.mappings = null;
+        this.selectedFeatures = null;
+    }
+
+    public OutputStreamConfiguration(OutputStreamDescription description, Map<String, String> mappings) {
+        this.description = description;
+        this.mappings = mappings;
+        this.selectedFeatures = null;
+    }
+
+    public OutputStreamConfiguration(OutputStreamDescription description, List<String> selectedFeatures) {
+        this.description = description;
+        this.mappings = null;
+        this.selectedFeatures = selectedFeatures;
+    }
+
+    public OutputStreamDescription getDescription() {
+        return description;
+    }
+
+    public void setDescription(OutputStreamDescription description) {
+        this.description = description;
+    }
+
+    public List<String> getSelectedFeatures() {
+        return selectedFeatures;
+    }
+
+    public void setSelectedFeatures(List<String> selectedFeatures) {
+        this.selectedFeatures = selectedFeatures;
+    }
+
+    public void setMappings(Map<String, String> mappings) {
+        this.mappings = mappings;
+    }
+
+    public String retrieveInputStreamSource() {
+        return description.getFrom();
+    }
+
+    public boolean hasInputStreamSource() {
+        return !isEmpty(description.getFrom());
+    }
+
+    public String retrieveStreamName() {
+        return description.getName();
+    }
+
+    public MappingType retrieveMappingType() {
+        return description.getType();
+    }
+
+    public Map<String, String> getMappings() {
+        return mappings;
+    }
+
+    public Collection<String> getNewFeatures() {
+        switch (description.getType()) {
+            case FIXED_FEATURES:
+                return mappings.values();
+            case USER_SELECTION:
+                return selectedFeatures;
+            default:
+                throw new IllegalStateException("Mapping type " + description.getType() + " isn't supported!");
         }
-
-	public OutputStreamConfiguration(OutputStreamDescription description, Map<String, String> mappings) {
-		this.description = description;
-		this.mappings = mappings;
-		this.selectedFeatures = null;
-	}
-
-	public OutputStreamConfiguration(OutputStreamDescription description, List<String> selectedFeatures) {
-		this.description = description;
-		this.mappings = null;
-		this.selectedFeatures = selectedFeatures;
-	}
-
-	public String getInputStreamSource() {
-		return description.getFrom();
-	}
-
-	public boolean hasInputStreamSource() {
-		return !isEmpty(description.getFrom());
-	}
-
-	public String getStreamName() {
-		return description.getName();
-	}
-
-	public MappingType getMappingType() {
-		return description.getMappingType();
-	}
-	
-	public Map<String, String> getMappings() {
-            return mappings;
-        }
-
-	public Collection<String> getNewFeatures() {
-		switch (description.getMappingType()) {
-		case FIXED_FEATURES:
-			return mappings.values();
-		case USER_SELECTION:
-			return selectedFeatures;
-		default:
-			throw new IllegalStateException("Mapping type " + description.getMappingType() + " isn't supported!");
-		}
-	}
+    }
 }
