@@ -5,9 +5,10 @@ app.directive('component', function() {
     return {
         restrict: "E",
         replace : true,
-        template: "<div class='diagram-component'><div class='diagram-component-title'>{{model.description.name}}</div></div>",
+        template: '<div class="diagram-component"><div class="diagram-component-title" ng-click="onTitleClicked(model)">{{model.name}}</div></div>',
         scope: {
-            model: "="
+            model: "=",
+            onTitleClicked: '&ngClick'
         },
         link: function (scope, element, attrs) {
         	var component = scope.model;
