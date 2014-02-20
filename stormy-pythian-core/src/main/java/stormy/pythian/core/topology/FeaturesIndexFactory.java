@@ -45,7 +45,7 @@ public class FeaturesIndexFactory {
 		Map<String, FeaturesIndex> indexes = new HashMap<>(component.getInputStreams().size());
 
 		for (InputStreamConfiguration inputStream : component.getInputStreams()) {
-			String streamName = inputStream.getStreamName();
+			String streamName = inputStream.retrieveStreamName();
 			FeaturesIndex index = createFeaturesIndex(component.getId(), inputStream);
 			indexes.put(streamName, index);
 		}
@@ -56,13 +56,13 @@ public class FeaturesIndexFactory {
 	private FeaturesIndex createFeaturesIndex(String componentId, InputStreamConfiguration inputStream) {
 		FeaturesIndex index = null;
 
-		String streamName = inputStream.getStreamName();
+		String streamName = inputStream.retrieveStreamName();
 		ConnectionConfiguration connection = topologyConfiguration.findConnectionTo(componentId, streamName);
 
 		if (connection == null) {
-			index = new FeaturesIndex(inputStream.getStreamFeatures());
+			index = new FeaturesIndex(inputStream.retrieveStreamFeatures());
 		} else {
-			index = outputFeaturesIndexes.get(connection.from, connection.fromStreamName);
+			index = outputFeaturesIndexes.get(connection.retrieveFromComponent(), connection.retrieveFromStreamName());
 		}
 
 		inputFeaturesIndexes.put(componentId, streamName, index);
@@ -74,7 +74,7 @@ public class FeaturesIndexFactory {
 		Map<String, FeaturesIndex> indexes = new HashMap<>(component.getOutputStreams().size());
 
 		for (OutputStreamConfiguration stream : component.getOutputStreams()) {
-			String streamName = stream.getStreamName();
+			String streamName = stream.retrieveStreamName();
 			FeaturesIndex index = createFeaturesIndex(component.getId(), stream);
 			indexes.put(streamName, index);
 		}
@@ -90,11 +90,11 @@ public class FeaturesIndexFactory {
 		if (!outputStream.hasInputStreamSource()) {
 			index = new FeaturesIndex(newFeatures);
 		} else {
-			FeaturesIndex inputIndex = inputFeaturesIndexes.get(componentId, outputStream.getInputStreamSource());
+			FeaturesIndex inputIndex = inputFeaturesIndexes.get(componentId, outputStream.retrieveInputStreamSource());
 			index = FeaturesIndex.Builder.from(inputIndex).with(newFeatures).build();
 		}
 
-		outputFeaturesIndexes.put(componentId, outputStream.getStreamName(), index);
+		outputFeaturesIndexes.put(componentId, outputStream.retrieveStreamName(), index);
 		return index;
 	}
 

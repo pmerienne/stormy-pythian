@@ -95,27 +95,6 @@ public class InputStreamDescriptionFactoryTest {
 		factory.createInputStreamDeclarations(TestComponent.class);
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void should_throw_illegal_argument_exception_whith_duplicated_input_streams() {
-		// Given
-		@Documentation(name = "Test component")
-		class TestComponent implements Component {
-
-			@InputStream(name = "in1", type = USER_SELECTION)
-			public Stream in1;
-
-			@InputStream(name = "in1", type = USER_SELECTION)
-			public Stream in2;
-
-			@Override
-			public void init() {
-			}
-		}
-
-		// When
-		factory.createInputStreamDeclarations(TestComponent.class);
-	}
-
 	@Test
 	public void should_retrieve_inherited_input_stream_declarations() {
 		// Given

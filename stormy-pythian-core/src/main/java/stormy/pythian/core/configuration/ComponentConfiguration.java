@@ -16,90 +16,147 @@
 package stormy.pythian.core.configuration;
 
 import static com.google.common.collect.Iterables.tryFind;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import stormy.pythian.core.description.ComponentDescription;
-
+import stormy.pythian.model.component.Component;
 import com.google.common.base.Predicate;
 
 public class ComponentConfiguration {
 
-	public String id;
+    private String id;
 
-	public ComponentDescription descriptor;
+    private ComponentDescription description;
 
-	public List<PropertyConfiguration> properties = new ArrayList<>();
-	public List<InputStreamConfiguration> inputStreams = new ArrayList<>();
-	public List<OutputStreamConfiguration> outputStreams = new ArrayList<>();
-	private final Map<String, String> stateFactories = new HashMap<>();
+    private List<PropertyConfiguration> properties = new ArrayList<>();
+    private List<InputStreamConfiguration> inputStreams = new ArrayList<>();
+    private List<OutputStreamConfiguration> outputStreams = new ArrayList<>();
+    private Map<String, String> stateFactories = new HashMap<>();
 
-	public ComponentConfiguration() {
-	}
+    private int x = 0;
+    private int y = 0;
 
-	public ComponentConfiguration(String id) {
-		this.id = id;
-	}
+    public ComponentConfiguration() {
+    }
 
-	public ComponentConfiguration(String id, ComponentDescription descriptor) {
-		this.id = id;
-		this.descriptor = descriptor;
-	}
+    public ComponentConfiguration(String id) {
+        this.id = id;
+    }
 
-	public ComponentConfiguration(String id, ComponentDescription descriptor, List<PropertyConfiguration> properties, List<InputStreamConfiguration> inputStreams,
-			List<OutputStreamConfiguration> outputStreams) {
-		this.id = id;
-		this.descriptor = descriptor;
-		this.properties = properties;
-		this.inputStreams = inputStreams;
-		this.outputStreams = outputStreams;
-	}
+    public ComponentConfiguration(String id, ComponentDescription description) {
+        this.id = id;
+        this.description = description;
+    }
 
-	public String getId() {
-		return id;
-	}
+    public ComponentConfiguration(String id, ComponentDescription description, List<PropertyConfiguration> properties, List<InputStreamConfiguration> inputStreams,
+            List<OutputStreamConfiguration> outputStreams) {
+        this.id = id;
+        this.description = description;
+        this.properties = properties;
+        this.inputStreams = inputStreams;
+        this.outputStreams = outputStreams;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public String getId() {
+        return id;
+    }
 
-	public List<InputStreamConfiguration> getInputStreams() {
-		return inputStreams;
-	}
+    public void setId(String id) {
+        this.id = id;
+    }
 
-	public void setInputStreams(List<InputStreamConfiguration> inputStreams) {
-		this.inputStreams = inputStreams;
-	}
+    public int getX() {
+        return x;
+    }
 
-	public List<OutputStreamConfiguration> getOutputStreams() {
-		return outputStreams;
-	}
+    public void setX(int x) {
+        this.x = x;
+    }
 
-	public void setOutputStreams(List<OutputStreamConfiguration> outputStreams) {
-		this.outputStreams = outputStreams;
-	}
+    public int getY() {
+        return y;
+    }
 
-	public void addStateFactory(String name, String id) {
-		this.stateFactories.put(name, id);
-	}
+    public void setY(int y) {
+        this.y = y;
+    }
 
-	public void addStateFactory(String name, PythianStateConfiguration configuration) {
-		this.stateFactories.put(name, configuration.getId());
-	}
+    public String retrieveName() {
+        return description.getName();
+    }
 
-	public Map<String, String> getStateFactories() {
-		return stateFactories;
-	}
+    public ComponentDescription getDescription() {
+        return description;
+    }
 
-	public OutputStreamConfiguration findOutputStreamByName(final String name) {
-		return tryFind(outputStreams, new Predicate<OutputStreamConfiguration>() {
-			public boolean apply(OutputStreamConfiguration candidate) {
-				return name.equals(candidate.getStreamName());
-			}
-		}).orNull();
-	}
+    public void setDescription(ComponentDescription description) {
+        this.description = description;
+    }
+
+    public void setProperties(List<PropertyConfiguration> properties) {
+        this.properties = properties;
+    }
+
+    public void setStateFactories(Map<String, String> stateFactories) {
+        this.stateFactories = stateFactories;
+    }
+
+    public List<InputStreamConfiguration> getInputStreams() {
+        return inputStreams;
+    }
+
+    public void setInputStreams(List<InputStreamConfiguration> inputStreams) {
+        this.inputStreams = inputStreams;
+    }
+
+    public List<OutputStreamConfiguration> getOutputStreams() {
+        return outputStreams;
+    }
+
+    public List<PropertyConfiguration> getProperties() {
+        return properties;
+    }
+
+    public void setOutputStreams(List<OutputStreamConfiguration> outputStreams) {
+        this.outputStreams = outputStreams;
+    }
+
+    public void addStateFactory(String name, String id) {
+        this.stateFactories.put(name, id);
+    }
+
+    public void addStateFactory(String name, PythianStateConfiguration configuration) {
+        this.stateFactories.put(name, configuration.getId());
+    }
+
+    public void add(PropertyConfiguration property) {
+        this.properties.add(property);
+    }
+
+    public void add(InputStreamConfiguration inputStream) {
+        this.inputStreams.add(inputStream);
+    }
+
+    public void add(OutputStreamConfiguration outputStream) {
+        this.outputStreams.add(outputStream);
+    }
+
+    public Map<String, String> getStateFactories() {
+        return stateFactories;
+    }
+
+    public OutputStreamConfiguration findOutputStreamByName(final String name) {
+        return tryFind(outputStreams, new Predicate<OutputStreamConfiguration>() {
+            public boolean apply(OutputStreamConfiguration candidate) {
+                return name.equals(candidate.retrieveStreamName());
+            }
+        }).orNull();
+    }
+
+    public Class<? extends Component> retrieveImplementationClass() {
+        return description.getClazz();
+    }
 
 }

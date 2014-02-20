@@ -16,24 +16,21 @@
 package stormy.pythian.core.topology;
 
 import static java.util.Arrays.asList;
+import static java.util.UUID.randomUUID;
 import static org.apache.commons.lang.RandomStringUtils.randomAlphabetic;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.fest.assertions.MapAssert.entry;
 import static org.mockito.Mockito.mock;
 import static stormy.pythian.model.annotation.MappingType.USER_SELECTION;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-
 import org.junit.Test;
-
 import storm.trident.Stream;
 import stormy.pythian.core.configuration.ComponentConfiguration;
 import stormy.pythian.core.configuration.ConnectionConfiguration;
 import stormy.pythian.core.description.ComponentDescription;
-import stormy.pythian.core.topology.AvailableComponentPool;
 import stormy.pythian.model.annotation.InputStream;
 import stormy.pythian.model.annotation.OutputStream;
 import stormy.pythian.model.component.Component;
@@ -46,8 +43,7 @@ public class AvailableComponentPoolTest {
 	public void should_retrieve_available_component() {
 		// Given
 		ComponentDescription descriptor = new ComponentDescription(TestComponent.class);
-		ComponentConfiguration configuration = new ComponentConfiguration();
-		configuration.descriptor = descriptor;
+		ComponentConfiguration configuration = new ComponentConfiguration(randomUUID().toString(), descriptor);
 
 		List<ComponentConfiguration> configurations = Arrays.asList(configuration);
 
@@ -64,8 +60,7 @@ public class AvailableComponentPoolTest {
 	public void should_know_when_empty() {
 		// Given
 		ComponentDescription descriptor = new ComponentDescription(TestComponent.class);
-		ComponentConfiguration configuration = new ComponentConfiguration();
-		configuration.descriptor = descriptor;
+                ComponentConfiguration configuration = new ComponentConfiguration(randomUUID().toString(), descriptor);
 
 		List<ComponentConfiguration> configurations = Arrays.asList(configuration);
 
@@ -86,8 +81,7 @@ public class AvailableComponentPoolTest {
 	public void should_not_retrieve_not_available_component() {
 		// Given
 		ComponentDescription descriptor = new ComponentDescription(TestComponentWithInputStreams.class);
-		ComponentConfiguration configuration = new ComponentConfiguration();
-		configuration.descriptor = descriptor;
+                ComponentConfiguration configuration = new ComponentConfiguration(randomUUID().toString(), descriptor);
 
 		List<ComponentConfiguration> configurations = Arrays.asList(configuration);
 
@@ -109,8 +103,8 @@ public class AvailableComponentPoolTest {
 		List<ComponentConfiguration> configurations = Arrays.asList(componentWithInputStreams, componentWithOutputStream);
 
 		List<ConnectionConfiguration> connections = new ArrayList<ConnectionConfiguration>();
-		connections.add(new ConnectionConfiguration(componentWithOutputStream.id, "out", componentWithInputStreams.id, "in1"));
-		connections.add(new ConnectionConfiguration(componentWithOutputStream.id, "out", componentWithInputStreams.id, "in2"));
+		connections.add(new ConnectionConfiguration(componentWithOutputStream.getId(), "out", componentWithInputStreams.getId(), "in1"));
+		connections.add(new ConnectionConfiguration(componentWithOutputStream.getId(), "out", componentWithInputStreams.getId(), "in2"));
 
 		AvailableComponentPool pool = new AvailableComponentPool(configurations, connections);
 
@@ -145,8 +139,8 @@ public class AvailableComponentPoolTest {
 		List<ComponentConfiguration> configurations = asList(componentConfiguration);
 
 		List<ConnectionConfiguration> connections = new ArrayList<ConnectionConfiguration>();
-		connections.add(new ConnectionConfiguration(streamSourceConfiguration.id, "out", componentConfiguration.id, "in1"));
-		connections.add(new ConnectionConfiguration(streamSourceConfiguration.id, "out", componentConfiguration.id, "in2"));
+		connections.add(new ConnectionConfiguration(streamSourceConfiguration.getId(), "out", componentConfiguration.getId(), "in1"));
+		connections.add(new ConnectionConfiguration(streamSourceConfiguration.getId(), "out", componentConfiguration.getId(), "in2"));
 
 		AvailableComponentPool pool = new AvailableComponentPool(configurations, connections);
 		pool.registerBuildedComponent(streamSource, streamSourceConfiguration);
@@ -160,9 +154,7 @@ public class AvailableComponentPoolTest {
 
 	private ComponentConfiguration createConfiguration(Class<? extends Component> clazz) {
 		ComponentDescription descriptor = new ComponentDescription(clazz);
-		ComponentConfiguration component = new ComponentConfiguration();
-		component.id = randomAlphabetic(6);
-		component.descriptor = descriptor;
+		ComponentConfiguration component = new ComponentConfiguration(randomAlphabetic(6), descriptor);
 
 		return component;
 	}

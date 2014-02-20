@@ -68,7 +68,7 @@ public class FeaturesIndexFactoryTest {
 		String streamName = "in";
 
 		InputStreamConfiguration inputStream = mock(InputStreamConfiguration.class);
-		when(inputStream.getStreamName()).thenReturn(streamName);
+		when(inputStream.retrieveStreamName()).thenReturn(streamName);
 
 		ComponentConfiguration component = mock(ComponentConfiguration.class);
 		when(component.getId()).thenReturn(componentId);
@@ -94,8 +94,8 @@ public class FeaturesIndexFactoryTest {
 		List<String> expectedFeatures = asList("age", "viewCount");
 
 		InputStreamConfiguration inputStream = mock(InputStreamConfiguration.class);
-		when(inputStream.getStreamName()).thenReturn(streamName);
-		when(inputStream.getStreamFeatures()).thenReturn(expectedFeatures);
+		when(inputStream.retrieveStreamName()).thenReturn(streamName);
+		when(inputStream.retrieveStreamFeatures()).thenReturn(expectedFeatures);
 
 		when(topologyConfiguration.findConnectionTo(componentId, "in")).thenReturn(null);
 
@@ -121,7 +121,7 @@ public class FeaturesIndexFactoryTest {
 		Collection<String> newFeatures = asList("user age", "user name", "user id");
 
 		OutputStreamConfiguration outputStream = mock(OutputStreamConfiguration.class);
-		when(outputStream.getStreamName()).thenReturn(streamName);
+		when(outputStream.retrieveStreamName()).thenReturn(streamName);
 		when(outputStream.hasInputStreamSource()).thenReturn(false);
 		when(outputStream.getNewFeatures()).thenReturn(newFeatures);
 
@@ -151,9 +151,9 @@ public class FeaturesIndexFactoryTest {
 		Collection<String> newFeatures = asList("mean rating");
 
 		OutputStreamConfiguration outputStream = mock(OutputStreamConfiguration.class);
-		when(outputStream.getStreamName()).thenReturn(streamName);
+		when(outputStream.retrieveStreamName()).thenReturn(streamName);
 		when(outputStream.hasInputStreamSource()).thenReturn(true);
-		when(outputStream.getInputStreamSource()).thenReturn(inputStreamName);
+		when(outputStream.retrieveInputStreamSource()).thenReturn(inputStreamName);
 		when(outputStream.getNewFeatures()).thenReturn(newFeatures);
 
 		when(inputFeaturesIndexes.get(componentId, inputStreamName)).thenReturn(inputIndex);

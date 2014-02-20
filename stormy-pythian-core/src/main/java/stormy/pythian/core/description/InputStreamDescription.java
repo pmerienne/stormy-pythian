@@ -23,18 +23,24 @@ import stormy.pythian.model.annotation.MappingType;
 public class InputStreamDescription {
 
 	private final String name;
-	private final MappingType mappingType;
+	private final MappingType type;
 	private final List<FeatureDescription> expectedFeatures;
+	
+	public InputStreamDescription() {
+            this.name = null;
+            this.type = null;
+            this.expectedFeatures = null;
+        }
 
 	public InputStreamDescription(String name, MappingType type, List<FeatureDescription> expectedFeatures) {
 		this.name = name;
-		this.mappingType = type;
+		this.type = type;
 		this.expectedFeatures = expectedFeatures;
 	}
 
 	public InputStreamDescription(String name, MappingType type) {
 		this.name = name;
-		this.mappingType = type;
+		this.type = type;
 		this.expectedFeatures = new ArrayList<>();
 	}
 
@@ -43,7 +49,7 @@ public class InputStreamDescription {
 	}
 
 	public MappingType getType() {
-		return mappingType;
+		return type;
 	}
 
 	public List<FeatureDescription> getExpectedFeatures() {
@@ -56,7 +62,7 @@ public class InputStreamDescription {
 		int result = 1;
 		result = prime * result + ((expectedFeatures == null) ? 0 : expectedFeatures.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + ((mappingType == null) ? 0 : mappingType.hashCode());
+		result = prime * result + ((type == null) ? 0 : type.hashCode());
 		return result;
 	}
 
@@ -79,14 +85,14 @@ public class InputStreamDescription {
 				return false;
 		} else if (!name.equals(other.name))
 			return false;
-		if (mappingType != other.mappingType)
+		if (type != other.type)
 			return false;
 		return true;
 	}
 
 	@Override
 	public String toString() {
-		return "InputStreamDescription [name=" + name + ", mappingType=" + mappingType + ", expectedFeatures=" + expectedFeatures + "]";
+		return "InputStreamDescription [name=" + name + ", mappingType=" + type + ", expectedFeatures=" + expectedFeatures + "]";
 	}
 
 }

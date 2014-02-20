@@ -1,50 +1,69 @@
 <div>
-	<div class="row">
-		<div class="pull-left">
-			<h2>{{topology.name}}</h2>
+	<form class="form-inline" role="form" style="margin: 10px">
+		<div class="form-group">
+			<input class="form-control input-lg" ng-model="topology.name" placeholder="Topology's name"/>
 		</div>
-		<div class="pull-right btn-group">
-			<div class="btn-group">
-				<button class="btn dropdown-toggle" data-toggle="dropdown">
-					<i class="fa fa-download fa-2x"></i>
-					<span class="caret"></span>
-				</button>
-				<ul class="dropdown-menu">
-					<li ng-repeat="description in streamSourceDescriptions">
-						<a ng-click="addNewComponent(description)">{{description.name}}</a>
-					</li>
-				</ul>
-			</div>
-			
-			<div class="btn-group">
-				<button class="btn dropdown-toggle" data-toggle="dropdown">
-					<i class="fa fa-bolt fa-2x"></i>
-					<span class="caret"></span>
-				</button>
-				<ul class="dropdown-menu">
-					<li ng-repeat="description in componentDescriptions">
-						<a ng-click="addNewComponent(description)">{{description.name}}</a>
-					</li>
-				</ul>
-			</div>
+
+		<div class="pull-right">
+			<button class="btn btn-danger" ng-click="remove()">
+				<i class="fa fa-trash-o fa-2x"></i>
+			</button>
+			<button class="btn" ng-click="revert()">
+				<i class="fa fa-undo fa-2x"></i>
+			</button>
+			<button class="btn btn-primary" ng-click="save()">
+				<i class="fa fa-save fa-2x"></i>
+			</button>
 		</div>
-		
-		<div id="jsplumb-container" class="jsplumb-container">
-			<div diagram-component="{{component}}" ng-repeat="component in topology.components" class="diagram-component">
-				<div class="diagram-component-title" ng-click="editComponent(component)">
-					 {{component.name}} 
+	</form>
+
+	<div id="jsplumb-container" class="jsplumb-container">
+		<div class="diagram-toolbar btn-toolbar pull-right" role="toolbar">
+			<!--  Components : STREAM_SOURCE-->
+			<div class="btn-group">
+				<div class="btn-group">
+					<button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown">
+						Stream source <span class="caret"></span>
+					</button>
+					<ul class="dropdown-menu">
+						<li ng-repeat="description in streamSourcesDescriptions"><a ng-click="addNewComponent(description)">{{description.name}}</a></li>
+					</ul>
+				</div>
+			</div>
+
+			<!-- Components : LEARNER, NO_TYPE, ANALYTICS-->
+			<div class="btn-group">
+				<div class="btn-group">
+					<div class="btn-group">
+						<button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown">
+							Learners <span class="caret"></span>
+						</button>
+						<ul class="dropdown-menu">
+							<li ng-repeat="description in learnersDescriptions"><a ng-click="addNewComponent(description)">{{description.name}}</a></li>
+						</ul>
+					</div>
+
+					<div class="btn-group">
+						<button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown">
+							Analytics <span class="caret"></span>
+						</button>
+						<ul class="dropdown-menu">
+							<li ng-repeat="description in analyticsDescriptions"><a ng-click="addNewComponent(description)">{{description.name}}</a></li>
+						</ul>
+					</div>
+
+					<div class="btn-group">
+						<button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown">
+							Others <span class="caret"></span>
+						</button>
+						<ul class="dropdown-menu">
+							<li ng-repeat="description in othersDescriptions"><a ng-click="addNewComponent(description)">{{description.name}}</a></li>
+						</ul>
+					</div>
 				</div>
 			</div>
 		</div>
 		
-		<div class="well">
-			<div class="pull-right">
-				<button class="btn" ng-click="revert()"><i class="icon-refresh"></i> Revert</button>
-				<button class="btn btn-primary" ng-click="save()">
-					<i class="fa fa-save fa-lg"></i>
-					Save
-				</button>
-			</div>
-		</div>
+		<component model="component" ng-repeat="component in topology.components"></component>
 	</div>
 </div>

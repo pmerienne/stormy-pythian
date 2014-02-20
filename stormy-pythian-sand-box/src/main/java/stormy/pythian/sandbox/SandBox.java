@@ -56,28 +56,28 @@ public class SandBox {
 
 		ComponentDescription randomWordSource = componentDescriptionFactory.createDeclaration(RandomWordSource.class);
 		ComponentConfiguration randomWordSourceConfiguration = new ComponentConfiguration(randomAlphabetic(6), randomWordSource);
-		randomWordSourceConfiguration.outputStreams.add(new OutputStreamConfiguration(randomWordSource.outputStreamDescriptions.get(0), createMappings(RandomWordSource.WORD_FEATURE, "random word")));
+		randomWordSourceConfiguration.add(new OutputStreamConfiguration(randomWordSource.getOutputStreams().get(0), createMappings(RandomWordSource.WORD_FEATURE, "random word")));
 
 		ComponentDescription wordCount = componentDescriptionFactory.createDeclaration(WordCount.class);
 		ComponentConfiguration wordCountConfiguration = new ComponentConfiguration(randomAlphabetic(6), wordCount);
-		wordCountConfiguration.inputStreams.add(new InputStreamConfiguration(wordCount.inputStreamDescriptions.get(0), createMappings(WordCount.WORD_FEATURE, "random word")));
-		wordCountConfiguration.outputStreams.add(new OutputStreamConfiguration(wordCount.outputStreamDescriptions.get(0), createMappings(WordCount.COUNT_FEATURE, "word count")));
+		wordCountConfiguration.add(new InputStreamConfiguration(wordCount.getInputStreams().get(0), createMappings(WordCount.WORD_FEATURE, "random word")));
+		wordCountConfiguration.add(new OutputStreamConfiguration(wordCount.getOutputStreams().get(0), createMappings(WordCount.COUNT_FEATURE, "word count")));
 		wordCountConfiguration.addStateFactory("count state", stateFactoryConfiguration);
 		
 		ComponentDescription consoleOutput = componentDescriptionFactory.createDeclaration(ConsoleOutput.class);
 		ComponentConfiguration consoleOutputConfiguration = new ComponentConfiguration(randomAlphabetic(6), consoleOutput);
-		consoleOutputConfiguration.inputStreams.add(new InputStreamConfiguration(consoleOutput.inputStreamDescriptions.get(0), Arrays.asList("random word", "word count")));
+		consoleOutputConfiguration.add(new InputStreamConfiguration(consoleOutput.getInputStreams().get(0), Arrays.asList("random word", "word count")));
 
 		LocalCluster cluster = new LocalCluster();
 
 		PythianToplogyConfiguration topologyConfiguration = new PythianToplogyConfiguration();
-		topologyConfiguration.getComponents().add(randomWordSourceConfiguration);
-		topologyConfiguration.getComponents().add(wordCountConfiguration);
-		topologyConfiguration.getComponents().add(consoleOutputConfiguration);
-		topologyConfiguration.addStateFactory(stateFactoryConfiguration);
+		topologyConfiguration.add(randomWordSourceConfiguration);
+		topologyConfiguration.add(wordCountConfiguration);
+		topologyConfiguration.add(consoleOutputConfiguration);
+		topologyConfiguration.add(stateFactoryConfiguration);
 
-		topologyConfiguration.getConnections().add(new ConnectionConfiguration(randomWordSourceConfiguration.id, "out", wordCountConfiguration.id, "in"));
-		topologyConfiguration.getConnections().add(new ConnectionConfiguration(wordCountConfiguration.id, "out", consoleOutputConfiguration.id, "in"));
+		topologyConfiguration.add(new ConnectionConfiguration(randomWordSourceConfiguration.getId(), "out", wordCountConfiguration.getId(), "in"));
+		topologyConfiguration.add(new ConnectionConfiguration(wordCountConfiguration.getId(), "out", consoleOutputConfiguration.getId(), "in"));
 
 		try {
 			PythianTopology pythianTopology = new PythianTopology();

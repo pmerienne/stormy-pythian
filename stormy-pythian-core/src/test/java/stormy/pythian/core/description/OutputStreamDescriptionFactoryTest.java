@@ -127,47 +127,5 @@ public class OutputStreamDescriptionFactoryTest {
 		factory.createOutputStreamDeclarations(TestComponent.class);
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void should_throw_illegal_argument_exception_with_duplicated_output_streams() {
-		// Given
-		@Documentation(name = "Test component")
-		class TestComponent implements Component {
-
-			@InputStream(name = "in", type = USER_SELECTION)
-			public Stream in;
-
-			@OutputStream(from = "in", name = "out1")
-			private Stream out1;
-
-			@OutputStream(from = "in", name = "out1")
-			private Stream out2;
-
-			@Override
-			public void init() {
-			}
-		}
-
-		// When
-		factory.createOutputStreamDeclarations(TestComponent.class);
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void should_throw_illegal_argument_exception_when_output_stream_reference_not_existing_input_stream() {
-		// Given
-		@Documentation(name = "Test component")
-		class TestComponent implements Component {
-
-			@OutputStream(from = "in", name = "out1")
-			private Stream out1;
-
-			@Override
-			public void init() {
-			}
-		}
-
-		// When
-		List<OutputStreamDescription> outputStreamDeclarations = factory.createOutputStreamDeclarations(TestComponent.class);
-		factory.ensureInputStreamReference(outputStreamDeclarations, new ArrayList<InputStreamDescription>());
-	}
 
 }

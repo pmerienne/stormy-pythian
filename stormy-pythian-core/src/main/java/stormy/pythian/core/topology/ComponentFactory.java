@@ -56,8 +56,8 @@ public class ComponentFactory {
 	public Component createComponent(ComponentConfiguration configuration, Map<String, StateFactory> topologyStateFactories, Map<String, Stream> inputStreams,
 			Map<String, FeaturesIndex> inputFeaturesIndexes, Map<String, FeaturesIndex> outputFeaturesIndexes) {
 		try {
-			Component component = configuration.descriptor.clazz.newInstance();
-			setProperties(component, configuration.properties);
+			Component component = configuration.retrieveImplementationClass().newInstance();
+			setProperties(component, configuration.getProperties());
 			setInputStreams(component, inputStreams);
 			setTopology(component, tridentTopology);
 			setConfiguration(component, config);
@@ -68,7 +68,7 @@ public class ComponentFactory {
 
 			return component;
 		} catch (Exception e) {
-			throw new IllegalArgumentException("Unable to add component " + configuration.descriptor.name, e);
+			throw new IllegalArgumentException("Unable to add component " + configuration.retrieveName(), e);
 		}
 	}
 
@@ -98,10 +98,10 @@ public class ComponentFactory {
 
 	// TODO : refactor !
 	private void setFeaturesMappers(Component component, ComponentConfiguration configuration, Map<String, FeaturesIndex> inputFeaturesIndexes, Map<String, FeaturesIndex> outputFeaturesIndexes) {
-		for (InputStreamConfiguration isConfiguration : configuration.inputStreams) {
-			String streamName = isConfiguration.getStreamName();
+		for (InputStreamConfiguration isConfiguration : configuration.getInputStreams()) {
+			String streamName = isConfiguration.retrieveStreamName();
 
-			switch (isConfiguration.getMappingType()) {
+			switch (isConfiguration.retrieveMappingType()) {
 			case USER_SELECTION:
 				setFeaturesMapper(component, streamName, new InputUserSelectionFeaturesMapper(inputFeaturesIndexes.get(streamName), isConfiguration.getSelectedFeatures()));
 				break;
@@ -109,24 +109,24 @@ public class ComponentFactory {
 				setFeaturesMapper(component, streamName, new InputFixedFeaturesMapper(inputFeaturesIndexes.get(streamName), isConfiguration.getMappings()));
 				break;
 			default:
-				throw new IllegalStateException("Unsupported mapping type : " + isConfiguration.getMappingType());
+				throw new IllegalStateException("Unsupported mapping type : " + isConfiguration.retrieveMappingType());
 			}
 		}
 
-		for (OutputStreamConfiguration osConfiguration : configuration.outputStreams) {
-			String streamName = osConfiguration.getStreamName();
+		for (OutputStreamConfiguration osConfiguration : configuration.getOutputStreams()) {
+			String streamName = osConfiguration.retrieveStreamName();
 
-			switch (osConfiguration.getMappingType()) {
+			switch (osConfiguration.retrieveMappingType()) {
 			case USER_SELECTION:
 				OutputUserSelectionFeaturesMapper outputUserSelectionFeaturesMapper = new OutputUserSelectionFeaturesMapper(outputFeaturesIndexes.get(streamName), osConfiguration.getNewFeatures());
 				setFeaturesMapper(component, streamName, outputUserSelectionFeaturesMapper);
 				break;
 			case FIXED_FEATURES:
-				OutputFixedFeaturesMapper outputFixedFeaturesMapper = new OutputFixedFeaturesMapper(outputFeaturesIndexes.get(streamName), osConfiguration.mappings);
+				OutputFixedFeaturesMapper outputFixedFeaturesMapper = new OutputFixedFeaturesMapper(outputFeaturesIndexes.get(streamName), osConfiguration.getMappings());
 				setFeaturesMapper(component, streamName, outputFixedFeaturesMapper);
 				break;
 			default:
-				throw new IllegalStateException("Unsupported mapping type : " + osConfiguration.getMappingType());
+				throw new IllegalStateException("Unsupported mapping type : " + osConfiguration.retrieveMappingType());
 			}
 		}
 	}

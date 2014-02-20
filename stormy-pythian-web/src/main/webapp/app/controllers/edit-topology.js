@@ -1,27 +1,32 @@
-app.controller('EditTopologyCtrl', function (
-		$scope, $routeParams, $modal,
-		JsPlumbService, ComponentService, 
-		TopologyResource, DescriptionsResource) {
-	
+app.controller('EditTopologyCtrl', function($scope, $location, $route, $routeParams, $modal,
+		JsPlumbService, ComponentService, TopologyResource, TopologiesResource,
+		DescriptionsResource) {
+
 	var REDRAW_TIMEOUT = 50;
-	
-	$scope.topology = {components: [], connections: []};
-	
+
+	$scope.topology = {};
+
 	$scope.displayTopology = function(topology) {
 		$scope.topology = topology;
-		
+
 		$scope.diagram = JsPlumbService.createDiagram("jsplumb-container");
 		setTimeout(function() {
 			$scope.diagram.bindTopologyConnections($scope.topology);
 			$scope.redraw();
 		}, REDRAW_TIMEOUT);
-		
 	};
-	
-	$scope.editComponent = function (component) {
-	    var modalInstance = $modal.open({
+
+	TopologyResource.get({ topologyId : $routeParams.topologyId}, function(topology) {
+		$scope.displayTopology(topology);
+	}, function(error) {
+		console.log("Unable to load topology");
+		$location.path("topologies/");
+	});
+
+	$scope.editComponent = function(component) {
+		var modalInstance = $modal.open({
 			templateUrl : 'views/component/edit-component-modal.html',
-			controller: 'EditComponentCtrl', 
+			controller : 'EditComponentCtrl',
 			resolve : {
 				editedComponent : function() {
 					return component;
@@ -29,38 +34,39 @@ app.controller('EditTopologyCtrl', function (
 			}
 		});
 
-		modalInstance.result.then(
-			function(editedComponent) {
-				if(!editedComponent) {
-					$scope.removeComponent(component);
-				}
-			}, function(component) {
-				// Edition canceled
+		modalInstance.result.then(function(editedComponent) {
+			if (!editedComponent) {
+				$scope.removeComponent(component);
 			}
-		);
+		}, function(component) {
+			// Edition canceled
+		});
 	};
-	
+
 	$scope.removeComponent = function(component) {
 		$scope.diagram.clearComponent(component);
 		$scope.topology.components.remove(component);
 	};
 
-	$scope.save = function () {
-		console.log($scope.topology);
-		console.log($scope.topology.components);
-		$scope.redraw(true);
-	};
-	
-	$scope.revert = function () {
-		if($scope.diagram) {
-			$scope.diagram.reset();
-		}
-
-		TopologyResource.get({topologyId: $routeParams.topologyId}, function(topology) {
-			$scope.displayTopology(topology);
+	$scope.save = function() {
+		TopologiesResource.save($scope.topology, function(data) {
+			console.log("Topology saved");
+		}, function(error) {
+			console.log("Save failed");
 		});
 	};
-	
+
+	$scope.remove = function() {
+		TopologyResource.remove({topologyId : $scope.topology.id}, function() {
+			console.log("Topology deleted");
+			$location.path("topologies/");
+		});
+	};
+
+	$scope.revert = function() {
+		$route.reload();
+	};
+
 	$scope.addNewComponent = function(description) {
 		var component = ComponentService.createNewComponent(description);
 		$scope.topology.components.push(component);
@@ -68,7 +74,7 @@ app.controller('EditTopologyCtrl', function (
 	};
 
 	$scope.redraw = function(deffered) {
-		if(!deffered) {
+		if (!deffered) {
 			$scope.diagram.jsPlumbInstance.repaintEverything();
 		} else {
 			setTimeout(function() {
@@ -76,14 +82,28 @@ app.controller('EditTopologyCtrl', function (
 			}, REDRAW_TIMEOUT);
 		}
 	};
-	
-	TopologyResource.get({topologyId: $routeParams.topologyId}, function(topology) {
-		$scope.displayTopology(topology);
+
+	DescriptionsResource.getComponentDescriptions(function(descriptions) {
+		$scope.streamSourcesDescriptions = descriptions.filter(function(
+				description) {
+			return description.type == 'STREAM_SOURCE';
+		});
+		$scope.learnersDescriptions = descriptions
+				.filter(function(description) {
+					return description.type == 'LEARNER';
+				});
+		$scope.analyticsDescriptions = descriptions
+				.filter(function(description) {
+					return description.type == 'ANALYTICS';
+				});
+		$scope.othersDescriptions = descriptions.filter(function(description) {
+			return description.type == 'NO_TYPE' || description.type == ''
+					|| description.type == null;
+		});
 	});
-	
-	DescriptionsResource.getDescriptions(function(descriptions) {
-		$scope.componentDescriptions = descriptions["COMPONENT"];
-		$scope.streamSourceDescriptions = descriptions["STREAM_SOURCE"];
+
+	DescriptionsResource.getStateDescriptions(function(descriptions) {
+		$scope.stateDescriptions = descriptions;
 	});
 
 });
