@@ -25,8 +25,8 @@ public class FeatureDescription {
         }
     };
 
-    private final String name;
-    private final Class<?> type;
+    private String name;
+    private Class<?> type;
 
     public FeatureDescription() {
         this.name = null;
@@ -44,6 +44,14 @@ public class FeatureDescription {
 
     public Class<?> getType() {
         return type;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setType(Class<?> type) {
+        this.type = type;
     }
 
     @Override

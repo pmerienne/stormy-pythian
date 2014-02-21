@@ -17,82 +17,93 @@ package stormy.pythian.core.description;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import stormy.pythian.model.annotation.MappingType;
 
 public class InputStreamDescription {
 
-	private final String name;
-	private final MappingType type;
-	private final List<FeatureDescription> expectedFeatures;
-	
-	public InputStreamDescription() {
-            this.name = null;
-            this.type = null;
-            this.expectedFeatures = null;
-        }
+    private String name;
+    private MappingType type;
+    private List<FeatureDescription> expectedFeatures = new ArrayList<>();
 
-	public InputStreamDescription(String name, MappingType type, List<FeatureDescription> expectedFeatures) {
-		this.name = name;
-		this.type = type;
-		this.expectedFeatures = expectedFeatures;
-	}
+    public InputStreamDescription() {
+        this.name = null;
+        this.type = null;
+        this.expectedFeatures = null;
+    }
 
-	public InputStreamDescription(String name, MappingType type) {
-		this.name = name;
-		this.type = type;
-		this.expectedFeatures = new ArrayList<>();
-	}
+    public InputStreamDescription(String name, MappingType type, List<FeatureDescription> expectedFeatures) {
+        this.name = name;
+        this.type = type;
+        this.expectedFeatures = expectedFeatures;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public InputStreamDescription(String name, MappingType type) {
+        this.name = name;
+        this.type = type;
+        this.expectedFeatures = new ArrayList<>();
+    }
 
-	public MappingType getType() {
-		return type;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public List<FeatureDescription> getExpectedFeatures() {
-		return expectedFeatures;
-	}
+    public MappingType getType() {
+        return type;
+    }
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((expectedFeatures == null) ? 0 : expectedFeatures.hashCode());
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + ((type == null) ? 0 : type.hashCode());
-		return result;
-	}
+    public List<FeatureDescription> getExpectedFeatures() {
+        return expectedFeatures;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		InputStreamDescription other = (InputStreamDescription) obj;
-		if (expectedFeatures == null) {
-			if (other.expectedFeatures != null)
-				return false;
-		} else if (!expectedFeatures.equals(other.expectedFeatures))
-			return false;
-		if (name == null) {
-			if (other.name != null)
-				return false;
-		} else if (!name.equals(other.name))
-			return false;
-		if (type != other.type)
-			return false;
-		return true;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	@Override
-	public String toString() {
-		return "InputStreamDescription [name=" + name + ", mappingType=" + type + ", expectedFeatures=" + expectedFeatures + "]";
-	}
+    public void setType(MappingType type) {
+        this.type = type;
+    }
+
+    public void setExpectedFeatures(List<FeatureDescription> expectedFeatures) {
+        this.expectedFeatures = expectedFeatures;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((expectedFeatures == null) ? 0 : expectedFeatures.hashCode());
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result + ((type == null) ? 0 : type.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        InputStreamDescription other = (InputStreamDescription) obj;
+        if (expectedFeatures == null) {
+            if (other.expectedFeatures != null)
+                return false;
+        } else if (!expectedFeatures.equals(other.expectedFeatures))
+            return false;
+        if (name == null) {
+            if (other.name != null)
+                return false;
+        } else if (!name.equals(other.name))
+            return false;
+        if (type != other.type)
+            return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "InputStreamDescription [name=" + name + ", mappingType=" + type + ", expectedFeatures=" + expectedFeatures + "]";
+    }
 
 }

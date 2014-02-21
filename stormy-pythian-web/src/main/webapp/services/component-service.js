@@ -18,8 +18,13 @@ app.factory('ComponentService', function() {
 
 		if("USER_SELECTION" == description.type) {
 			this.selectedFeatures = [];
-		} else if("FIXED" == description.mappingType) {
-			this.mappings = description.expectedFeatures ? description.expectedFeatures.slice(0) : [];
+		} else if("FIXED_FEATURES" == description.type) {
+			this.mappings = {};
+			if(description.expectedFeatures) {
+				for(var i = 0; i < description.expectedFeatures.length; i++) {
+					this.mappings[description.expectedFeatures[i].name] = "";
+				}
+			}
 		}
 	};
 
@@ -28,12 +33,14 @@ app.factory('ComponentService', function() {
 		
 		if("USER_SELECTION" == description.type) {
 			this.selectedFeatures = [];
-		} else if("FIXED" == description.mappingType) {
-			this.mappings = description.newFeatures ? description.newFeatures.slice(0) : [];
+		} else if("FIXED_FEATURES" == description.type) {
+			this.mappings = {};
+			if(description.newFeatures) {
+				for(var i = 0; i < description.newFeatures.length; i++) {
+					this.mappings[description.newFeatures[i].name] = "New feature : " + description.newFeatures[i].name;
+				}
+			}
 		}
-		
-		this.mappings = {};
-		this.selectedFeatures = [];
 	};
 	
 	var Property = function(description) {

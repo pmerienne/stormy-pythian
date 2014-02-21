@@ -18,14 +18,15 @@ package stormy.pythian.core.description;
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static stormy.pythian.model.annotation.MappingType.FIXED_FEATURES;
 import static stormy.pythian.model.annotation.MappingType.USER_SELECTION;
+import java.util.ArrayList;
 import java.util.List;
 import stormy.pythian.model.annotation.MappingType;
 
 public class OutputStreamDescription {
 
-    private final String name;
-    private final String from;
-    private final List<FeatureDescription> newFeatures;
+    private String name;
+    private String from;
+    private List<FeatureDescription> newFeatures = new ArrayList<>();
 
     private final MappingType type;
 
@@ -62,6 +63,18 @@ public class OutputStreamDescription {
         this.from = null;
         this.newFeatures = newFeatures;
         this.type = FIXED_FEATURES;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setFrom(String from) {
+        this.from = from;
+    }
+
+    public void setNewFeatures(List<FeatureDescription> newFeatures) {
+        this.newFeatures = newFeatures;
     }
 
     public String getName() {

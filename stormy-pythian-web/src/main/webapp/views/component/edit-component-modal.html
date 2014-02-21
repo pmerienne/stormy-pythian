@@ -19,39 +19,37 @@
 			</tab>
 			
 			<tab>
-		
-				<tab-heading> <i class="fa fa-link fa-lg"></i> Field mapping </tab-heading>
-		
-				<form class="form-horizontal" name="input-{{inputStream.name.removeSpaces()}}" ng-repeat="inputStream in component.inputStreams">
-					<h4>
-						{{inputStream.name}} <small>(Input stream)</small>
-					</h4>
-		
-					<!-- ?? | filter:isFixedFeaturesMapping -->
-					<div ng-repeat="mapping in inputStream.mappings" class="control-group" ng-class="{error: input-{{inputStream.name.removeSpaces()}}[{{mapping.inside.removeSpaces()}}].$invalid}">
-						<label class="control-label" for="{{mapping.inside.removeSpaces()}}">{{mapping.inside}}</label>
-						<div class="controls">
-							<input type="text" name="{{mapping.inside.removeSpaces()}}" ng-model="mapping.outside" ng-required="true"> <span
-								ng-show="input-{{inputStream.name.removeSpaces()}}.{{mapping.inside.removeSpaces()}}.$error.required" class="help-inline">Required</span>
+				<tab-heading><i class="fa fa-link fa-lg"></i> Input mapping </tab-heading>
+				
+				<form role="form" ng-repeat="inputStream in component.inputStreams">
+					<h3>{{inputStream.description.name}}</h3>
+					
+					<div ng-show="inputStream.description.type == 'FIXED_FEATURES'">
+						<div class="form-group" ng-repeat="(componentName, topologyName) in inputStream.mappings">
+							<label>{{componentName}}</label>
+							<input class="form-control" ng-model="inputStream.mappings[componentName]">
 						</div>
 					</div>
 				</form>
-		
-				<form class="form-horizontal" name="output-{{outputStream.name.removeSpaces()}}" ng-repeat="outputStream in component.outputStreams">
-					<h4>
-						{{outputStream.name}} <small>(Output stream)</small>
-					</h4>
-					<div ng-repeat="mapping in outputStream.mappings" class="control-group" ng-class="{error: output-{{outputStream.name.removeSpaces()}}[{{mapping.inside.removeSpaces()}}].$invalid}">
-						<label class="control-label" for="{{mapping.inside.removeSpaces()}}">{{mapping.inside}}</label>
-						<div class="controls">
-							<input type="text" name="{{mapping.inside.removeSpaces()}}" ng-model="mapping.outside" ng-required="true"> <span
-								ng-show="output-{{outputStream.name.removeSpaces()}}.{{mapping.inside.removeSpaces()}}.$error.required" class="help-inline">Required</span>
+			</tab>
+			
+			<tab>
+				<tab-heading><i class="fa fa-link fa-lg"></i> Output mapping </tab-heading>
+
+				<form role="form" ng-repeat="outputStream in component.outputStreams">
+					<h3>{{outputStream.description.name}}</h3>
+					
+					<div ng-show="outputStream.description.type == 'FIXED_FEATURES'">
+						<div class="form-group" ng-repeat="(componentName, topologyName) in outputStream.mappings">
+							<label>{{componentName}}</label>
+							<input class="form-control" ng-model="outputStream.mappings[componentName]">
 						</div>
 					</div>
 				</form>
 			</tab>
 		</tabset>
 	</div>
+
 	<div class="modal-footer">
 		<button class="btn btn-danger" ng-click="deleteComponent()">
 			<i class="fa fa-trash-o fa-lg"></i> Delete

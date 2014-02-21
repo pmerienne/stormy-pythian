@@ -85,7 +85,7 @@ public class FeaturesIndexFactory {
 	private FeaturesIndex createFeaturesIndex(String componentId, OutputStreamConfiguration outputStream) {
 		FeaturesIndex index = null;
 
-		Collection<String> newFeatures = outputStream.getNewFeatures();
+		Collection<String> newFeatures = outputStream.retrieveNewFeatures();
 
 		if (!outputStream.hasInputStreamSource()) {
 			index = new FeaturesIndex(newFeatures);
