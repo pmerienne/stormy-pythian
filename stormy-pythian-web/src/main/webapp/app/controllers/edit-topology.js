@@ -1,5 +1,5 @@
 app.controller('EditTopologyCtrl', function($scope, $location, $route, $routeParams, $modal,
-		JsPlumbService, ComponentService, TopologyResource, TopologiesResource,
+		NotificationService, JsPlumbService, ComponentService, TopologyResource, TopologiesResource,
 		DescriptionsResource) {
 
 	var REDRAW_TIMEOUT = 50;
@@ -19,7 +19,7 @@ app.controller('EditTopologyCtrl', function($scope, $location, $route, $routePar
 	TopologyResource.get({ topologyId : $routeParams.topologyId}, function(topology) {
 		$scope.displayTopology(topology);
 	}, function(error) {
-		console.log("Unable to load topology");
+		NotificationService.notify("Unable to load topology", "danger");
 		$location.path("topologies/");
 	});
 
@@ -50,15 +50,15 @@ app.controller('EditTopologyCtrl', function($scope, $location, $route, $routePar
 
 	$scope.save = function() {
 		TopologiesResource.save($scope.topology, function(data) {
-			console.log("Topology saved");
+			NotificationService.notify("'" + $scope.topology.name + "' saved");
 		}, function(error) {
-			console.log("Save failed");
+			NotificationService.notify("'" + $scope.topology.name + "' not saved! ", "danger");
 		});
 	};
 
 	$scope.remove = function() {
 		TopologyResource.remove({topologyId : $scope.topology.id}, function() {
-			console.log("Topology deleted");
+			NotificationService.notify("Topology deleted");
 			$location.path("topologies/");
 		});
 	};

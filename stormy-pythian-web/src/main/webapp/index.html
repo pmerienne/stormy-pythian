@@ -15,8 +15,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" href="img/favicon.ico" />
 <link rel="stylesheet" href="styles/bootstrap.min.css">
-<link rel="stylesheet"
-	href="vendors/font-awesome/css/font-awesome.min.css">
+<link rel="stylesheet" href="vendors/font-awesome/css/font-awesome.min.css">
+<link rel="stylesheet" href="vendors/bootstrap-notify/bootstrap-notify.css">
 <link rel="stylesheet" href="styles/main.css">
 </head>
 
@@ -29,6 +29,7 @@
 
 	<ui-include src="'views/navigation-bar.html'"></ui-include>
 	<div class="container" ng-view></div>
+	<div id="notifications" class='notifications bottom-right'></div>
 
 	<footer>
 		<p>&copy; Stormy-Pythian 2013</p>
@@ -44,6 +45,7 @@
 	<script src="vendors/ui-utils/include.js"></script>
 	<script src="vendors/bootstrap/bootstrap.js"></script>
 	<script src="vendors/angular-ui/ui-bootstrap-tpls-0.10.0.min.js"></script>
+	<script src="vendors/bootstrap-notify/bootstrap-notify.js"></script>
 
 	<script src="utils/array-utils.js"></script>
 	<script src="utils/string-utils.js"></script>
@@ -55,6 +57,7 @@
 	<script src="services/description-service.js"></script>
 	<script src="services/jsplumb-service.js"></script>
 	<script src="services/component-service.js"></script>
+	<script src="services/notification.js"></script>
 
 	<script src="resources/description-resources.js"></script>
 	<script src="resources/topology-resources.js"></script>
