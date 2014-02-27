@@ -118,7 +118,7 @@ public class ComponentFactory {
 
 			switch (osConfiguration.retrieveMappingType()) {
 			case USER_SELECTION:
-				OutputUserSelectionFeaturesMapper outputUserSelectionFeaturesMapper = new OutputUserSelectionFeaturesMapper(outputFeaturesIndexes.get(streamName), osConfiguration.getNewFeatures());
+				OutputUserSelectionFeaturesMapper outputUserSelectionFeaturesMapper = new OutputUserSelectionFeaturesMapper(outputFeaturesIndexes.get(streamName), osConfiguration.retrieveNewFeatures());
 				setFeaturesMapper(component, streamName, outputUserSelectionFeaturesMapper);
 				break;
 			case FIXED_FEATURES:

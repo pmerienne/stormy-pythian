@@ -123,7 +123,7 @@ public class FeaturesIndexFactoryTest {
 		OutputStreamConfiguration outputStream = mock(OutputStreamConfiguration.class);
 		when(outputStream.retrieveStreamName()).thenReturn(streamName);
 		when(outputStream.hasInputStreamSource()).thenReturn(false);
-		when(outputStream.getNewFeatures()).thenReturn(newFeatures);
+		when(outputStream.retrieveNewFeatures()).thenReturn(newFeatures);
 
 		ComponentConfiguration component = mock(ComponentConfiguration.class);
 		when(component.getId()).thenReturn(componentId);
@@ -154,7 +154,7 @@ public class FeaturesIndexFactoryTest {
 		when(outputStream.retrieveStreamName()).thenReturn(streamName);
 		when(outputStream.hasInputStreamSource()).thenReturn(true);
 		when(outputStream.retrieveInputStreamSource()).thenReturn(inputStreamName);
-		when(outputStream.getNewFeatures()).thenReturn(newFeatures);
+		when(outputStream.retrieveNewFeatures()).thenReturn(newFeatures);
 
 		when(inputFeaturesIndexes.get(componentId, inputStreamName)).thenReturn(inputIndex);
 

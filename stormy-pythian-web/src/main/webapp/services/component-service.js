@@ -4,10 +4,11 @@ app.factory('ComponentService', function() {
 		this.description = description;
 		
 		this.id = this.randomId();
+		this.name = description.name;
 		
 		this.inputStreams = description.inputStreams ? description.inputStreams.map(this.createInputStream): [];
 		this.outputStreams = description.outputStreams ? description.outputStreams.map(this.createOutputStream): [];
-		this.properties = description.properties ? description.properties.slice(0) : [];
+		this.properties = description.properties ? description.properties.map(this.createProperty): [];
 		this.x = 50;
 		this.y = 100;
 	};
@@ -17,8 +18,13 @@ app.factory('ComponentService', function() {
 
 		if("USER_SELECTION" == description.type) {
 			this.selectedFeatures = [];
-		} else if("FIXED" == description.mappingType) {
-			this.mappings = description.expectedFeatures ? description.expectedFeatures.slice(0) : [];
+		} else if("FIXED_FEATURES" == description.type) {
+			this.mappings = {};
+			if(description.expectedFeatures) {
+				for(var i = 0; i < description.expectedFeatures.length; i++) {
+					this.mappings[description.expectedFeatures[i].name] = "";
+				}
+			}
 		}
 	};
 
@@ -27,12 +33,19 @@ app.factory('ComponentService', function() {
 		
 		if("USER_SELECTION" == description.type) {
 			this.selectedFeatures = [];
-		} else if("FIXED" == description.mappingType) {
-			this.mappings = description.newFeatures ? description.newFeatures.slice(0) : [];
+		} else if("FIXED_FEATURES" == description.type) {
+			this.mappings = {};
+			if(description.newFeatures) {
+				for(var i = 0; i < description.newFeatures.length; i++) {
+					this.mappings[description.newFeatures[i].name] = "New feature : " + description.newFeatures[i].name;
+				}
+			}
 		}
-		
-		this.mappings = {};
-		this.selectedFeatures = [];
+	};
+	
+	var Property = function(description) {
+		this.name = description.name;
+		this.value = null;
 	};
 	
 	Component.prototype.createInputStream = function(description) {
@@ -43,14 +56,10 @@ app.factory('ComponentService', function() {
 		return new OutputStream(description);
 	};
 
-	Component.prototype.setProperty = function(name, value) {
-		this.properties.forEach(function(property) {
-		    if(property.name == name) {
-		    	property.value = value;
-		    }
-		});
+	Component.prototype.createProperty = function(description) {
+		return new Property(description);
 	};
-	
+
 	Component.prototype.randomId = function() {
 	    return Math.random().toString(36).substr(2) + Math.random().toString(36).substr(2) ; 
 	};

@@ -89,7 +89,7 @@ public class OutputStreamConfiguration {
         return mappings;
     }
 
-    public Collection<String> getNewFeatures() {
+    public Collection<String> retrieveNewFeatures() {
         switch (description.getType()) {
             case FIXED_FEATURES:
                 return mappings.values();

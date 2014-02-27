@@ -1,91 +1,79 @@
 <div>
 	<div class="modal-header">
-		<h3>{{component.name}}</h3>
+		<div class="form-group">
+			<input class="form-control input-lg" ng-model="component.name" placeholder="Component's name" />
+		</div>
 	</div>
 	<div class="modal-body">
-		<tabset> 
+		<tabset>
 			<tab>
-				<tab-heading>
-					<i class="fa fa-info fa-lg"></i>
-					General informations
-				</tab-heading>
-				
-				<form class="form-horizontal" name="documentationForm">
-					<div class="control-group" ng-class="{error: documentationForm.name.$invalid}">
-						<label class="control-label" for="name">Name</label>
-						<div class="controls">
-							<input type="text" name="name" ng-model="component.name" ng-required="true">
-							<span ng-show="documentationForm.name.$error.required" class="help-inline">Required</span>
-						</div>
-					</div>
-					
-					<div class="control-group" ng-class="{error: documentationForm.shortDescription.$invalid}">
-						<label class="control-label" for="shortDescription">Description</label>
-						<div class="controls">
-							<textarea rows="8" type="text" name="shortDescription" ng-model="component.shortDescription"></textarea>
-						</div>
+				<tab-heading><i class="fa fa-cogs fa-lg"></i> Properties </tab-heading>
+	
+				<form role="form">
+					<div class="form-group" ng-repeat="property in component.properties">
+						<label for="{{property.name}}">{{property.name}}</label>
+						<input id="{{property.name}}" class="form-control" ng-model="property.value" ng-required="property.mandatory">
+						<p class="help-block">{{property.description}}</p>
 					</div>
 				</form>
 			</tab>
 			
 			<tab>
-				<tab-heading>
-					<i class="fa fa-cogs fa-lg"></i>
-					Properties
-				</tab-heading>
-			
-				<form class="form-horizontal" name="propertiesForm">
-					<div ng-repeat="property in component.properties" class="control-group" ng-class="{error: propertiesForm[property.name.removeSpaces()].$invalid}">
-						<label class="control-label" for="{{property.name.removeSpaces()}}">{{property.name}}</label>
-						<div class="controls">
-							<input type="text" name="{{property.name.removeSpaces()}}" ng-model="property.value" ng-required="property.mandatory">
-							<!-- <span ng-show="propertiesForm.{{property.name.removeSpaces()}}.$error.required" class="help-inline">Required</span> -->
+				<tab-heading><i class="fa fa-link fa-lg"></i> Input mapping </tab-heading>
+				
+				<form role="form" ng-repeat="inputStream in component.inputStreams">
+					<h3>{{inputStream.description.name}}</h3>
+					
+					<div ng-show="inputStream.description.type == 'FIXED_FEATURES'">
+						<div class="form-group" ng-repeat="(componentName, topologyName) in inputStream.mappings">
+							<label>{{componentName}}</label>
+							<input class="form-control" ng-model="inputStream.mappings[componentName]">
 						</div>
 					</div>
+					
+					<div ng-show="inputStream.description.type == 'USER_SELECTION'">
+						<div class="input-group form-group" ng-repeat="selectedFeature in inputStream.selectedFeatures track by $index">
+							<input class="form-control" ng-model="inputStream.selectedFeatures[$index]" type="text"/>
+							<span class="input-group-addon btn" ng-click="inputStream.selectedFeatures.splice($index, 1)">x</span>
+						</div>
+
+					    <button class="btn btn-default" ng-click="inputStream.selectedFeatures.push('')"><i class="fa fa-plus"></i></button>
+					</div>
 				</form>
-			</tab> 
+			</tab>
 			
 			<tab>
-				<tab-heading>
-					<i class="fa fa-link fa-lg"></i>
-					Field mapping
-				</tab-heading>
-				
-				<form class="form-horizontal" name="input-{{inputStream.name.removeSpaces()}}" ng-repeat="inputStream in component.inputStreams">
-					<h4>{{inputStream.name}} <small>(Input stream)</small></h4>
+				<tab-heading><i class="fa fa-link fa-lg"></i> Output mapping </tab-heading>
+
+				<form role="form" ng-repeat="outputStream in component.outputStreams">
+					<h3>{{outputStream.description.name}}</h3>
 					
-					<!-- ?? | filter:isFixedFeaturesMapping -->
-					<div ng-repeat="mapping in inputStream.mappings" class="control-group" ng-class="{error: input-{{inputStream.name.removeSpaces()}}[{{mapping.inside.removeSpaces()}}].$invalid}">
-						<label class="control-label" for="{{mapping.inside.removeSpaces()}}">{{mapping.inside}}</label>
-						<div class="controls">
-							<input type="text" name="{{mapping.inside.removeSpaces()}}" ng-model="mapping.outside" ng-required="true">
-							<span ng-show="input-{{inputStream.name.removeSpaces()}}.{{mapping.inside.removeSpaces()}}.$error.required" class="help-inline">Required</span>
+					<div ng-show="outputStream.description.type == 'FIXED_FEATURES'">
+						<div class="form-group" ng-repeat="(componentName, topologyName) in outputStream.mappings">
+							<label>{{componentName}}</label>
+							<input class="form-control" ng-model="outputStream.mappings[componentName]">
 						</div>
 					</div>
-				</form>
-				
-				<form class="form-horizontal" name="output-{{outputStream.name.removeSpaces()}}" ng-repeat="outputStream in component.outputStreams">
-					<h4>{{outputStream.name}} <small>(Output stream)</small></h4>
-					<div ng-repeat="mapping in outputStream.mappings" class="control-group" ng-class="{error: output-{{outputStream.name.removeSpaces()}}[{{mapping.inside.removeSpaces()}}].$invalid}">
-						<label class="control-label" for="{{mapping.inside.removeSpaces()}}">{{mapping.inside}}</label>
-						<div class="controls">
-							<input type="text" name="{{mapping.inside.removeSpaces()}}" ng-model="mapping.outside" ng-required="true">
-							<span ng-show="output-{{outputStream.name.removeSpaces()}}.{{mapping.inside.removeSpaces()}}.$error.required" class="help-inline">Required</span>
+					
+					<div ng-show="outputStream.description.type == 'USER_SELECTION'">
+						<div class="input-group form-group" ng-repeat="selectedFeature in outputStream.selectedFeatures track by $index">
+							<input class="form-control" ng-model="outputStream.selectedFeatures[$index]" type="text"/>
+							<span class="input-group-addon btn" ng-click="outputStream.selectedFeatures.splice($index, 1)">x</span>
 						</div>
+
+					    <button class="btn btn-default" ng-click="outputStream.selectedFeatures.push('')"><i class="fa fa-plus"></i></button>
 					</div>
 				</form>
-				
 			</tab>
 		</tabset>
 	</div>
+
 	<div class="modal-footer">
 		<button class="btn btn-danger" ng-click="deleteComponent()">
-			<i class="fa fa-trash-o fa-lg"></i>
-			Delete
+			<i class="fa fa-trash-o fa-lg"></i> Delete
 		</button>
 		<button class="btn btn-primary" ng-click="saveComponent()">
-			<i class="fa fa-save fa-lg"></i>
-			Save
+			<i class="fa fa-save fa-lg"></i> Save
 		</button>
 	</div>
 </div>

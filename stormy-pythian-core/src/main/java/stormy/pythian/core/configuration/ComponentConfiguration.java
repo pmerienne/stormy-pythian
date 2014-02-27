@@ -27,6 +27,7 @@ import com.google.common.base.Predicate;
 public class ComponentConfiguration {
 
     private String id;
+    private String name;
 
     private ComponentDescription description;
 
@@ -65,6 +66,14 @@ public class ComponentConfiguration {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public int getX() {

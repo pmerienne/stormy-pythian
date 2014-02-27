@@ -24,6 +24,7 @@ app.controller('EditTopologyCtrl', function($scope, $location, $route, $routePar
 	});
 
 	$scope.editComponent = function(component) {
+		console.log(component);
 		var modalInstance = $modal.open({
 			templateUrl : 'views/component/edit-component-modal.html',
 			controller : 'EditComponentCtrl',
@@ -37,6 +38,8 @@ app.controller('EditTopologyCtrl', function($scope, $location, $route, $routePar
 		modalInstance.result.then(function(editedComponent) {
 			if (!editedComponent) {
 				$scope.removeComponent(component);
+			} else {
+				console.log("'" + component.name + "' saved");
 			}
 		}, function(component) {
 			// Edition canceled

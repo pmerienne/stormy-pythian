@@ -55,22 +55,6 @@ public class ComponentDescription {
         this.type = type;
     }
 
-    public Class<? extends Component> getClazz() {
-        return clazz;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public ComponentType getType() {
-        return type;
-    }
-
     public void addProperties(List<PropertyDescription> properties) {
         this.properties.addAll(properties);
     }
@@ -81,14 +65,6 @@ public class ComponentDescription {
 
     public void addOutputStreams(List<OutputStreamDescription> outputStreams) {
         this.outputStreams.addAll(outputStreams);
-    }
-    
-    public List<InputStreamDescription> getInputStreams() {
-        return inputStreams;
-    }
-    
-    public List<OutputStreamDescription> getOutputStreams() {
-        return outputStreams;
     }
 
     public void ensureOutputStreamReference() {
@@ -160,6 +136,62 @@ public class ComponentDescription {
         if (!inputStreamExists) {
             throw new IllegalArgumentException("Output stream reference a not existing input stream : \"" + name + "\"");
         }
+    }
+
+    public Class<? extends Component> getClazz() {
+        return clazz;
+    }
+
+    public void setClazz(Class<? extends Component> clazz) {
+        this.clazz = clazz;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public ComponentType getType() {
+        return type;
+    }
+
+    public void setType(ComponentType type) {
+        this.type = type;
+    }
+
+    public List<PropertyDescription> getProperties() {
+        return properties;
+    }
+
+    public void setProperties(List<PropertyDescription> properties) {
+        this.properties = properties;
+    }
+
+    public List<OutputStreamDescription> getOutputStreams() {
+        return outputStreams;
+    }
+
+    public void setOutputStreams(List<OutputStreamDescription> outputStreams) {
+        this.outputStreams = outputStreams;
+    }
+
+    public List<InputStreamDescription> getInputStreams() {
+        return inputStreams;
+    }
+
+    public void setInputStreams(List<InputStreamDescription> inputStreams) {
+        this.inputStreams = inputStreams;
     }
 
     @Override

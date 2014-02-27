@@ -136,5 +136,7 @@ body {
 }
 
 .modal-body {
-	height: 400px;
+	height: 600px;
+    max-height: 650px;
+    overflow-y: auto;
 }
