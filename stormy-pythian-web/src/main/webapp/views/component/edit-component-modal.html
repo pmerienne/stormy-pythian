@@ -30,6 +30,15 @@
 							<input class="form-control" ng-model="inputStream.mappings[componentName]">
 						</div>
 					</div>
+					
+					<div ng-show="inputStream.description.type == 'USER_SELECTION'">
+						<div class="input-group form-group" ng-repeat="selectedFeature in inputStream.selectedFeatures track by $index">
+							<input class="form-control" ng-model="inputStream.selectedFeatures[$index]" type="text"/>
+							<span class="input-group-addon btn" ng-click="inputStream.selectedFeatures.splice($index, 1)">x</span>
+						</div>
+
+					    <button class="btn btn-default" ng-click="inputStream.selectedFeatures.push('')"><i class="fa fa-plus"></i></button>
+					</div>
 				</form>
 			</tab>
 			
@@ -44,6 +53,15 @@
 							<label>{{componentName}}</label>
 							<input class="form-control" ng-model="outputStream.mappings[componentName]">
 						</div>
+					</div>
+					
+					<div ng-show="outputStream.description.type == 'USER_SELECTION'">
+						<div class="input-group form-group" ng-repeat="selectedFeature in outputStream.selectedFeatures track by $index">
+							<input class="form-control" ng-model="outputStream.selectedFeatures[$index]" type="text"/>
+							<span class="input-group-addon btn" ng-click="outputStream.selectedFeatures.splice($index, 1)">x</span>
+						</div>
+
+					    <button class="btn btn-default" ng-click="outputStream.selectedFeatures.push('')"><i class="fa fa-plus"></i></button>
 					</div>
 				</form>
 			</tab>
