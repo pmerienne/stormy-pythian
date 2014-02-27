@@ -1,7 +1,10 @@
 language: java
+
 jdk:
   - openjdk7
   - oraclejdk7
 
 before_install:
   - .travis/install_and_launch_redis.sh;
+
+script: mvn verify
