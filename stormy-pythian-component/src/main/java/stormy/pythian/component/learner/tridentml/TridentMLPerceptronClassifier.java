@@ -15,11 +15,15 @@
  */
 package stormy.pythian.component.learner.tridentml;
 
+import static stormy.pythian.model.annotation.ComponentType.LEARNER;
+import stormy.pythian.model.annotation.ComponentType;
+import stormy.pythian.model.annotation.Documentation;
 import stormy.pythian.model.annotation.Property;
 
 import com.github.pmerienne.trident.ml.classification.Classifier;
 import com.github.pmerienne.trident.ml.classification.PerceptronClassifier;
 
+@Documentation(name = "Perceptron classifier", description = "Perceptron classifier from trident-ml", type = LEARNER)
 public class TridentMLPerceptronClassifier extends TridentMLClassifier<Boolean> {
 
 	private static final long serialVersionUID = 1L;
