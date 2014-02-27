@@ -43,7 +43,7 @@ import stormy.pythian.testing.InstanceCollector;
 import stormy.pythian.testing.TridentIntegrationTest;
 import backtype.storm.utils.Utils;
 
-public class FileSteamSourceTest extends TridentIntegrationTest {
+public class FileSteamSourceIntegrationTest extends TridentIntegrationTest {
 
 	private static final int TOPOLOGY_START_TIME = 5000;
 

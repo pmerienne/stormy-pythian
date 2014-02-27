@@ -45,7 +45,7 @@ import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Values;
 import backtype.storm.utils.Utils;
 
-public class GlobalMeanTest extends TridentIntegrationTest {
+public class GlobalMeanIntegrationTest extends TridentIntegrationTest {
 
 	private static final int TOPOLOGY_START_TIME = 5000;
 

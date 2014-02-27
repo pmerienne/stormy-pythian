@@ -32,7 +32,7 @@ import stormy.pythian.testing.FixedInstanceSpout;
 import stormy.pythian.testing.InstanceCollector;
 import stormy.pythian.testing.TridentIntegrationTest;
 
-public class TridentMLPerceptronClassifierTest extends TridentIntegrationTest {
+public class TridentMLPerceptronClassifierIntegrationTest extends TridentIntegrationTest {
 
 	@Test
 	public void should_classify_nand() {
