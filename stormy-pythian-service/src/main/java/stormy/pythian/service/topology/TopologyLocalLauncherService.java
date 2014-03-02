@@ -15,6 +15,15 @@
  */
 package stormy.pythian.service.topology;
 
+import static com.google.common.collect.Maps.uniqueIndex;
+import static stormy.pythian.service.topology.TopologyState.Status.STOPPED;
+import static stormy.pythian.service.topology.TopologyState.Status.fromStormStatus;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
@@ -23,7 +32,12 @@ import org.springframework.stereotype.Service;
 
 import stormy.pythian.core.configuration.PythianToplogyConfiguration;
 import stormy.pythian.core.topology.PythianTopology;
+import backtype.storm.Config;
 import backtype.storm.LocalCluster;
+import backtype.storm.generated.StormTopology;
+import backtype.storm.generated.TopologySummary;
+
+import com.google.common.base.Function;
 
 @Service
 public class TopologyLocalLauncherService {
@@ -43,19 +57,62 @@ public class TopologyLocalLauncherService {
 		cluster.shutdown();
 	}
 
-	public void launch(String topologyId) {
-		cluster.killTopology(topologyId);
-
+	public void launch(String topologyId) throws TopologyLaunchException {
 		PythianToplogyConfiguration configuration = topologyRepository.findById(topologyId);
+		if (configuration == null) {
+			throw new TopologyLaunchException("No topology found with id " + topologyId);
+		}
 
-		PythianTopology pythianTopology = new PythianTopology();
-		pythianTopology.build(configuration);
+		StormTopology stormTopology;
+		Config tridentConfig;
+		try {
+			PythianTopology pythianTopology = new PythianTopology();
+			pythianTopology.build(configuration);
+			stormTopology = pythianTopology.getStormTopology();
+			tridentConfig = pythianTopology.getTridentConfig();
+		} catch (Exception ex) {
+			throw new TopologyLaunchException("Topology could not be builded", ex);
+		}
 
-		cluster.submitTopology(topologyId, pythianTopology.getTridentConfig(), pythianTopology.getStormTopology());
+		try {
+			cluster.submitTopology(topologyId, tridentConfig, stormTopology);
+		} catch (Exception ex) {
+			throw new TopologyLaunchException("Topology could not be launched", ex);
+		}
 	}
 
-	public void kill(String topologyId) {
-		cluster.killTopology(topologyId);
+	public void kill(String topologyId) throws TopologyKillException {
+		try {
+			cluster.killTopology(topologyId);
+		} catch (Exception ex) {
+			throw new TopologyKillException("Topology could not be killed", ex);
+		}
+	}
+
+	public List<TopologyState> getTopologyStates() {
+		Map<String, TopologySummary> summaries = getClusterTopologySummaries();
+		Collection<PythianToplogyConfiguration> topologies = topologyRepository.findAll();
+
+		List<TopologyState> states = new ArrayList<>();
+		for (PythianToplogyConfiguration topology : topologies) {
+			TopologySummary summary = summaries.get(topology.getId());
+			if (summary == null) {
+				states.add(new TopologyState(topology.getId(), topology.getName(), STOPPED));
+			} else {
+				states.add(new TopologyState(topology.getId(), topology.getName(), fromStormStatus(summary.get_status())));
+			}
+		}
+
+		return states;
+	}
+
+	private Map<String, TopologySummary> getClusterTopologySummaries() {
+		Map<String, TopologySummary> summaries = uniqueIndex(cluster.getClusterInfo().get_topologies(), new Function<TopologySummary, String>() {
+			public String apply(TopologySummary summary) {
+				return summary.get_name();
+			}
+		});
+		return summaries;
 	}
 
 }

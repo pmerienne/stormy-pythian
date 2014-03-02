@@ -42,8 +42,12 @@ public class PythianToplogyConfiguration {
 
 	public PythianToplogyConfiguration(String id) {
 		this.id = id;
-		this.components = new ArrayList<>();
-		this.connections = new ArrayList<>();
+	}
+	
+
+	public PythianToplogyConfiguration(String id, String name) {
+		this.id = id;
+		this.name = name;
 	}
 
 	public String ensureId() {

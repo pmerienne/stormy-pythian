@@ -15,23 +15,36 @@
  */
 package stormy.pythian.service.topology;
 
+import static java.util.Arrays.asList;
 import static java.util.Collections.EMPTY_LIST;
 import static org.apache.commons.lang.RandomStringUtils.random;
+import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Answers.RETURNS_DEEP_STUBS;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.isA;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static stormy.pythian.service.topology.TopologyState.Status.KILLING;
+import static stormy.pythian.service.topology.TopologyState.Status.STARTED;
+import static stormy.pythian.service.topology.TopologyState.Status.STOPPED;
+
+import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import stormy.pythian.core.configuration.PythianToplogyConfiguration;
 import backtype.storm.Config;
 import backtype.storm.LocalCluster;
+import backtype.storm.generated.AlreadyAliveException;
 import backtype.storm.generated.StormTopology;
+import backtype.storm.generated.TopologySummary;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TopologyLocalLauncherServiceTest {
@@ -42,12 +55,12 @@ public class TopologyLocalLauncherServiceTest {
 	@Mock
 	private TopologyRepository topologyRepository;
 
-	@Mock
+	@Mock(answer = RETURNS_DEEP_STUBS)
 	private LocalCluster cluster;
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void should_launch_topology() {
+	public void should_launch_topology() throws Exception {
 		// Given
 		String topologyId = random(6);
 		PythianToplogyConfiguration configuration = mock(PythianToplogyConfiguration.class);
@@ -62,5 +75,55 @@ public class TopologyLocalLauncherServiceTest {
 
 		// Then
 		verify(cluster).submitTopology(isA(String.class), isA(Config.class), isA(StormTopology.class));
+	}
+
+	@Test
+	public void should_retrieve_topology_states() {
+		// Given
+		PythianToplogyConfiguration topology1 = new PythianToplogyConfiguration("1", "topology 1");
+		PythianToplogyConfiguration topology2 = new PythianToplogyConfiguration("2", "topology 2");
+		PythianToplogyConfiguration topology3 = new PythianToplogyConfiguration("3", "topology 3");
+		given(topologyRepository.findAll()).willReturn(asList(topology1, topology2, topology3));
+
+		TopologySummary expectedTopologySummary1 = new TopologySummary(random(6), "1", 1, 1, 1, 1, "ACTIVE");
+		TopologySummary expectedTopologySummary2 = new TopologySummary(random(6), "2", 2, 2, 2, 2, "KILLED");
+		List<TopologySummary> expectedTopologySummaries = asList(expectedTopologySummary1, expectedTopologySummary2);
+		given(cluster.getClusterInfo().get_topologies()).willReturn(expectedTopologySummaries);
+
+		// When
+		List<TopologyState> states = service.getTopologyStates();
+
+		// Then
+		assertThat(states).containsOnly(
+				new TopologyState("1", "topology 1", STARTED),
+				new TopologyState("2", "topology 2", KILLING),
+				new TopologyState("3", "topology 3", STOPPED)
+				);
+	}
+
+	@Test(expected = TopologyLaunchException.class)
+	public void should_not_launch_not_existing_topology() throws TopologyLaunchException {
+		// Given
+		String topologyId = random(6);
+		given(topologyRepository.findById(topologyId)).willReturn(null);
+
+		// When
+		service.launch(topologyId);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test(expected = TopologyLaunchException.class)
+	public void should_throw_launch_exception_when_storm_submit_fails() throws TopologyLaunchException {
+		// Given
+		String topologyId = random(6);
+		PythianToplogyConfiguration configuration = mock(PythianToplogyConfiguration.class);
+		when(configuration.getComponents()).thenReturn(EMPTY_LIST);
+		when(configuration.getConnections()).thenReturn(EMPTY_LIST);
+
+		given(topologyRepository.findById(topologyId)).willReturn(configuration);
+		doThrow(new RuntimeException()).when(cluster).submitTopology(Mockito.anyString(), Mockito.any(Config.class), Mockito.any(StormTopology.class));
+
+		// When
+		service.launch(topologyId);
 	}
 }
