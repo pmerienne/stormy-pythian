@@ -46,7 +46,7 @@ public class InputStreamDescriptionFactoryTest {
 	private FeatureDescriptionFactory featureDescriptorFactory;
 
 	@Test
-	public void should_retrieve_input_stream_declarations() {
+	public void should_retrieve_input_stream_descriptions() {
 		// Given
 		@Documentation(name = "Test component")
 		class TestComponent implements Component {
@@ -68,10 +68,10 @@ public class InputStreamDescriptionFactoryTest {
 				.thenReturn(expectedFeatures);
 
 		// When
-		List<InputStreamDescription> actualDeclarations = factory.createInputStreamDeclarations(TestComponent.class);
+		List<InputStreamDescription> actualDescriptions = factory.createInputStreamDescriptions(TestComponent.class);
 
 		// Then
-		assertThat(actualDeclarations).containsOnly( //
+		assertThat(actualDescriptions).containsOnly( //
 				new InputStreamDescription("in1", USER_SELECTION), //
 				new InputStreamDescription("in2", FIXED_FEATURES, expectedFeatures) //
 				);
@@ -92,11 +92,11 @@ public class InputStreamDescriptionFactoryTest {
 		}
 
 		// When
-		factory.createInputStreamDeclarations(TestComponent.class);
+		factory.createInputStreamDescriptions(TestComponent.class);
 	}
 
 	@Test
-	public void should_retrieve_inherited_input_stream_declarations() {
+	public void should_retrieve_inherited_input_stream_descriptions() {
 		// Given
 		@Documentation(name = "Test component")
 		class AbstractTestComponent implements Component {
@@ -122,10 +122,10 @@ public class InputStreamDescriptionFactoryTest {
 				.thenReturn(expectedFeatures);
 
 		// When
-		List<InputStreamDescription> actualDeclarations = factory.createInputStreamDeclarations(TestComponent.class);
+		List<InputStreamDescription> actualDescriptions = factory.createInputStreamDescriptions(TestComponent.class);
 
 		// Then
-		assertThat(actualDeclarations).containsOnly( //
+		assertThat(actualDescriptions).containsOnly( //
 				new InputStreamDescription("in1", USER_SELECTION), //
 				new InputStreamDescription("in2", FIXED_FEATURES, expectedFeatures) //
 				);

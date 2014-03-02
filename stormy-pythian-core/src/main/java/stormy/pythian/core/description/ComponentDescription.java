@@ -15,6 +15,8 @@
  */
 package stormy.pythian.core.description;
 
+import static com.google.common.collect.Lists.transform;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -74,9 +76,9 @@ public class ComponentDescription {
 	}
 
 	public void ensureOutputStreamReference() {
-		for (OutputStreamDescription outputStreamDeclaration : outputStreams) {
-			if (!StringUtils.isEmpty(outputStreamDeclaration.getFrom())) {
-				ensureInputStreamReference(outputStreamDeclaration.getFrom());
+		for (OutputStreamDescription outputStream : outputStreams) {
+			if (!StringUtils.isEmpty(outputStream.getFrom())) {
+				ensureInputStreamReference(outputStream.getFrom());
 			}
 		}
 	}
@@ -133,9 +135,9 @@ public class ComponentDescription {
 	}
 
 	private void ensureInputStreamReference(String name) {
-		boolean inputStreamExists = Lists.transform(inputStreams, new Function<InputStreamDescription, String>() {
-			public String apply(InputStreamDescription declaration) {
-				return declaration.getName();
+		boolean inputStreamExists = transform(inputStreams, new Function<InputStreamDescription, String>() {
+			public String apply(InputStreamDescription description) {
+				return description.getName();
 			}
 		}).contains(name);
 

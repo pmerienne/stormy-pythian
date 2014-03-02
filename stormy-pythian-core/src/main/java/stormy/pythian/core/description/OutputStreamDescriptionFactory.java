@@ -34,8 +34,8 @@ public class OutputStreamDescriptionFactory {
     private FeatureDescriptionFactory featureDescriptorFactory;
 
     @SuppressWarnings("unchecked")
-    public List<OutputStreamDescription> createOutputStreamDeclarations(Class<?> componentClass) {
-        List<OutputStreamDescription> declarations = new ArrayList<>();
+    public List<OutputStreamDescription> createOutputStreamDescriptions(Class<?> componentClass) {
+        List<OutputStreamDescription> descriptions = new ArrayList<>();
 
         Set<Field> fields = getAllFields(componentClass, withAnnotation(OutputStream.class));
         for (Field field : fields) {
@@ -44,28 +44,28 @@ public class OutputStreamDescriptionFactory {
             }
 
             OutputStream annotation = field.getAnnotation(OutputStream.class);
-            OutputStreamDescription declaration = createDescription(annotation);
-            declarations.add(declaration);
+            OutputStreamDescription description = createDescription(annotation);
+            descriptions.add(description);
         }
 
-        return declarations;
+        return descriptions;
     }
 
     private OutputStreamDescription createDescription(OutputStream annotation) {
-        OutputStreamDescription declaration;
+        OutputStreamDescription description;
         switch (annotation.type()) {
             case FIXED_FEATURES:
                 List<FeatureDescription> newFeatures = featureDescriptorFactory.createDescriptions(annotation);
-                declaration = new OutputStreamDescription(annotation.name(), annotation.from(), newFeatures);
+                description = new OutputStreamDescription(annotation.name(), annotation.from(), newFeatures);
                 break;
             case USER_SELECTION:
-                declaration = new OutputStreamDescription(annotation.name(), annotation.from());
+                description = new OutputStreamDescription(annotation.name(), annotation.from());
                 break;
             default:
                 throw new IllegalStateException("@OutputStream supports only type like : " + MappingType.values());
         }
 
-        return declaration;
+        return description;
     }
 
 }

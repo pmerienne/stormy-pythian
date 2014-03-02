@@ -50,17 +50,17 @@ public class SandBox {
 		PythianStateDescriptionFactory stateDescriptionFactory = context.getBean(PythianStateDescriptionFactory.class);
 		
 		PythianStateDescription inMemoryDescription = stateDescriptionFactory.createDescription(InMemoryPythianState.class);
-		ComponentDescription randomWordSource = componentDescriptionFactory.createDeclaration(RandomWordSource.class);
+		ComponentDescription randomWordSource = componentDescriptionFactory.createDescription(RandomWordSource.class);
 		ComponentConfiguration randomWordSourceConfiguration = new ComponentConfiguration(randomAlphabetic(6), randomWordSource);
 		randomWordSourceConfiguration.add(new OutputStreamConfiguration(randomWordSource.getOutputStreams().get(0), createMappings(RandomWordSource.WORD_FEATURE, "random word")));
 
-		ComponentDescription wordCount = componentDescriptionFactory.createDeclaration(WordCount.class);
+		ComponentDescription wordCount = componentDescriptionFactory.createDescription(WordCount.class);
 		ComponentConfiguration wordCountConfiguration = new ComponentConfiguration(randomAlphabetic(6), wordCount);
 		wordCountConfiguration.add(new InputStreamConfiguration(wordCount.getInputStreams().get(0), createMappings(WordCount.WORD_FEATURE, "random word")));
 		wordCountConfiguration.add(new OutputStreamConfiguration(wordCount.getOutputStreams().get(0), createMappings(WordCount.COUNT_FEATURE, "word count")));
 		wordCountConfiguration.add(stateConfiguration(inMemoryDescription).name("count state").with("Transaction mode", NONE).with("Name", "Word count").build());
 		
-		ComponentDescription consoleOutput = componentDescriptionFactory.createDeclaration(ConsoleOutput.class);
+		ComponentDescription consoleOutput = componentDescriptionFactory.createDescription(ConsoleOutput.class);
 		ComponentConfiguration consoleOutputConfiguration = new ComponentConfiguration(randomAlphabetic(6), consoleOutput);
 		consoleOutputConfiguration.add(new InputStreamConfiguration(consoleOutput.getInputStreams().get(0), Arrays.asList("random word", "word count")));
 

@@ -26,27 +26,27 @@ import stormy.pythian.model.component.Component;
 public class ComponentDescriptionFactory {
 
 	@Autowired
-	private PropertyDescriptionFactory propertyDeclarationFactory;
+	private PropertyDescriptionFactory propertyDescriptionFactory;
 
 	@Autowired
-	private InputStreamDescriptionFactory inputStreamDeclarationFactory;
+	private InputStreamDescriptionFactory inputStreamDescriptionFactory;
 
 	@Autowired
-	private OutputStreamDescriptionFactory outputStreamDeclarationFactory;
+	private OutputStreamDescriptionFactory outputStreamDescriptionFactory;
 	
 	@Autowired
 	private ReferencedStateDescriptionFactory stateDescriptionFactory;
 
-	public ComponentDescription createDeclaration(Class<? extends Component> componentClass) {
+	public ComponentDescription createDescription(Class<? extends Component> componentClass) {
 		checkArgument(componentClass != null, "Component class is mandatory");
 
 		Documentation documentation = componentClass.getAnnotation(Documentation.class);
 		checkArgument(documentation != null, "No documentation found for " + componentClass + " but documentation is mandatory!");
 
 		ComponentDescription description = new ComponentDescription(componentClass, documentation.name(), documentation.description(), documentation.type());
-		description.addProperties(propertyDeclarationFactory.createPropertyDeclarations(componentClass));
-		description.addInputStreams(inputStreamDeclarationFactory.createInputStreamDeclarations(componentClass));
-		description.addOutputStreams(outputStreamDeclarationFactory.createOutputStreamDeclarations(componentClass));
+		description.addProperties(propertyDescriptionFactory.createPropertyDescriptions(componentClass));
+		description.addInputStreams(inputStreamDescriptionFactory.createInputStreamDescriptions(componentClass));
+		description.addOutputStreams(outputStreamDescriptionFactory.createOutputStreamDescriptions(componentClass));
 		description.addStates(stateDescriptionFactory.createDescriptions(componentClass));
 		
 		description.ensureNoDuplicatedInputStreams();

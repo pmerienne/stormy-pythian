@@ -61,9 +61,9 @@ public class DescriptionServiceTest {
 		ComponentDescription testLearner1Description = mock(ComponentDescription.class);
 		ComponentDescription testLearner2Description = mock(ComponentDescription.class);
 
-		when(componentDescriptionFactory.createDeclaration(TestAnalytics.class)).thenReturn(testAnalyticsDescription);
-		when(componentDescriptionFactory.createDeclaration(TestLearner1.class)).thenReturn(testLearner1Description);
-		when(componentDescriptionFactory.createDeclaration(TestLearner2.class)).thenReturn(testLearner2Description);
+		when(componentDescriptionFactory.createDescription(TestAnalytics.class)).thenReturn(testAnalyticsDescription);
+		when(componentDescriptionFactory.createDescription(TestLearner1.class)).thenReturn(testLearner1Description);
+		when(componentDescriptionFactory.createDescription(TestLearner2.class)).thenReturn(testLearner2Description);
 
 		// When
 		List<ComponentDescription> actualDescriptions = service.findAllComponentDescriptions();

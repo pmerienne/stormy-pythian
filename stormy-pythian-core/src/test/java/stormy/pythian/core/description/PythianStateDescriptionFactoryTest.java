@@ -54,7 +54,7 @@ public class PythianStateDescriptionFactoryTest {
 		}
 
 		List<PropertyDescription> expectedProperties = new ArrayList<>();
-		given(propertyDescriptionFactory.createPropertyDeclarations(TestState.class)).willReturn(expectedProperties);
+		given(propertyDescriptionFactory.createPropertyDescriptions(TestState.class)).willReturn(expectedProperties);
 
 		// When
 		PythianStateDescription description = factory.createDescription(TestState.class);

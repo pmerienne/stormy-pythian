@@ -27,7 +27,7 @@ import stormy.pythian.model.component.PythianState;
 public class PythianStateDescriptionFactory {
 
 	@Autowired
-	private PropertyDescriptionFactory propertyDeclarationFactory;
+	private PropertyDescriptionFactory propertyDescriptionFactory;
 
 	public PythianStateDescription createDescription(Class<? extends PythianState> clazz) {
 		checkArgument(clazz != null, "PythianState class is mandatory");
@@ -36,7 +36,7 @@ public class PythianStateDescriptionFactory {
 		checkArgument(documentation != null, "No documentation found for " + clazz + " but documentation is mandatory!");
 
 		PythianStateDescription description = new PythianStateDescription(clazz, documentation.name(), documentation.description());
-		description.addProperties(propertyDeclarationFactory.createPropertyDeclarations(clazz));
+		description.addProperties(propertyDescriptionFactory.createPropertyDescriptions(clazz));
 
 		return description;
 	}

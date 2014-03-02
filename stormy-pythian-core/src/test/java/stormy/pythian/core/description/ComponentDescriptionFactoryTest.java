@@ -42,13 +42,13 @@ public class ComponentDescriptionFactoryTest {
 	private ComponentDescriptionFactory factory;
 
 	@Mock
-	private PropertyDescriptionFactory propertyDeclarationFactory;
+	private PropertyDescriptionFactory propertyDescriptionFactory;
 
 	@Mock
-	private InputStreamDescriptionFactory inputStreamDeclarationFactory;
+	private InputStreamDescriptionFactory inputStreamDescriptionFactory;
 
 	@Mock
-	private OutputStreamDescriptionFactory outputStreamDeclarationFactory;
+	private OutputStreamDescriptionFactory outputStreamDescriptionFactory;
 
 	@Mock
 	private ReferencedStateDescriptionFactory stateDescriptionFactory;
@@ -56,7 +56,7 @@ public class ComponentDescriptionFactoryTest {
 	@Test(expected = IllegalArgumentException.class)
 	public void should_throw_illegal_argument_exception_when_no_component_class() {
 		// When
-		factory.createDeclaration(null);
+		factory.createDescription(null);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -70,7 +70,7 @@ public class ComponentDescriptionFactoryTest {
 		}
 
 		// When
-		factory.createDeclaration(TestComponent.class);
+		factory.createDescription(TestComponent.class);
 	}
 
 	@Test
@@ -85,10 +85,10 @@ public class ComponentDescriptionFactoryTest {
 		}
 
 		// When
-		ComponentDescription actualDeclaration = factory.createDeclaration(TestComponent.class);
+		ComponentDescription actualDescription = factory.createDescription(TestComponent.class);
 
 		// Then
-		assertThat(actualDeclaration.getName()).isEqualTo("Test component");
+		assertThat(actualDescription.getName()).isEqualTo("Test component");
 	}
 
 	@Test
@@ -103,10 +103,10 @@ public class ComponentDescriptionFactoryTest {
 		}
 
 		// When
-		ComponentDescription actualDeclaration = factory.createDeclaration(TestComponent.class);
+		ComponentDescription actualDescription = factory.createDescription(TestComponent.class);
 
 		// Then
-		assertThat(actualDeclaration.getDescription()).isEqualTo("Only for test purpose");
+		assertThat(actualDescription.getDescription()).isEqualTo("Only for test purpose");
 	}
 
 	@Test
@@ -121,10 +121,10 @@ public class ComponentDescriptionFactoryTest {
 		}
 
 		// When
-		ComponentDescription actualDeclaration = factory.createDeclaration(TestComponent.class);
+		ComponentDescription actualDescription = factory.createDescription(TestComponent.class);
 
 		// Then
-		assertThat(actualDeclaration.getDescription()).isEmpty();
+		assertThat(actualDescription.getDescription()).isEmpty();
 	}
 
 	@Test
@@ -139,10 +139,10 @@ public class ComponentDescriptionFactoryTest {
 		}
 
 		// When
-		ComponentDescription actualDeclaration = factory.createDeclaration(TestComponent.class);
+		ComponentDescription actualDescription = factory.createDescription(TestComponent.class);
 
 		// Then
-		assertThat(actualDeclaration.getType()).isEqualTo(ComponentType.STREAM_SOURCE);
+		assertThat(actualDescription.getType()).isEqualTo(ComponentType.STREAM_SOURCE);
 	}
 	
 	@Test
@@ -157,10 +157,10 @@ public class ComponentDescriptionFactoryTest {
 		}
 
 		// When
-		ComponentDescription actualDeclaration = factory.createDeclaration(TestComponent.class);
+		ComponentDescription actualDescription = factory.createDescription(TestComponent.class);
 
 		// Then
-		assertThat(actualDeclaration.getType()).isEqualTo(ComponentType.NO_TYPE);
+		assertThat(actualDescription.getType()).isEqualTo(ComponentType.NO_TYPE);
 	}
 
 	@Test
@@ -175,10 +175,10 @@ public class ComponentDescriptionFactoryTest {
 		}
 
 		// When
-		ComponentDescription actualDeclaration = factory.createDeclaration(TestComponent.class);
+		ComponentDescription actualDescription = factory.createDescription(TestComponent.class);
 
 		// Then
-		assertThat(actualDeclaration.getClazz()).isEqualTo(TestComponent.class);
+		assertThat(actualDescription.getClazz()).isEqualTo(TestComponent.class);
 	}
 
 
@@ -203,6 +203,6 @@ public class ComponentDescriptionFactoryTest {
 		given(stateDescriptionFactory.createDescriptions(TestComponent.class)).willReturn(expectedStateDescriptions );
 
 		// When
-		factory.createDeclaration(TestComponent.class);
+		factory.createDescription(TestComponent.class);
 	}
 }

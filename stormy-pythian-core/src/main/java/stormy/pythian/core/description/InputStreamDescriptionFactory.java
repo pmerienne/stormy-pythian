@@ -33,8 +33,8 @@ public class InputStreamDescriptionFactory {
     private FeatureDescriptionFactory featureDescriptorFactory;
 
     @SuppressWarnings("unchecked")
-    public List<InputStreamDescription> createInputStreamDeclarations(Class<?> componentClass) {
-        List<InputStreamDescription> inputStreamDeclarations = new ArrayList<>();
+    public List<InputStreamDescription> createInputStreamDescriptions(Class<?> componentClass) {
+        List<InputStreamDescription> inputStreamDescriptions = new ArrayList<>();
 
         Set<Field> inputStreamFields = getAllFields(componentClass, withAnnotation(InputStream.class));
         for (Field inputStreamField : inputStreamFields) {
@@ -43,10 +43,10 @@ public class InputStreamDescriptionFactory {
             }
 
             InputStreamDescription inputStreamDescription = createInputStreamDescription(inputStreamField);
-            inputStreamDeclarations.add(inputStreamDescription);
+            inputStreamDescriptions.add(inputStreamDescription);
         }
 
-        return inputStreamDeclarations;
+        return inputStreamDescriptions;
     }
 
     private InputStreamDescription createInputStreamDescription(Field inputStreamField) {

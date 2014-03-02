@@ -29,18 +29,18 @@ import stormy.pythian.model.annotation.Property;
 public class PropertyDescriptionFactory {
 
     @SuppressWarnings("unchecked")
-    public List<PropertyDescription> createPropertyDeclarations(Class<?> componentClass) {
-        List<PropertyDescription> propertyDeclarations = new ArrayList<>();
+    public List<PropertyDescription> createPropertyDescriptions(Class<?> componentClass) {
+        List<PropertyDescription> propertyDescriptions = new ArrayList<>();
 
         Set<Field> propertyFields = getAllFields(componentClass, withAnnotation(Property.class));
         for (Field propertyField : propertyFields) {
             Property property = propertyField.getAnnotation(Property.class);
-            PropertyDescription propertyDeclaration = new PropertyDescription(property.name(), property.description(), property.mandatory(), fromType(propertyField.getType()));
+            PropertyDescription propertyDescription = new PropertyDescription(property.name(), property.description(), property.mandatory(), fromType(propertyField.getType()));
 
-            propertyDeclarations.add(propertyDeclaration);
+            propertyDescriptions.add(propertyDescription);
         }
 
-        return propertyDeclarations;
+        return propertyDescriptions;
     }
 
 }

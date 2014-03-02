@@ -46,7 +46,7 @@ public class OutputStreamDescriptionFactoryTest {
 	private FeatureDescriptionFactory featureDescriptorFactory;
 
 	@Test
-	public void should_retrieve_output_stream_declarations() {
+	public void should_retrieve_output_stream_descriptions() {
 		// Given
 		@Documentation(name = "Test component")
 		class TestComponent implements Component {
@@ -69,18 +69,18 @@ public class OutputStreamDescriptionFactoryTest {
 		when(featureDescriptorFactory.createDescriptions(isA(OutputStream.class))).thenReturn(newFeatures);
 
 		// When
-		List<OutputStreamDescription> actualDeclarations = factory.createOutputStreamDeclarations(TestComponent.class);
+		List<OutputStreamDescription> actualDescriptions = factory.createOutputStreamDescriptions(TestComponent.class);
 
 		// Then
-		assertThat(actualDeclarations).hasSize(2);
-		assertThat(actualDeclarations).containsOnly( //
+		assertThat(actualDescriptions).hasSize(2);
+		assertThat(actualDescriptions).containsOnly( //
 				new OutputStreamDescription("out1", "in", newFeatures), //
 				new OutputStreamDescription("out2", "", newFeatures) //
 				);
 	}
 
 	@Test
-	public void should_retrieve_user_selection_output_stream_declarations() {
+	public void should_retrieve_user_selection_output_stream_descriptions() {
 		// Given
 		@Documentation(name = "Test component")
 		class TestComponent implements Component {
@@ -98,10 +98,10 @@ public class OutputStreamDescriptionFactoryTest {
 		}
 
 		// When
-		List<OutputStreamDescription> actualDeclarations = factory.createOutputStreamDeclarations(TestComponent.class);
+		List<OutputStreamDescription> actualDescriptions = factory.createOutputStreamDescriptions(TestComponent.class);
 
 		// Then
-		assertThat(actualDeclarations).containsOnly( // 
+		assertThat(actualDescriptions).containsOnly( // 
 			new OutputStreamDescription("out1", "in"), //
 			new OutputStreamDescription("out2") //
 		);
@@ -124,7 +124,7 @@ public class OutputStreamDescriptionFactoryTest {
 		}
 
 		// When
-		factory.createOutputStreamDeclarations(TestComponent.class);
+		factory.createOutputStreamDescriptions(TestComponent.class);
 	}
 
 

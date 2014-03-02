@@ -35,7 +35,7 @@ public class PropertyDescriptionFactoryTest {
     }
 
     @Test
-    public void should_retrieve_single_property_declaration() {
+    public void should_retrieve_single_property_description() {
         // Given
         @Documentation(name = "Test component")
         class TestComponent implements Component {
@@ -50,18 +50,18 @@ public class PropertyDescriptionFactoryTest {
         }
 
         // When
-        List<PropertyDescription> actualDeclarations = factory.createPropertyDeclarations(TestComponent.class);
+        List<PropertyDescription> actualDescriptions = factory.createPropertyDescriptions(TestComponent.class);
 
         // Then
-        assertThat(actualDeclarations).hasSize(1);
+        assertThat(actualDescriptions).hasSize(1);
 
-        PropertyDescription actualPropertyDeclaration = actualDeclarations.get(0);
-        assertThat(actualPropertyDeclaration).isEqualTo(
+        PropertyDescription actualPropertyDescription = actualDescriptions.get(0);
+        assertThat(actualPropertyDescription).isEqualTo(
                 new PropertyDescription("expected property", "tested property", false, STRING));
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void should_throw_illegal_argument_exception_with_unsupported_property_declaration_type() {
+    public void should_throw_illegal_argument_exception_with_unsupported_property_description_type() {
         // Given
         @Documentation(name = "Test component")
         class TestComponent implements Component {
@@ -75,7 +75,7 @@ public class PropertyDescriptionFactoryTest {
         }
 
         // When
-        factory.createPropertyDeclarations(TestComponent.class);
+        factory.createPropertyDescriptions(TestComponent.class);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -96,7 +96,7 @@ public class PropertyDescriptionFactoryTest {
         }
 
         // When
-        factory.createPropertyDeclarations(TestComponent.class);
+        factory.createPropertyDescriptions(TestComponent.class);
     }
 
 }

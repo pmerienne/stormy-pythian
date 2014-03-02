@@ -47,7 +47,7 @@ public class DescriptionService {
 
 		for (Class<? extends Component> componentClass : classes) {
 			try {
-				ComponentDescription description = componentDescriptionFactory.createDeclaration(componentClass);
+				ComponentDescription description = componentDescriptionFactory.createDescription(componentClass);
 				descriptions.add(description);
 			} catch (Exception ex) {
 				// TODO log it, lazy bastard !!
