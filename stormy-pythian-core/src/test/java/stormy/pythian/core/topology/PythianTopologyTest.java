@@ -80,7 +80,7 @@ public class PythianTopologyTest {
 		when(componentPool.getAvailableInputStreams(componentConfiguration)).thenReturn(inputStreams);
 		when(featuresIndexFactory.createInputFeaturesIndexes(componentConfiguration)).thenReturn(inputFeaturesIndexes);
 		when(featuresIndexFactory.createOutputFeaturesIndexes(componentConfiguration)).thenReturn(outputFeaturesIndexes);
-		when(pythianStateFactory.createStateFactories(topologyConfiguration)).thenReturn(expectedStateFactories);
+		when(pythianStateFactory.createStateFactories(componentConfiguration)).thenReturn(expectedStateFactories);
 		when(componentFactory.createComponent(componentConfiguration, expectedStateFactories, inputStreams, inputFeaturesIndexes, outputFeaturesIndexes)).thenReturn(component);
 
 		// Then

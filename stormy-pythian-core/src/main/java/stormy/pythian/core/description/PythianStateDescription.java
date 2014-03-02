@@ -22,12 +22,15 @@ import stormy.pythian.model.component.PythianState;
 
 public class PythianStateDescription {
 
-	private final Class<? extends PythianState> clazz;
+	private Class<? extends PythianState> clazz;
 
-	private final String name;
-	private final String description;
+	private String name;
+	private String description;
 
-	private final List<PropertyDescription> properties = new ArrayList<>();
+	private List<PropertyDescription> properties = new ArrayList<>();
+
+	public PythianStateDescription() {
+	}
 
 	public PythianStateDescription(Class<? extends PythianState> clazz, String name, String description) {
 		this.clazz = clazz;

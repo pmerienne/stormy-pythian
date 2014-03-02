@@ -72,23 +72,4 @@ public class ReferencedStateDescriptionFactoryTest {
 		factory.createDescriptions(TestComponent.class);
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void should_fail_with_duplicated_state_names() {
-		// Given
-		class TestComponent implements Component {
-
-			@State(name = "Word count")
-			private StateFactory stateFactory1;
-
-			@State(name = "Word count")
-			private StateFactory stateFactory2;
-
-			@Override
-			public void init() {
-			}
-		}
-
-		// When
-		factory.createDescriptions(TestComponent.class);
-	}
 }

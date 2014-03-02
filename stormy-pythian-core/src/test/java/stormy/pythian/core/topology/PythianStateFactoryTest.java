@@ -29,8 +29,8 @@ import org.mockito.InjectMocks;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import storm.trident.state.StateFactory;
+import stormy.pythian.core.configuration.ComponentConfiguration;
 import stormy.pythian.core.configuration.PythianStateConfiguration;
-import stormy.pythian.core.configuration.PythianToplogyConfiguration;
 import stormy.pythian.core.description.PythianStateDescription;
 import stormy.pythian.model.component.PythianState;
 
@@ -46,17 +46,17 @@ public class PythianStateFactoryTest {
 	@Test
 	public void should_create_state_factory() {
 		// Given
-		final PythianStateDescription description = new PythianStateDescription(TestPythianState.class, "test");
-		final PythianStateConfiguration expectedStateConfiguration = new PythianStateConfiguration("uuid", description, EMPTY_LIST);
+		final PythianStateDescription description = new PythianStateDescription(TestPythianState.class, "Mocked state");
+		final PythianStateConfiguration expectedStateConfiguration = new PythianStateConfiguration("test", description, EMPTY_LIST);
 
-		final PythianToplogyConfiguration topologyConfiguration = mock(PythianToplogyConfiguration.class);
-		given(topologyConfiguration.getStates()).willReturn(asList(expectedStateConfiguration));
-
+		ComponentConfiguration componentConfiguration = mock(ComponentConfiguration.class);
+		given(componentConfiguration.getStates()).willReturn(asList(expectedStateConfiguration));
+		
 		// When
-		Map<String, StateFactory> stateFactories = factory.createStateFactories(topologyConfiguration);
+		Map<String, StateFactory> stateFactories = factory.createStateFactories(componentConfiguration);
 
 		// Then
-		StateFactory actualStateFactory = stateFactories.get("uuid");
+		StateFactory actualStateFactory = stateFactories.get("test");
 		assertThat(actualStateFactory).isSameAs(EXPECTED_STATE_FACTORY);
 	}
 

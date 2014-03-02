@@ -21,19 +21,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 import storm.trident.state.StateFactory;
+import stormy.pythian.core.configuration.ComponentConfiguration;
 import stormy.pythian.core.configuration.PythianStateConfiguration;
-import stormy.pythian.core.configuration.PythianToplogyConfiguration;
 import stormy.pythian.model.component.PythianState;
 
 public class PythianStateFactory {
 
-	public Map<String, StateFactory> createStateFactories(PythianToplogyConfiguration topologyConfiguration) {
+	public Map<String, StateFactory> createStateFactories(ComponentConfiguration componentConfiguration) {
 		Map<String, StateFactory> stateFactoriesByIds = new HashMap<>();
 
-		for (PythianStateConfiguration stateConfiguration : topologyConfiguration.getStates()) {
+		for (PythianStateConfiguration stateConfiguration : componentConfiguration.getStates()) {
 			PythianState pythianState = this.createStateFactory(stateConfiguration);
 			StateFactory stateFactory = pythianState.createStateFactory();
-			stateFactoriesByIds.put(stateConfiguration.getId(), stateFactory);
+			stateFactoriesByIds.put(stateConfiguration.getName(), stateFactory);
 		}
 
 		return stateFactoriesByIds;

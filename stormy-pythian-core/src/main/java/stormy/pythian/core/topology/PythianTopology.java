@@ -57,7 +57,6 @@ public class PythianTopology {
 
 		featuresIndexFactory.init(topologyConfiguration);
 
-		Map<String, StateFactory> componentStateFactories = pythianStateFactory.createStateFactories(topologyConfiguration);
 
 		// Init components
 		while (!componentPool.isEmpty()) {
@@ -66,6 +65,7 @@ public class PythianTopology {
 				Map<String, Stream> inputStreams = componentPool.getAvailableInputStreams(configuration);
 				Map<String, FeaturesIndex> inputFeaturesIndexes = featuresIndexFactory.createInputFeaturesIndexes(configuration);
 				Map<String, FeaturesIndex> outputFeaturesIndexes = featuresIndexFactory.createOutputFeaturesIndexes(configuration);
+				Map<String, StateFactory> componentStateFactories = pythianStateFactory.createStateFactories(configuration);
 
 				Component component = componentFactory.createComponent(configuration, componentStateFactories, inputStreams, inputFeaturesIndexes, outputFeaturesIndexes);
 

@@ -30,7 +30,6 @@ import stormy.pythian.core.configuration.ComponentConfiguration;
 import stormy.pythian.core.configuration.ConnectionConfiguration;
 import stormy.pythian.core.configuration.InputStreamConfiguration;
 import stormy.pythian.core.configuration.OutputStreamConfiguration;
-import stormy.pythian.core.configuration.PythianStateConfiguration;
 import stormy.pythian.core.configuration.PythianToplogyConfiguration;
 import stormy.pythian.core.description.ComponentDescription;
 import stormy.pythian.core.description.ComponentDescriptionFactory;
@@ -51,9 +50,6 @@ public class SandBox {
 		PythianStateDescriptionFactory stateDescriptionFactory = context.getBean(PythianStateDescriptionFactory.class);
 		
 		PythianStateDescription inMemoryDescription = stateDescriptionFactory.createDescription(InMemoryPythianState.class);
-		PythianStateConfiguration stateFactoryConfiguration = stateConfiguration(inMemoryDescription).with("Transaction mode", NONE).with("Name", "Word count").build();
-
-
 		ComponentDescription randomWordSource = componentDescriptionFactory.createDeclaration(RandomWordSource.class);
 		ComponentConfiguration randomWordSourceConfiguration = new ComponentConfiguration(randomAlphabetic(6), randomWordSource);
 		randomWordSourceConfiguration.add(new OutputStreamConfiguration(randomWordSource.getOutputStreams().get(0), createMappings(RandomWordSource.WORD_FEATURE, "random word")));
@@ -62,7 +58,7 @@ public class SandBox {
 		ComponentConfiguration wordCountConfiguration = new ComponentConfiguration(randomAlphabetic(6), wordCount);
 		wordCountConfiguration.add(new InputStreamConfiguration(wordCount.getInputStreams().get(0), createMappings(WordCount.WORD_FEATURE, "random word")));
 		wordCountConfiguration.add(new OutputStreamConfiguration(wordCount.getOutputStreams().get(0), createMappings(WordCount.COUNT_FEATURE, "word count")));
-		wordCountConfiguration.addStateFactory("count state", stateFactoryConfiguration);
+		wordCountConfiguration.add(stateConfiguration(inMemoryDescription).name("count state").with("Transaction mode", NONE).with("Name", "Word count").build());
 		
 		ComponentDescription consoleOutput = componentDescriptionFactory.createDeclaration(ConsoleOutput.class);
 		ComponentConfiguration consoleOutputConfiguration = new ComponentConfiguration(randomAlphabetic(6), consoleOutput);
@@ -74,7 +70,6 @@ public class SandBox {
 		topologyConfiguration.add(randomWordSourceConfiguration);
 		topologyConfiguration.add(wordCountConfiguration);
 		topologyConfiguration.add(consoleOutputConfiguration);
-		topologyConfiguration.add(stateFactoryConfiguration);
 
 		topologyConfiguration.add(new ConnectionConfiguration(randomWordSourceConfiguration.getId(), "out", wordCountConfiguration.getId(), "in"));
 		topologyConfiguration.add(new ConnectionConfiguration(wordCountConfiguration.getId(), "out", consoleOutputConfiguration.getId(), "in"));
