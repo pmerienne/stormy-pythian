@@ -53,7 +53,7 @@ public class ComponentFactory {
 		this.config = config;
 	}
 
-	public Component createComponent(ComponentConfiguration configuration, Map<String, StateFactory> topologyStateFactories, Map<String, Stream> inputStreams,
+	public Component createComponent(ComponentConfiguration configuration, Map<String, StateFactory> stateFactories, Map<String, Stream> inputStreams,
 			Map<String, FeaturesIndex> inputFeaturesIndexes, Map<String, FeaturesIndex> outputFeaturesIndexes) {
 		try {
 			Component component = configuration.retrieveImplementationClass().newInstance();
@@ -62,7 +62,7 @@ public class ComponentFactory {
 			setTopology(component, tridentTopology);
 			setConfiguration(component, config);
 			setFeaturesMappers(component, configuration, inputFeaturesIndexes, outputFeaturesIndexes);
-			setStateFactories(component, configuration, topologyStateFactories);
+			setStateFactories(component, configuration, stateFactories);
 
 			component.init();
 
@@ -72,13 +72,9 @@ public class ComponentFactory {
 		}
 	}
 
-	private void setStateFactories(Component component, ComponentConfiguration componentConfiguration, Map<String, StateFactory> topologyStateFactories) {
-		for (Entry<String, String> entry : componentConfiguration.getStateFactories().entrySet()) {
-			String stateFactoryName = entry.getKey();
-			String stateFactoryId = entry.getValue();
-			StateFactory stateFactory = topologyStateFactories.get(stateFactoryId);
-
-			setStateFactory(component, stateFactoryName, stateFactory);
+	private void setStateFactories(Component component, ComponentConfiguration componentConfiguration, Map<String, StateFactory> stateFactories) {
+		for (String stateName : stateFactories.keySet()) {
+			setStateFactory(component, stateName, stateFactories.get(stateName));
 		}
 	}
 

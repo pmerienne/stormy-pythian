@@ -15,8 +15,12 @@
  */
 package stormy.pythian.core.description;
 
+import static java.util.Arrays.asList;
 import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
 import static stormy.pythian.model.annotation.ComponentType.STREAM_SOURCE;
+
+import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,8 +28,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import storm.trident.state.StateFactory;
 import stormy.pythian.model.annotation.ComponentType;
 import stormy.pythian.model.annotation.Documentation;
+import stormy.pythian.model.annotation.State;
 import stormy.pythian.model.component.Component;
 
 @SuppressWarnings("serial")
@@ -43,6 +49,9 @@ public class ComponentDescriptionFactoryTest {
 
 	@Mock
 	private OutputStreamDescriptionFactory outputStreamDeclarationFactory;
+
+	@Mock
+	private ReferencedStateDescriptionFactory stateDescriptionFactory;
 	
 	@Test(expected = IllegalArgumentException.class)
 	public void should_throw_illegal_argument_exception_when_no_component_class() {
@@ -172,4 +181,28 @@ public class ComponentDescriptionFactoryTest {
 		assertThat(actualDeclaration.getClazz()).isEqualTo(TestComponent.class);
 	}
 
+
+	@Test(expected = IllegalArgumentException.class)
+	public void should_fail_with_duplicated_state_names() {
+		// Given
+		@Documentation(name = "Test component")
+		class TestComponent implements Component {
+
+			@State(name = "word count")
+			private StateFactory stateFactory1;
+
+			@State(name = "word count")
+			private StateFactory stateFactory2;
+
+			@Override
+			public void init() {
+			}
+		}
+		
+		List<ReferencedStateDescription> expectedStateDescriptions = asList(new ReferencedStateDescription("word count"), new ReferencedStateDescription("word count"));
+		given(stateDescriptionFactory.createDescriptions(TestComponent.class)).willReturn(expectedStateDescriptions );
+
+		// When
+		factory.createDeclaration(TestComponent.class);
+	}
 }

@@ -22,44 +22,88 @@ import stormy.pythian.model.component.PythianState;
 
 public class PythianStateConfiguration {
 
-    private String id;
+	private String name;
 
-    private PythianStateDescription description;
-    private List<PropertyConfiguration> properties = new ArrayList<>();
+	private PythianStateDescription description;
+	private List<PropertyConfiguration> properties = new ArrayList<>();
 
-    public PythianStateConfiguration(String id, PythianStateDescription description, List<PropertyConfiguration> properties) {
-        this.id = id;
-        this.description = description;
-        this.properties = properties;
-    }
+	public PythianStateConfiguration() {
+	}
 
-    public String getId() {
-        return id;
-    }
+	public PythianStateConfiguration(String name, PythianStateDescription description, List<PropertyConfiguration> properties) {
+		this.name = name;
+		this.description = description;
+		this.properties = properties;
+	}
 
-    public PythianStateDescription getDescription() {
-        return description;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public List<PropertyConfiguration> getProperties() {
-        return properties;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public Class<? extends PythianState> getImplementation() {
-        return description.getClazz();
-    }
+	public PythianStateDescription getDescription() {
+		return description;
+	}
 
-    public void setId(String id) {
-        this.id = id;
-    }
+	public List<PropertyConfiguration> getProperties() {
+		return properties;
+	}
 
-    public void setDescription(PythianStateDescription description) {
-        this.description = description;
-    }
+	public Class<? extends PythianState> getImplementation() {
+		return description.getClazz();
+	}
 
-    public void setProperties(List<PropertyConfiguration> properties) {
-        this.properties = properties;
-    }
+	public void setDescription(PythianStateDescription description) {
+		this.description = description;
+	}
 
-    
+	public void setProperties(List<PropertyConfiguration> properties) {
+		this.properties = properties;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((description == null) ? 0 : description.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((properties == null) ? 0 : properties.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		PythianStateConfiguration other = (PythianStateConfiguration) obj;
+		if (description == null) {
+			if (other.description != null)
+				return false;
+		} else if (!description.equals(other.description))
+			return false;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		if (properties == null) {
+			if (other.properties != null)
+				return false;
+		} else if (!properties.equals(other.properties))
+			return false;
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "PythianStateConfiguration [name=" + name + ", description=" + description + ", properties=" + properties + "]";
+	}
+
 }

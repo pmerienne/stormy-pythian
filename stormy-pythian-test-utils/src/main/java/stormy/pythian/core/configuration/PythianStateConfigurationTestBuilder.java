@@ -17,13 +17,12 @@ package stormy.pythian.core.configuration;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import stormy.pythian.core.description.PythianStateDescription;
 
 public class PythianStateConfigurationTestBuilder {
 
-	private String id = UUID.randomUUID().toString();
+	private String name;
 	private PythianStateDescription description;
 	private List<PropertyConfiguration> properties = new ArrayList<>();
 
@@ -32,6 +31,11 @@ public class PythianStateConfigurationTestBuilder {
 		builder.description = description;
 		return builder;
 	}
+	
+	public PythianStateConfigurationTestBuilder name(String name) {
+		this.name = name;
+		return this;
+	}
 
 	public PythianStateConfigurationTestBuilder with(String name, Object value) {
 		this.properties.add(new PropertyConfiguration(name, value));
@@ -39,7 +43,10 @@ public class PythianStateConfigurationTestBuilder {
 	}
 
 	public PythianStateConfiguration build() {
-		PythianStateConfiguration configuration = new PythianStateConfiguration(id, description, properties);
+		PythianStateConfiguration configuration = new PythianStateConfiguration();
+		configuration.setName(name);
+		configuration.setDescription(description);
+		configuration.setProperties(properties);
 		return configuration;
 	}
 }

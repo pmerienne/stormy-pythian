@@ -20,15 +20,15 @@ import static org.reflections.ReflectionUtils.withAnnotation;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.google.common.collect.Lists;
+import org.springframework.stereotype.Component;
 
 import storm.trident.state.StateFactory;
 import stormy.pythian.model.annotation.State;
 
+@Component
 public class ReferencedStateDescriptionFactory {
 
 	@SuppressWarnings("unchecked")
@@ -46,25 +46,7 @@ public class ReferencedStateDescriptionFactory {
 			descriptions.add(description);
 		}
 
-		ensureNoDuplicatedStateName(descriptions);
 		return descriptions;
-	}
-
-	private void ensureNoDuplicatedStateName(List<ReferencedStateDescription> descriptions) {
-		Set<String> duplicatedNames = new HashSet<>();
-		Set<String> uniqueNames = new HashSet<>();
-
-		for (ReferencedStateDescription description : descriptions) {
-			if (uniqueNames.contains(description.getName())) {
-				duplicatedNames.add(description.getName());
-			} else {
-				uniqueNames.add(description.getName());
-			}
-		}
-
-		if (!duplicatedNames.isEmpty()) {
-			throw new IllegalArgumentException("@State should have unique name. Found duplicates : " + Lists.newArrayList(duplicatedNames));
-		}
 	}
 
 	private void checkSupportedType(Field field) {

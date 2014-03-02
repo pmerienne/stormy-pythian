@@ -33,6 +33,9 @@ public class ComponentDescriptionFactory {
 
 	@Autowired
 	private OutputStreamDescriptionFactory outputStreamDeclarationFactory;
+	
+	@Autowired
+	private ReferencedStateDescriptionFactory stateDescriptionFactory;
 
 	public ComponentDescription createDeclaration(Class<? extends Component> componentClass) {
 		checkArgument(componentClass != null, "Component class is mandatory");
@@ -44,13 +47,13 @@ public class ComponentDescriptionFactory {
 		description.addProperties(propertyDeclarationFactory.createPropertyDeclarations(componentClass));
 		description.addInputStreams(inputStreamDeclarationFactory.createInputStreamDeclarations(componentClass));
 		description.addOutputStreams(outputStreamDeclarationFactory.createOutputStreamDeclarations(componentClass));
-
+		description.addStates(stateDescriptionFactory.createDescriptions(componentClass));
+		
 		description.ensureNoDuplicatedInputStreams();
-
 		description.ensureOutputStreamReference();
 		description.ensureNoDuplicatedOutputStreams();
-		
 		description.ensureNoDuplicatedProperties();
+		description.ensureNoDuplicatedStateName();
 		
 		return description;
 	}

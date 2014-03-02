@@ -231,13 +231,10 @@ public class ComponentFactoryTest {
     public void should_set_state_factories() {
         // Given
         StateFactory expectedStateFactory = mock(StateFactory.class);
-        StateFactory unexpectedStateFactory = mock(StateFactory.class);
         Map<String, StateFactory> topologyStateFactories = new HashMap<>();
-        topologyStateFactories.put("1", unexpectedStateFactory);
-        topologyStateFactories.put("2", expectedStateFactory);
+        topologyStateFactories.put("Word count", expectedStateFactory);
 
         ComponentConfiguration configuration = new ComponentConfiguration(randomAlphabetic(6), new ComponentDescription(TestComponent.class));
-        configuration.addStateFactory("Word count", "2");
 
         // When
         Component component = factory.createComponent(configuration, topologyStateFactories, new HashMap<String, Stream>(), new HashMap<String, FeaturesIndex>(),
