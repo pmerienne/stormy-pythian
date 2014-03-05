@@ -46,6 +46,7 @@ app.factory('ComponentService', function() {
 	var Property = function(description) {
 		this.name = description.name;
 		this.value = null;
+		this.description = description;
 	};
 	
 	Component.prototype.createInputStream = function(description) {

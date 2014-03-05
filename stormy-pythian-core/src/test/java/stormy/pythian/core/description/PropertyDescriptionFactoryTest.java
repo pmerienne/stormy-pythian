@@ -16,10 +16,15 @@
 package stormy.pythian.core.description;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static stormy.pythian.core.description.PropertyDescriptionTestBuilder.propertyDescription;
+import static stormy.pythian.model.annotation.PropertyType.ENUM;
 import static stormy.pythian.model.annotation.PropertyType.STRING;
+
 import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
+
 import stormy.pythian.model.annotation.Documentation;
 import stormy.pythian.model.annotation.Property;
 import stormy.pythian.model.component.Component;
@@ -27,76 +32,101 @@ import stormy.pythian.model.component.Component;
 @SuppressWarnings("serial")
 public class PropertyDescriptionFactoryTest {
 
-    private PropertyDescriptionFactory factory;
+	private PropertyDescriptionFactory factory;
 
-    @Before
-    public void init() {
-        factory = new PropertyDescriptionFactory();
-    }
+	@Before
+	public void init() {
+		factory = new PropertyDescriptionFactory();
+	}
 
-    @Test
-    public void should_retrieve_single_property_description() {
-        // Given
-        @Documentation(name = "Test component")
-        class TestComponent implements Component {
+	@Test
+	public void should_retrieve_single_property_description() {
+		// Given
+		@Documentation(name = "Test component")
+		class TestComponent implements Component {
 
-            @Property(name = "expected property", description = "tested property", mandatory = false)
-            public String expectedProperty;
+			@Property(name = "expected property", description = "tested property", mandatory = false)
+			public String expectedProperty;
 
-            @Override
-            public void init() {
+			@Override
+			public void init() {
 
-            }
-        }
+			}
+		}
 
-        // When
-        List<PropertyDescription> actualDescriptions = factory.createPropertyDescriptions(TestComponent.class);
+		// When
+		List<PropertyDescription> actualDescriptions = factory.createPropertyDescriptions(TestComponent.class);
 
-        // Then
-        assertThat(actualDescriptions).hasSize(1);
+		// Then
+		assertThat(actualDescriptions).hasSize(1);
 
-        PropertyDescription actualPropertyDescription = actualDescriptions.get(0);
-        assertThat(actualPropertyDescription).isEqualTo(
-                new PropertyDescription("expected property", "tested property", false, STRING));
-    }
+		PropertyDescription actualPropertyDescription = actualDescriptions.get(0);
+		assertThat(actualPropertyDescription).isEqualTo(
+				new PropertyDescription("expected property", "tested property", false, STRING));
+	}
 
-    @Test(expected = IllegalArgumentException.class)
-    public void should_throw_illegal_argument_exception_with_unsupported_property_description_type() {
-        // Given
-        @Documentation(name = "Test component")
-        class TestComponent implements Component {
+	@Test
+	public void should_retrieve_enum_description() {
+		// Given
+		@Documentation(name = "Test component")
+		class TestComponent implements Component {
 
-            @Property(name = "object")
-            public Object object;
+			@Property(name = "enum")
+			public TestEnum expectedProperty;
 
-            @Override
-            public void init() {
-            }
-        }
+			@Override
+			public void init() {
 
-        // When
-        factory.createPropertyDescriptions(TestComponent.class);
-    }
+			}
+		}
 
-    @Test(expected = IllegalArgumentException.class)
-    public void should_throw_illegal_argument_exception_when_properties_have_same_names() {
-        // Given
-        @Documentation(name = "Test component")
-        class TestComponent implements Component {
+		// When
+		List<PropertyDescription> actualDescriptions = factory.createPropertyDescriptions(TestComponent.class);
 
-            @Property(name = "same name")
-            public String stringProperty;
+		// Then
+		assertThat(actualDescriptions).containsOnly(propertyDescription("enum", ENUM).accepted("VALUE1", "VALUE2", "VALUE3").build());
+	}
 
-            @Property(name = "same name")
-            public int intProperty;
+	@Test(expected = IllegalArgumentException.class)
+	public void should_throw_illegal_argument_exception_with_unsupported_property_description_type() {
+		// Given
+		@Documentation(name = "Test component")
+		class TestComponent implements Component {
 
-            @Override
-            public void init() {
-            }
-        }
+			@Property(name = "object")
+			public Object object;
 
-        // When
-        factory.createPropertyDescriptions(TestComponent.class);
-    }
+			@Override
+			public void init() {
+			}
+		}
 
+		// When
+		factory.createPropertyDescriptions(TestComponent.class);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void should_throw_illegal_argument_exception_when_properties_have_same_names() {
+		// Given
+		@Documentation(name = "Test component")
+		class TestComponent implements Component {
+
+			@Property(name = "same name")
+			public String stringProperty;
+
+			@Property(name = "same name")
+			public int intProperty;
+
+			@Override
+			public void init() {
+			}
+		}
+
+		// When
+		factory.createPropertyDescriptions(TestComponent.class);
+	}
+
+	private static enum TestEnum {
+		VALUE1, VALUE2, VALUE3;
+	}
 }

@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Set;
 import org.springframework.stereotype.Component;
 import stormy.pythian.model.annotation.Property;
+import stormy.pythian.model.annotation.PropertyType;
 
 @Component
 public class PropertyDescriptionFactory {
@@ -36,11 +37,25 @@ public class PropertyDescriptionFactory {
         for (Field propertyField : propertyFields) {
             Property property = propertyField.getAnnotation(Property.class);
             PropertyDescription propertyDescription = new PropertyDescription(property.name(), property.description(), property.mandatory(), fromType(propertyField.getType()));
-
+            if(PropertyType.ENUM.equals(propertyDescription.getType())) {
+            	List<String> enumValues = retrieveEnumValues(propertyField);
+            	propertyDescription.setAcceptedValues(enumValues);
+            }
+            
             propertyDescriptions.add(propertyDescription);
         }
 
         return propertyDescriptions;
     }
 
+    private List<String> retrieveEnumValues(Field field) {
+    	Object[] enumConstants = field.getType().getEnumConstants();
+    	
+    	List<String> enumValues = new ArrayList<>(enumConstants.length);
+    	for(Object enumConstant : enumConstants) {
+    		enumValues.add(enumConstant.toString());
+    	}
+    	
+    	return enumValues;
+    }
 }

@@ -9,11 +9,9 @@
 			<tab>
 				<tab-heading><i class="fa fa-cogs fa-lg"></i> Properties </tab-heading>
 	
-				<form role="form">
-					<div class="form-group" ng-repeat="property in component.properties">
-						<label for="{{property.name}}">{{property.name}}</label>
-						<input id="{{property.name}}" class="form-control" ng-model="property.value" ng-required="property.mandatory">
-						<p class="help-block">{{property.description}}</p>
+				<form name="propertiesForm">
+					<div ng-repeat="property in component.properties">
+						<property model="property" />
 					</div>
 				</form>
 			</tab>
@@ -70,10 +68,10 @@
 
 	<div class="modal-footer">
 		<button class="btn btn-danger" ng-click="deleteComponent()">
-			<i class="fa fa-trash-o fa-lg"></i> Delete
+			<i class="fa fa-times fa-lg"></i> Remove
 		</button>
 		<button class="btn btn-primary" ng-click="saveComponent()">
-			<i class="fa fa-save fa-lg"></i> Save
+			<i class="fa fa-check fa-lg"></i> Ok
 		</button>
 	</div>
 </div>

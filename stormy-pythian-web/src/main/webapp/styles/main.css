@@ -54,7 +54,7 @@ body {
 	-o-transition: -o-box-shadow 0.15s ease-in;
 	transition: box-shadow 0.15s ease-in;
 	opacity: 0.9;
-	filter: alpha(opacity =      90);
+	filter: alpha(opacity =        90);
 }
 
 .diagram-stream-source {
@@ -76,7 +76,7 @@ body {
 	-o-transition: -o-box-shadow 0.15s ease-in;
 	transition: box-shadow 0.15s ease-in;
 	opacity: 0.9;
-	filter: alpha(opacity =      90);
+	filter: alpha(opacity =        90);
 }
 
 .diagram-component:hover {
@@ -86,7 +86,7 @@ body {
 	-webkit-box-shadow: 2px 2px 19px #444;
 	-moz-box-shadow: 2px 2px 19px #fff;
 	opacity: 0.8;
-	filter: alpha(opacity =      80);
+	filter: alpha(opacity =        80);
 }
 
 .diagram-stream-source:hover {
@@ -96,7 +96,7 @@ body {
 	-webkit-box-shadow: 2px 2px 19px #444;
 	-moz-box-shadow: 2px 2px 19px #fff;
 	opacity: 0.8;
-	filter: alpha(opacity =      80);
+	filter: alpha(opacity =        80);
 }
 
 .diagram-output-label {
@@ -137,6 +137,12 @@ body {
 
 .modal-body {
 	height: 600px;
-    max-height: 650px;
-    overflow-y: auto;
+	max-height: 650px;
+	overflow-y: auto;
+}
+
+input.ng-invalid-required {
+	border-color: #a94442;
+	-webkit-box-shadow: inset 0 1px 1px rgba(169, 68, 66, 0.1), 0 0 4px rgba(169, 68, 66, 1);
+     box-shadow: inset 0 1px 1px rgba(169, 68, 66, 0.1), 0 0 4px rgba(169, 68, 66, 1);
 }
