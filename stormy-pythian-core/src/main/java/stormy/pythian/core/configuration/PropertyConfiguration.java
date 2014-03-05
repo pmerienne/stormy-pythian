@@ -15,7 +15,11 @@
  */
 package stormy.pythian.core.configuration;
 
+import stormy.pythian.core.description.PropertyDescription;
+
 public class PropertyConfiguration {
+
+    private PropertyDescription description;
 
     private String name;
     private Object value;
@@ -43,13 +47,20 @@ public class PropertyConfiguration {
     public void setValue(Object value) {
         this.value = value;
     }
-    
-    
+
+    public PropertyDescription getDescription() {
+        return description;
+    }
+
+    public void setDescription(PropertyDescription description) {
+        this.description = description;
+    }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
+        result = prime * result + ((description == null) ? 0 : description.hashCode());
         result = prime * result + ((name == null) ? 0 : name.hashCode());
         result = prime * result + ((value == null) ? 0 : value.hashCode());
         return result;
@@ -64,6 +75,11 @@ public class PropertyConfiguration {
         if (getClass() != obj.getClass())
             return false;
         PropertyConfiguration other = (PropertyConfiguration) obj;
+        if (description == null) {
+            if (other.description != null)
+                return false;
+        } else if (!description.equals(other.description))
+            return false;
         if (name == null) {
             if (other.name != null)
                 return false;
@@ -79,7 +95,7 @@ public class PropertyConfiguration {
 
     @Override
     public String toString() {
-        return "PropertyConfiguration [name=" + name + ", value=" + value + "]";
+        return "PropertyConfiguration [description=" + description + ", name=" + name + ", value=" + value + "]";
     }
 
 }
