@@ -29,8 +29,10 @@ app.controller('EditTopologyCtrl', function($scope, $location, $route, $routePar
 			templateUrl : 'views/component/edit-component-modal.html',
 			controller : 'EditComponentCtrl',
 			resolve : {
-				editedComponent : function() {
+				component : function() {
 					return component;
+				}, topology: function() {
+					return $scope.topology;
 				}
 			}
 		});
