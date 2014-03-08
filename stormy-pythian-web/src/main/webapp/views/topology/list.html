@@ -4,16 +4,16 @@
 	<table class="table table-hover">
 		<tbody>
             <tr ng-repeat="topology in topologies">
-                <td>{{topology.name}}</td>
+                <td id="topology-{{topology.id}}-name">{{topology.name}}</td>
                 <td>
-                	<a ng-href="#/topologies/{{topology.id}}"><i class="fa fa-edit fa-lg"></i></a>
-                	<i class="fa fa-trash-o fa-lg clickable" ng-click="deleteTopology();"></i>
+                	<a id="edit-topology-{{topology.id}}" ng-href="#/topologies/{{topology.id}}"><i class="fa fa-edit fa-lg"></i></a>
+                	<i id="delete-topology-{{topology.id}}" class="fa fa-trash-o fa-lg clickable" ng-click="deleteTopology();"></i>
                	</td>
             </tr>
         </tbody>
 	</table>
 	
-	<button class="btn btn-primary" ng-click="createNewTopology();">
+	<button id="create-new-topology" class="btn btn-primary" ng-click="createNewTopology();">
 		<i class="fa fa-plus"></i> Create new
 	</button>
 </div>

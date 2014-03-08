@@ -16,7 +16,8 @@
 package stormy.pythian.features.steps;
 
 import static org.junit.Assert.assertTrue;
-import stormy.pythian.features.connectors.WebConnector;
+import static stormy.pythian.features.support.Environment.BASE_PATH;
+import stormy.pythian.features.support.WebConnector;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
@@ -30,12 +31,12 @@ public class RootPageStepDef {
 
     @When("^I visit the root page$")
     public void i_visit_the_root_page() throws Throwable {
-        connector.openAndWait("http://localhost:8080/stormy-pythian-web/");
+        connector.openAndWait(BASE_PATH);
     }
 
-    @Then("^I should see \"([^\"]*)\"")
+    @Then("^I should see the brand name : \"([^\"]*)\"")
     public void i_should_see(String content) {
-        assertTrue(connector.isTextPresent(content));
+        assertTrue(connector.navigationBarBrandContains(content));
     }
 
 }

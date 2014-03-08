@@ -5,4 +5,4 @@ Feature: Root path feature
 
   Scenario: Load stormy-pyhtian at base path
     When I visit the root page
-    Then I should see "Stormy Pythian"
+    Then I should see the brand name : "Stormy Pythian"

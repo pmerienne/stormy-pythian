@@ -1,17 +1,17 @@
 <div>
 	<form class="form-inline" role="form" style="margin: 10px">
 		<div class="form-group">
-			<input class="form-control input-lg" ng-model="topology.name" placeholder="Topology's name"/>
+			<input id="topology-name-input" class="form-control input-lg" ng-model="topology.name" placeholder="Topology's name"/>
 		</div>
 
 		<div class="pull-right">
-			<button class="btn btn-danger" ng-click="remove()">
+			<button id="delete-topology" class="btn btn-danger" ng-click="remove()">
 				<i class="fa fa-trash-o fa-2x"></i>
 			</button>
-			<button class="btn" ng-click="revert()">
+			<button id="revert-change" class="btn" ng-click="revert()">
 				<i class="fa fa-undo fa-2x"></i>
 			</button>
-			<button class="btn btn-primary" ng-click="save()">
+			<button id="save-topology" class="btn btn-primary" ng-click="save()">
 				<i class="fa fa-save fa-2x"></i>
 			</button>
 		</div>
