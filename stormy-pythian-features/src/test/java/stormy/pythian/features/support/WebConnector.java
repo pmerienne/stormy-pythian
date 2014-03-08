@@ -15,79 +15,119 @@
  */
 package stormy.pythian.features.support;
 
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static stormy.pythian.features.support.Environment.BASE_HTML_PATH;
-
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
-
-import cucumber.api.java.After;
-import cucumber.api.java.Before;
+import org.openqa.selenium.remote.RemoteWebDriver;
 
 public class WebConnector {
 
-	private final static long DEFAULT_TIMEOUT = 2000;
-	private PhantomJSDriver driver;
+    private final static boolean HEADLESS = true;
 
-	@Before
-	public void initSelenium() throws Exception {
-		driver = new PhantomJSDriver();
-	}
+    private final static RemoteWebDriver driver;
 
-	@After
-	public void destroySelenium() {
-		driver.close();
-	}
+    /**
+     * Static init to avoid lots of initialization causing bugs and timeouts!
+     */
+    static {
+        if (HEADLESS) {
+            driver = new PhantomJSDriver();
+        } else {
+            System.setProperty("webdriver.chrome.driver", "/opt/chromedriver/chromedriver");
+            driver = new ChromeDriver();
+        }
 
-	public void clickAndWait(String selector) {
-		clickAndWait(By.id(selector));
-	}
+        driver.manage().timeouts().implicitlyWait(1, SECONDS);
+        driver.manage().timeouts().setScriptTimeout(2, SECONDS);
+    }
 
-	public void fill(String id, String text) {
-		WebElement element = driver.findElementById(id);
-		element.sendKeys(text);
-	}
+    public void click(String selector) {
+        click(By.id(selector));
+    }
 
-	public void clickAndWait(By by) {
-		WebElement element = driver.findElement(by);
-		element.click();
-		driver.manage().timeouts().implicitlyWait(DEFAULT_TIMEOUT, MILLISECONDS);
-		waitForAngularRequestsToFinish();
-	}
+    public void fill(String id, String text) {
+        WebElement element = driver.findElementById(id);
+        element.sendKeys(text);
+    }
 
-	public boolean elementExists(String id) {
-		try {
-			WebElement element = driver.findElementById(id);
-			return element != null;
-		} catch (NoSuchElementException ex) {
-			return false;
-		}
-	}
+    public void click(By by) {
+        WebElement element = driver.findElement(by);
+        element.click();
+        wait_for_angular_requests_to_finish();
+    }
 
-	public void openAndWait(String location) {
-		driver.get(location);
-		driver.manage().timeouts().implicitlyWait(DEFAULT_TIMEOUT, MILLISECONDS);
-		waitForAngularRequestsToFinish();
-	}
+    public void drag_and_drop(WebElement source, WebElement destination) {
+        new Actions(driver)
+                .clickAndHold(source)
+                .moveByOffset(1, 1)
+                .moveToElement(destination)
+                .moveByOffset(1, 1)
+                .release()
+                .build().perform();
+        wait_for_angular_requests_to_finish();
+    }
 
-	public boolean navigationBarBrandContains(String text) {
-		WebElement content = driver.findElement(By.className("navbar-brand"));
-		return content.getText().contains(text);
-	}
+    public void drag_and_drop(WebElement source, int dx, int dy) {
+        new Actions(driver)
+                .clickAndHold(source)
+                .moveByOffset(dx, dy)
+                .moveByOffset(1, 1)
+                .release()
+                .build().perform();
 
-	public PhantomJSDriver getDriver() {
-		return driver;
-	}
+        wait_for_angular_requests_to_finish();
+    }
 
-	public String getRelativeLocation() {
-		return driver.getCurrentUrl().replaceAll(BASE_HTML_PATH, "");
-	}
+    public WebElement retrieve_element(By by) {
+        try {
+            return driver.findElement(by);
+        } catch (NoSuchElementException ex) {
+            return null;
+        }
+    }
 
-	public void waitForAngularRequestsToFinish() {
-		driver.executeAsyncScript("var callback = arguments[arguments.length - 1];" +
-				"angular.element(document.body).injector().get('$browser').notifyWhenNoOutstandingRequests(callback);");
-	}
+    public boolean element_exists(String id) {
+        return element_exists(By.id(id));
+    }
 
+    public boolean element_exists(By by) {
+        try {
+            WebElement element = driver.findElement(by);
+            return element != null;
+        } catch (NoSuchElementException ex) {
+            return false;
+        }
+    }
+
+    public void open_and_wait(String location) {
+        driver.get(location);
+        wait_for_angular_requests_to_finish();
+    }
+
+    public boolean navigation_bar_brand_contains(String text) {
+        WebElement content = driver.findElement(By.className("navbar-brand"));
+        return content.getText().contains(text);
+    }
+
+    public RemoteWebDriver driver() {
+        return driver;
+    }
+
+    public String relative_location() {
+        return driver.getCurrentUrl().replaceAll(BASE_HTML_PATH, "");
+    }
+
+    public void wait_for_angular_requests_to_finish() {
+        driver.executeAsyncScript("var callback = arguments[arguments.length - 1];" +
+                "angular.element(document.body).injector().get('$browser').notifyWhenNoOutstandingRequests(callback);");
+    }
+
+    public Object executeScript(String script, Object... args) {
+        return driver.executeScript(script, args);
+    }
 }

@@ -21,22 +21,22 @@ import stormy.pythian.features.support.WebConnector;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class RootPageStepDef {
+public class RootPageStep {
 
     private final WebConnector connector;
 
-    public RootPageStepDef(WebConnector connector) {
+    public RootPageStep(WebConnector connector) {
         this.connector = connector;
     }
 
     @When("^I visit the root page$")
     public void i_visit_the_root_page() throws Throwable {
-        connector.openAndWait(BASE_PATH);
+        connector.open_and_wait(BASE_PATH);
     }
 
     @Then("^I should see the brand name : \"([^\"]*)\"")
     public void i_should_see(String content) {
-        assertTrue(connector.navigationBarBrandContains(content));
+        assertTrue(connector.navigation_bar_brand_contains(content));
     }
 
 }
