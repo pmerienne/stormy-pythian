@@ -104,7 +104,7 @@ public class WebConnector {
         }
     }
 
-    public void open_and_wait(String location) {
+    public void open(String location) {
         driver.get(location);
         wait_for_angular_requests_to_finish();
     }
