@@ -16,6 +16,7 @@
 		<module>stormy-pythian-service</module>
 		<module>stormy-pythian-sand-box</module>
 		<module>stormy-pythian-web</module>
+		<module>stormy-pythian-features</module>
 	</modules>
 
 	<properties>
@@ -116,6 +117,12 @@
 				<groupId>com.github.pmerienne</groupId>
 				<artifactId>stormy-pythian-state</artifactId>
 				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.github.pmerienne</groupId>
+				<artifactId>stormy-pythian-web</artifactId>
+				<version>${project.version}</version>
+				<type>war</type>
 			</dependency>
 			<dependency>
 				<groupId>com.github.pmerienne</groupId>

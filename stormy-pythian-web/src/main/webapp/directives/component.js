@@ -38,26 +38,30 @@ app.directive('component', function() {
 			for(var i = 0; i < inputStreamsCount; i++) {
 				var inputStream = component.description.inputStreams[i];
 				var yOffset =  (i + 1) / (inputStreamsCount + 1);
-				diagram.jsPlumbInstance.addEndpoint(element, {
-					uuid: diagram.getInputStreamId(component.id, inputStream.name),
+				var endpointUUID = diagram.getInputStreamId(component.id, inputStream.name);
+				var e = diagram.jsPlumbInstance.addEndpoint(element, {
+					uuid: endpointUUID,
 					isTarget: true,
 					maxConnections: 1,
 					overlays:[ [ "Label", { label: inputStream.name, location: [2, 0.5], cssClass: "diagram-input-label"}]],
 					anchor : [ [ 0, yOffset, -1, 0] ]
 				});
+				e.canvas.id = endpointUUID;
 			}
 			
 			// Create endpoints for output streams
 			for(var i = 0; i < outputStreamsCount; i++) {
 				var outputStream = component.description.outputStreams[i];
 				var yOffset =  (i + 1) / (outputStreamsCount + 1);
-				diagram.jsPlumbInstance.addEndpoint(element, {
-					uuid:  diagram.getOutputStreamId(component.id, outputStream.name),
+				var endpointUUID =  diagram.getOutputStreamId(component.id, outputStream.name);
+				var e = diagram.jsPlumbInstance.addEndpoint(element, {
+					uuid:  endpointUUID,
 					isSource: true,
 					maxConnections: -1,
 					overlays:[ [ "Label", { label: outputStream.name, location: [-1, 0.5], cssClass: "diagram-output-label"}]],
 					anchor : [ [ 1, yOffset, 1, 0] ]
 				});
+				e.canvas.id = endpointUUID;
 			}
         }
     };

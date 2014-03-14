@@ -1,17 +1,17 @@
 <div>
 	<form class="form-inline" role="form" style="margin: 10px">
 		<div class="form-group">
-			<input class="form-control input-lg" ng-model="topology.name" placeholder="Topology's name"/>
+			<input id="topology-name-input" class="form-control input-lg" ng-model="topology.name" placeholder="Topology's name"/>
 		</div>
 
 		<div class="pull-right">
-			<button class="btn btn-danger" ng-click="remove()">
+			<button id="delete-topology" class="btn btn-danger" ng-click="remove()">
 				<i class="fa fa-trash-o fa-2x"></i>
 			</button>
-			<button class="btn" ng-click="revert()">
+			<button id="revert-change" class="btn" ng-click="revert()">
 				<i class="fa fa-undo fa-2x"></i>
 			</button>
-			<button class="btn btn-primary" ng-click="save()">
+			<button id="save-topology" class="btn btn-primary" ng-click="save()">
 				<i class="fa fa-save fa-2x"></i>
 			</button>
 		</div>
@@ -36,7 +36,7 @@
 				<div class="btn-group">
 					<div class="btn-group">
 						<button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown">
-							Learners <span class="caret"></span>
+							Learner <span class="caret"></span>
 						</button>
 						<ul class="dropdown-menu">
 							<li ng-repeat="description in learnersDescriptions"><a ng-click="addNewComponent(description)">{{description.name}}</a></li>
@@ -54,7 +54,7 @@
 
 					<div class="btn-group">
 						<button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown">
-							Others <span class="caret"></span>
+							Other <span class="caret"></span>
 						</button>
 						<ul class="dropdown-menu">
 							<li ng-repeat="description in othersDescriptions"><a ng-click="addNewComponent(description)">{{description.name}}</a></li>
