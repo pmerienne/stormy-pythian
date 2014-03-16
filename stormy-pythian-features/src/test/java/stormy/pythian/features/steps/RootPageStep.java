@@ -17,7 +17,9 @@ package stormy.pythian.features.steps;
 
 import static org.junit.Assert.assertTrue;
 import static stormy.pythian.features.support.Environment.BASE_PATH;
+import org.openqa.selenium.By;
 import stormy.pythian.features.support.WebConnector;
+import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
@@ -29,14 +31,24 @@ public class RootPageStep {
         this.connector = connector;
     }
 
+    @Given("^I'm on the root page$")
+    public void i_m_on_the_root_page() throws Throwable {
+        connector.open(BASE_PATH);
+    }
+
     @When("^I visit the root page$")
     public void i_visit_the_root_page() throws Throwable {
-        connector.open_and_wait(BASE_PATH);
+        connector.open(BASE_PATH);
     }
 
     @Then("^I should see the brand name : \"([^\"]*)\"")
     public void i_should_see(String content) {
         assertTrue(connector.navigation_bar_brand_contains(content));
+    }
+
+    @When("^I click on the navigation link \"([^\"]*)\"$")
+    public void I_click_on_the_navigation_link(String text) throws Throwable {
+        connector.click(By.linkText(text));
     }
 
 }

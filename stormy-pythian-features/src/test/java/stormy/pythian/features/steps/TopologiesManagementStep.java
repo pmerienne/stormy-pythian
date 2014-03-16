@@ -20,7 +20,7 @@ public class TopologiesManagementStep {
 
     @Given("^I'm on the topologies page$")
     public void i_m_on_the_topologies_page() throws Throwable {
-        connector.open_and_wait(BASE_HTML_PATH + "topologies");
+        connector.open(BASE_HTML_PATH + "topologies");
     }
 
     @When("^I click on the create new topology button$")
@@ -35,13 +35,7 @@ public class TopologiesManagementStep {
 
     @Given("^an empty topology named \"([^\"]*)\"$")
     public void an_empty_topology_named(String topologyName) throws Throwable {
-        connector.open_and_wait(BASE_HTML_PATH + "topologies");
-        connector.click("create-new-topology");
-        connector.fill("topology-name-input", topologyName);
-        connector.click("save-topology");
-
-        String topologyId = connector.relative_location().replace("topologies/", "");
-        topologies.storeId(topologyName, topologyId);
+        topologies.create_new_topology(topologyName);
     }
 
     @When("^I click on the edit topology button of \"([^\"]*)\"$")
@@ -64,7 +58,7 @@ public class TopologiesManagementStep {
 
     @When("^I visit the topologies page$")
     public void i_visit_the_topologies_page() throws Throwable {
-        connector.open_and_wait(BASE_HTML_PATH + "topologies");
+        connector.open(BASE_HTML_PATH + "topologies");
     }
 
     @Then("^I should see \"([^\"]*)\" in the topologies list$")
@@ -76,6 +70,6 @@ public class TopologiesManagementStep {
     @Given("^I'm on the \"([^\"]*)\" edition page$")
     public void i_m_on_the_edition_page(String topologyName) throws Throwable {
         String topologyId = topologies.getId(topologyName);
-        connector.open_and_wait(BASE_HTML_PATH + "topologies/" + topologyId);
+        connector.open(BASE_HTML_PATH + "topologies/" + topologyId);
     }
 }

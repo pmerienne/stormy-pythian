@@ -18,16 +18,18 @@ package stormy.pythian.web.jersey;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.spring.scope.RequestContextFilter;
+
+import stormy.pythian.web.resource.ClustersResource;
 import stormy.pythian.web.resource.DescriptionsResource;
 import stormy.pythian.web.resource.TopologiesResource;
 
 public class ResourceConfiguration extends ResourceConfig {
 
-    /**
-     * Register JAX-RS application components.
-     */
-    public ResourceConfiguration() {
-        registerClasses(RequestContextFilter.class, JacksonFeature.class);
-        registerClasses(TopologiesResource.class, DescriptionsResource.class);
-    }
+	/**
+	 * Register JAX-RS application components.
+	 */
+	public ResourceConfiguration() {
+		registerClasses(RequestContextFilter.class, JacksonFeature.class);
+		registerClasses(TopologiesResource.class, DescriptionsResource.class, ClustersResource.class);
+	}
 }
