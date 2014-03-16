@@ -2,8 +2,11 @@ package stormy.pythian.features.steps;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static stormy.pythian.features.support.Environment.BASE_HTML_PATH;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+
+import stormy.pythian.features.support.Clusters;
 import stormy.pythian.features.support.Topologies;
 import stormy.pythian.features.support.WebConnector;
 import cucumber.api.java.en.Given;
@@ -14,17 +17,19 @@ public class LocalClusterStep {
 
     private final WebConnector connector;
     private final Topologies topologies;
+    private final Clusters clusters;
 
-    public LocalClusterStep(WebConnector connector, Topologies topologies) {
+    public LocalClusterStep(WebConnector connector, Topologies topologies, Clusters clusters) {
         this.connector = connector;
         this.topologies = topologies;
+        this.clusters = clusters;
     }
 
     @Then("^I should see a navigation link to the local cluster page$")
     public void i_should_see_a_navigation_link_to_the_local_cluster_page() throws Throwable {
         WebElement local_cluster_link = connector.retrieve_element(By.linkText("Local"));
         assertThat(local_cluster_link).isNotNull();
-        assertThat(local_cluster_link.getAttribute("href")).isEqualTo("#/clusters/local");
+        assertThat(local_cluster_link.getAttribute("href").replace(BASE_HTML_PATH, "")).isEqualTo("clusters/local");
     }
 
     @Given("^I\'m on the local cluster page$")
@@ -50,20 +55,22 @@ public class LocalClusterStep {
     @Then("^I should see the \"([^\"]*)\" deployed$")
     public void i_should_see_the_running(String name) throws Throwable {
         String topologyId = topologies.getId(name);
-        String state_element_id = topologyId + "-state";
+        String state_element_id = topologyId + "-status";
         WebElement state_element = connector.retrieve_element(By.id(state_element_id));
 
         assertThat(state_element).isNotNull();
-        assertThat(state_element.getText()).isEqualTo("Deployed");
+        assertThat(state_element.getText()).isEqualToIgnoringCase("Deployed");
     }
 
     @Given("^a deployed topology \"([^\"]*)\"$")
     public void a_deplyed_topology(String name) throws Throwable {
-        topologies.create_new_topology(name);
+        String topology_id = topologies.create_new_topology(name);
 
         connector.open(BASE_HTML_PATH + "clusters/local");
         connector.click(By.id("choose-topology-to-deploy-button"));
         connector.click(By.linkText(name));
+        
+        clusters.register("local", topology_id);
     }
 
     @When("^I click on the undeploy button of \"([^\"]*)\"$")
@@ -75,11 +82,11 @@ public class LocalClusterStep {
     @Then("^I should see the \"([^\"]*)\" undeploying$")
     public void i_should_see_the_undeploying(String name) throws Throwable {
         String topologyId = topologies.getId(name);
-        String state_element_id = topologyId + "-state";
+        String state_element_id = topologyId + "-status";
         WebElement state_element = connector.retrieve_element(By.id(state_element_id));
 
         assertThat(state_element).isNotNull();
-        assertThat(state_element.getText()).isEqualTo("Undeploying");
+        assertThat(state_element.getText()).isEqualToIgnoringCase("Undeploying");
     }
 
     @Given("^an undeployed topology \"([^\"]*)\"$")
@@ -90,7 +97,7 @@ public class LocalClusterStep {
     @Then("^I should not see the \"([^\"]*)\" deploy state$")
     public void i_should_not_see_the_deployed(String name) throws Throwable {
         String topologyId = topologies.getId(name);
-        String state_element_id = topologyId + "-state";
+        String state_element_id = topologyId + "-status";
         assertThat(connector.element_exists(By.id(state_element_id))).isFalse();
     }
 }

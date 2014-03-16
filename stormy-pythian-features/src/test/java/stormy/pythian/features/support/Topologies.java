@@ -29,7 +29,7 @@ public class Topologies {
         return topologies.get(topologyName);
     }
 
-    public void create_new_topology(String topologyName) {
+    public String create_new_topology(String topologyName) {
         connector.open(BASE_HTML_PATH + "topologies");
         connector.click("create-new-topology");
         connector.fill("topology-name-input", topologyName);
@@ -37,6 +37,7 @@ public class Topologies {
         connector.click("save-topology");
         String topologyId = connector.relative_location().replace("topologies/", "");
         storeId(topologyName, topologyId);
+        return topologyId;
     }
 
     public void create_new_topology(String topologyName, List<Component> components) {
