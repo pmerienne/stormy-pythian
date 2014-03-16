@@ -13,20 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package stormy.pythian.service.topology;
+package stormy.pythian.service.cluster;
 
 @SuppressWarnings("serial")
-public class TopologyLaunchException extends Exception {
+public class TopologyKillException extends Exception {
 
-	public TopologyLaunchException() {
+	public TopologyKillException() {
 		super();
 	}
 
-	public TopologyLaunchException(String message) {
+	public TopologyKillException(String message) {
 		super(message);
 	}
 
-	public TopologyLaunchException(String message, Throwable cause) {
+	public TopologyKillException(String message, Throwable cause) {
 		super(message, cause);
 	}
 }

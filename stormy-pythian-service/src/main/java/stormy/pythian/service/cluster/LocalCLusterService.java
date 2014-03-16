@@ -13,34 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package stormy.pythian.service.topology;
+package stormy.pythian.service.cluster;
 
-import static com.google.common.collect.Maps.uniqueIndex;
-import static stormy.pythian.service.topology.TopologyState.Status.STOPPED;
-import static stormy.pythian.service.topology.TopologyState.Status.fromStormStatus;
+import static stormy.pythian.service.cluster.TopologyState.Status.fromStormStatus;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import stormy.pythian.core.configuration.PythianToplogyConfiguration;
 import stormy.pythian.core.topology.PythianTopology;
+import stormy.pythian.service.topology.TopologyRepository;
 import backtype.storm.Config;
 import backtype.storm.LocalCluster;
 import backtype.storm.generated.StormTopology;
 import backtype.storm.generated.TopologySummary;
 
-import com.google.common.base.Function;
-
 @Service
-public class TopologyLocalLauncherService {
+public class LocalCLusterService {
 
 	@Autowired
 	private TopologyRepository topologyRepository;
@@ -90,15 +86,12 @@ public class TopologyLocalLauncherService {
 	}
 
 	public List<TopologyState> getTopologyStates() {
-		Map<String, TopologySummary> summaries = getClusterTopologySummaries();
-		Collection<PythianToplogyConfiguration> topologies = topologyRepository.findAll();
+		List<TopologySummary> summaries = cluster.getClusterInfo().get_topologies();
+		List<TopologyState> states = new ArrayList<>(summaries.size());
 
-		List<TopologyState> states = new ArrayList<>();
-		for (PythianToplogyConfiguration topology : topologies) {
-			TopologySummary summary = summaries.get(topology.getId());
-			if (summary == null) {
-				states.add(new TopologyState(topology.getId(), topology.getName(), STOPPED));
-			} else {
+		for (TopologySummary summary : summaries) {
+			PythianToplogyConfiguration topology = topologyRepository.findById(summary.get_name());
+			if (topology != null) {
 				states.add(new TopologyState(topology.getId(), topology.getName(), fromStormStatus(summary.get_status())));
 			}
 		}
@@ -106,13 +99,16 @@ public class TopologyLocalLauncherService {
 		return states;
 	}
 
-	private Map<String, TopologySummary> getClusterTopologySummaries() {
-		Map<String, TopologySummary> summaries = uniqueIndex(cluster.getClusterInfo().get_topologies(), new Function<TopologySummary, String>() {
-			public String apply(TopologySummary summary) {
-				return summary.get_name();
-			}
-		});
-		return summaries;
-	}
+	public TopologyState getTopologyState(String topologyId) {
+		PythianToplogyConfiguration configuration = topologyRepository.findById(topologyId);
+		List<TopologySummary> summaries = cluster.getClusterInfo().get_topologies();
 
+		for (TopologySummary summary : summaries) {
+			if (StringUtils.equals(summary.get_name(), topologyId)) {
+				return new TopologyState(configuration.getId(), configuration.getName(), fromStormStatus(summary.get_status()));
+			}
+		}
+
+		return new TopologyState(configuration.getId(), configuration.getName(), TopologyState.Status.UNDEPLOYED);
+	}
 }

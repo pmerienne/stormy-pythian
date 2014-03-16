@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package stormy.pythian.service.topology;
+package stormy.pythian.service.cluster;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.EMPTY_LIST;
@@ -26,9 +26,8 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static stormy.pythian.service.topology.TopologyState.Status.KILLING;
-import static stormy.pythian.service.topology.TopologyState.Status.STARTED;
-import static stormy.pythian.service.topology.TopologyState.Status.STOPPED;
+import static stormy.pythian.service.cluster.TopologyState.Status.UNDEPLOYING;
+import static stormy.pythian.service.cluster.TopologyState.Status.DEPLOYED;
 
 import java.util.List;
 
@@ -40,17 +39,17 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import stormy.pythian.core.configuration.PythianToplogyConfiguration;
+import stormy.pythian.service.topology.TopologyRepository;
 import backtype.storm.Config;
 import backtype.storm.LocalCluster;
-import backtype.storm.generated.AlreadyAliveException;
 import backtype.storm.generated.StormTopology;
 import backtype.storm.generated.TopologySummary;
 
 @RunWith(MockitoJUnitRunner.class)
-public class TopologyLocalLauncherServiceTest {
+public class LocalCLusterServiceTest {
 
 	@InjectMocks
-	private TopologyLocalLauncherService service;
+	private LocalCLusterService service;
 
 	@Mock
 	private TopologyRepository topologyRepository;
@@ -83,21 +82,21 @@ public class TopologyLocalLauncherServiceTest {
 		PythianToplogyConfiguration topology1 = new PythianToplogyConfiguration("1", "topology 1");
 		PythianToplogyConfiguration topology2 = new PythianToplogyConfiguration("2", "topology 2");
 		PythianToplogyConfiguration topology3 = new PythianToplogyConfiguration("3", "topology 3");
-		given(topologyRepository.findAll()).willReturn(asList(topology1, topology2, topology3));
+		given(topologyRepository.findById("1")).willReturn(topology1);
+		given(topologyRepository.findById("2")).willReturn(topology2);
+		given(topologyRepository.findById("3")).willReturn(topology3);
 
 		TopologySummary expectedTopologySummary1 = new TopologySummary(random(6), "1", 1, 1, 1, 1, "ACTIVE");
 		TopologySummary expectedTopologySummary2 = new TopologySummary(random(6), "2", 2, 2, 2, 2, "KILLED");
-		List<TopologySummary> expectedTopologySummaries = asList(expectedTopologySummary1, expectedTopologySummary2);
-		given(cluster.getClusterInfo().get_topologies()).willReturn(expectedTopologySummaries);
+		given(cluster.getClusterInfo().get_topologies()).willReturn(asList(expectedTopologySummary1, expectedTopologySummary2));
 
 		// When
 		List<TopologyState> states = service.getTopologyStates();
 
 		// Then
 		assertThat(states).containsOnly(
-				new TopologyState("1", "topology 1", STARTED),
-				new TopologyState("2", "topology 2", KILLING),
-				new TopologyState("3", "topology 3", STOPPED)
+				new TopologyState("1", "topology 1", DEPLOYED),
+				new TopologyState("2", "topology 2", UNDEPLOYING)
 				);
 	}
 

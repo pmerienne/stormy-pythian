@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package stormy.pythian.service.topology;
+package stormy.pythian.service.cluster;
 
 public class TopologyState {
 
@@ -94,14 +94,14 @@ public class TopologyState {
 	}
 
 	public static enum Status {
-		STARTED, KILLING, STOPPED, UNKNOWN;
+		DEPLOYING, DEPLOYED, UNDEPLOYING, UNDEPLOYED, UNKNOWN;
 
 		public static Status fromStormStatus(String status) {
 			switch (status) {
 			case "ACTIVE":
-				return STARTED;
+				return DEPLOYED;
 			case "KILLED":
-				return KILLING;
+				return UNDEPLOYING;
 			default:
 				return UNKNOWN;
 			}
