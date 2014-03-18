@@ -6,11 +6,11 @@
 	<input ng-if="property.description.type == 'DECIMAL'" name="{{property.name.removeSpaces()}}" class="form-control" ng-model="property.value" type="number" step="any" ng-required="property.description.mandatory">
 	<input ng-if="property.description.type == 'NUMBER'" name="{{property.name.removeSpaces()}}" class="form-control" ng-model="property.value" type="number" step="any" ng-required="property.description.mandatory">
 	
-	<select ng-if="property.description.type == 'ENUM'" name="{{property.name}}.removeSpaces()" class="form-control" ng-model="property.value"  ng-options="value as value for value in property.description.acceptedValues" ng-required="property.description.mandatory">
+	<select ng-if="property.description.type == 'ENUM'" name="{{property.name.removeSpaces()}}" class="form-control" ng-model="property.value"  ng-options="value as value for value in property.description.acceptedValues" ng-required="property.description.mandatory">
 		<option ng-if="!property.description.mandatory" value=>None</option>
 	</select>
 	
-	<div ng-if="property.description.type == 'BOOLEAN'">
+	<div ng-if="property.description.type == 'BOOLEAN'" name="{{property.name.removeSpaces()}}">
 	    <input name="{{property.name.removeSpaces()}}" type="checkbox" switch>
 	</div>
       

@@ -1,13 +1,13 @@
 <div>
 	<div class="modal-header">
 		<div class="form-group">
-			<input class="form-control input-lg" ng-model="component.name" placeholder="Component's name" />
+			<input id="component-name" class="form-control input-lg" ng-model="component.name" placeholder="Component's name" />
 		</div>
 	</div>
 	<div class="modal-body">
 		<tabset>
 			<tab>
-				<tab-heading><i class="fa fa-cogs fa-lg"></i> Properties </tab-heading>
+				<tab-heading id="properties-tab-heading"><i class="fa fa-cogs fa-lg"></i> Properties </tab-heading>
 	
 				<form name="propertiesForm">
 					<div ng-repeat="property in component.properties">
@@ -17,7 +17,7 @@
 			</tab>
 			
 			<tab>
-				<tab-heading><i class="fa fa-link fa-lg"></i> Input mapping </tab-heading>
+				<tab-heading id="input-mapping-tab-heading"><i class="fa fa-link fa-lg"></i> Input mapping </tab-heading>
 				
 				<form role="form" ng-repeat="inputStream in component.inputStreams">
 					<h3>{{inputStream.description.name}}</h3>
@@ -38,7 +38,7 @@
 			</tab>
 			
 			<tab>
-				<tab-heading><i class="fa fa-link fa-lg"></i> Output mapping </tab-heading>
+				<tab-heading id="output-mapping-tab-heading"><i class="fa fa-link fa-lg"></i> Output mapping </tab-heading>
 
 				<form role="form" ng-repeat="outputStream in component.outputStreams">
 					<h3>{{outputStream.description.name}}</h3>
@@ -64,10 +64,10 @@
 	</div>
 
 	<div class="modal-footer">
-		<button class="btn btn-danger" ng-click="deleteComponent()">
+		<button id="delete-component" class="btn btn-danger" ng-click="deleteComponent()">
 			<i class="fa fa-times fa-lg"></i> Remove
 		</button>
-		<button class="btn btn-primary" ng-click="saveComponent()">
+		<button id="save-component" class="btn btn-primary" ng-click="saveComponent()">
 			<i class="fa fa-check fa-lg"></i> Ok
 		</button>
 	</div>

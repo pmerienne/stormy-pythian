@@ -3,8 +3,10 @@ package stormy.pythian.features.steps;
 import static org.fest.assertions.Assertions.assertThat;
 import java.util.List;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import stormy.pythian.features.support.Component;
 import stormy.pythian.features.support.Components;
+import stormy.pythian.features.support.Property;
 import stormy.pythian.features.support.Topologies;
 import stormy.pythian.features.support.WebConnector;
 import cucumber.api.DataTable;
@@ -30,9 +32,9 @@ public class TopologyEditionSteps {
         topologies.create_new_topology(topologyName, components);
     }
 
-    @When("^I add a new \"([^\"]*)\" component : \"([^\"]*)\"$")
-    public void i_add_a_new_component(String type, String name) {
-        topologies.add_new_component(type, name, 50, 50);
+    @When("^I add a new \"([^\"]*)\" \"([^\"]*)\" component named \"([^\"]*)\"$")
+    public void i_add_a_new_component(String type, String component, String name) {
+        components.add_new_component(type, component, name, 50, 50);
     }
 
     @Then("^I should see a component named \"([^\"]*)\"$")
@@ -59,6 +61,26 @@ public class TopologyEditionSteps {
                 sourceComponent,
                 targetComponent);
         assertThat(hasConnections).isTrue();
+    }
+
+    @When("^I set the \"([^\"]*)\" properties:$")
+    public void i_set_the_properties(String componentName, DataTable datatable) throws Throwable {
+        List<Property> properties = datatable.asList(Property.class);
+        components.set_properties(componentName, properties);
+    }
+
+    @Then("^the component \"([^\"]*)\" should have the following properties:$")
+    public void the_component_should_have_the_following_properties(String componentName, DataTable datatable) throws Throwable {
+        connector.click(By.xpath("//*[contains(@class,'diagram-component-title') and contains(text(),'" + componentName + "')]"));
+        connector.click("properties-tab-heading");
+        
+        List<Property> properties = datatable.asList(Property.class);
+        for (Property property : properties) {
+            String actualValue = components.get_property_value(componentName, property.type, property.name);
+            assertThat(actualValue).isEqualTo(property.value);
+        }
+        
+        connector.press(Keys.ESCAPE);
     }
 
 }

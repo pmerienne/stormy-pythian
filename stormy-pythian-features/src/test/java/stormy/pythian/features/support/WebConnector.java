@@ -18,12 +18,14 @@ package stormy.pythian.features.support;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static stormy.pythian.features.support.Environment.BASE_HTML_PATH;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.support.ui.Select;
 
 public class WebConnector {
 
@@ -42,23 +44,49 @@ public class WebConnector {
             driver = new ChromeDriver();
         }
 
-        driver.manage().timeouts().implicitlyWait(1, SECONDS);
-        driver.manage().timeouts().setScriptTimeout(2, SECONDS);
+        driver.manage().timeouts()
+                .implicitlyWait(2, SECONDS)
+                .setScriptTimeout(2, SECONDS)
+                .pageLoadTimeout(10, SECONDS);
     }
 
-    public void click(String selector) {
-        click(By.id(selector));
+    public void press(Keys keys) {
+        new Actions(driver).sendKeys(keys).build().perform();
+        wait_for_angular_requests_to_finish();
     }
 
     public void fill(String id, String text) {
         WebElement element = driver.findElementById(id);
+        fill(element, text);
+    }
+
+    public void fill(By by, String text) {
+        WebElement element = driver.findElement(by);
+        fill(element, text);
+    }
+
+    public void fill(WebElement element, String text) {
+        element.clear();
         element.sendKeys(text);
+    }
+
+    public void scroll_into_view(WebElement element) {
+        driver.executeScript("arguments[0].scrollIntoView(true);", element);
+        wait_for_angular_requests_to_finish();
+    }
+
+    public void click(WebElement element) {
+        element.click();
+        wait_for_angular_requests_to_finish();
     }
 
     public void click(By by) {
         WebElement element = driver.findElement(by);
-        element.click();
-        wait_for_angular_requests_to_finish();
+        click(element);
+    }
+
+    public void click(String selector) {
+        click(By.id(selector));
     }
 
     public void drag_and_drop(WebElement source, WebElement destination) {
@@ -70,6 +98,11 @@ public class WebConnector {
                 .release()
                 .build().perform();
         wait_for_angular_requests_to_finish();
+    }
+
+    public void drag_and_drop(String elementId, int dx, int dy) {
+        WebElement element = driver.findElement(By.id(elementId));
+        drag_and_drop(element, dx, dy);
     }
 
     public void drag_and_drop(WebElement source, int dx, int dy) {
@@ -104,14 +137,29 @@ public class WebConnector {
         }
     }
 
-    public void open(String location) {
-        driver.get(location);
+    public void select(WebElement selectElement, String value) {
+        new Select(selectElement).selectByVisibleText(value);
         wait_for_angular_requests_to_finish();
     }
 
-    public boolean navigation_bar_brand_contains(String text) {
-        WebElement content = driver.findElement(By.className("navbar-brand"));
-        return content.getText().contains(text);
+    public void select(By by, String value) {
+        WebElement selectElement = retrieve_element(by);
+        new Select(selectElement).selectByVisibleText(value);
+        wait_for_angular_requests_to_finish();
+    }
+
+    public String retrieve_selected(By by) {
+        WebElement selectElement = retrieve_element(by);
+        return new Select(selectElement).getFirstSelectedOption().getText();
+    }
+
+    public String retrieve_selected(WebElement selectElement) {
+        return new Select(selectElement).getFirstSelectedOption().getText();
+    }
+
+    public void open(String location) {
+        driver.get(location);
+        wait_for_angular_requests_to_finish();
     }
 
     public RemoteWebDriver driver() {
@@ -123,8 +171,13 @@ public class WebConnector {
     }
 
     public void wait_for_angular_requests_to_finish() {
-        driver.executeAsyncScript("var callback = arguments[arguments.length - 1];" +
-                "angular.element(document.body).injector().get('$browser').notifyWhenNoOutstandingRequests(callback);");
+        try {
+            Thread.sleep(200);
+            driver.executeAsyncScript("var callback = arguments[arguments.length - 1];" +
+                    "angular.element(document.body).injector().get('$browser').notifyWhenNoOutstandingRequests(callback);");
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public Object executeScript(String script, Object... args) {

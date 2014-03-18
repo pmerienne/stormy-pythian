@@ -15,9 +15,10 @@
  */
 package stormy.pythian.features.steps;
 
-import static org.junit.Assert.assertTrue;
+import static org.fest.assertions.Assertions.assertThat;
 import static stormy.pythian.features.support.Environment.BASE_PATH;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 import stormy.pythian.features.support.WebConnector;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -42,8 +43,9 @@ public class RootPageStep {
     }
 
     @Then("^I should see the brand name : \"([^\"]*)\"")
-    public void i_should_see(String content) {
-        assertTrue(connector.navigation_bar_brand_contains(content));
+    public void i_should_see_the_brand_name(String content) {
+        WebElement navbar_element = connector.retrieve_element(By.className("navbar-brand"));
+        assertThat(navbar_element.getText()).contains(content);
     }
 
     @When("^I click on the navigation link \"([^\"]*)\"$")

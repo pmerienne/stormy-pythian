@@ -1,6 +1,5 @@
 package stormy.pythian.features.support;
 
-import static org.openqa.selenium.By.linkText;
 import static stormy.pythian.features.support.Environment.BASE_HTML_PATH;
 import java.util.HashMap;
 import java.util.List;
@@ -46,21 +45,12 @@ public class Topologies {
         connector.fill("topology-name-input", topologyName);
 
         for (Component component : components) {
-            add_new_component(component.type, component.name, component.x, component.y);
+            this.components.add_new_component(component.type, component.component, component.name, component.x, component.y);
         }
 
         connector.click("save-topology");
         String topologyId = connector.relative_location().replace("topologies/", "");
         storeId(topologyName, topologyId);
-    }
-
-    public void add_new_component(String type, String name, int x, int y) {
-        connector.click(By.xpath("//*[contains(@class,'dropdown-toggle') and contains(text(),'" + type + "')]"));
-        connector.click(linkText(name));
-
-        components.storeId(name, retrieve_component_id(name));
-        connector.drag_and_drop(retrieve_component(name), x - 50, y - 50);
-        connector.click("save-topology");
     }
 
     public void connect(String component1Name, String component1Stream, String component2Name, String component2Stream) throws Throwable {
@@ -70,25 +60,14 @@ public class Topologies {
         connector.click("save-topology");
     }
 
-    public String retrieve_component_id(String componentName) {
-        WebElement component = connector.retrieve_element(By.xpath("//*[contains(@class,'diagram-component-title') and contains(text(),'" + componentName + "')]/.."));
-        String id = component.getAttribute("id");
-        return id;
-    }
-
-    public WebElement retrieve_component(String name) {
+    public WebElement retrieve_input_endpoint(String name, String stream) {
         String componentId = components.getId(name);
-        return connector.retrieve_element(By.id(componentId));
-    }
-
-    public WebElement retrieve_input_endpoint(String component, String stream) {
-        String componentId = components.getId(component);
         String endpointId = componentId + "-in-" + stream;
         return connector.retrieve_element(By.id(endpointId));
     }
 
-    public WebElement retrieve_output_endpoint(String component, String stream) {
-        String componentId = components.getId(component);
+    public WebElement retrieve_output_endpoint(String name, String stream) {
+        String componentId = components.getId(name);
         String endpointId = componentId + "-out-" + stream;
         return connector.retrieve_element(By.id(endpointId));
     }
