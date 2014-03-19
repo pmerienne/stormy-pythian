@@ -17,7 +17,9 @@ package stormy.pythian.features.support;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static stormy.pythian.features.support.Environment.BASE_HTML_PATH;
+
 import org.openqa.selenium.By;
+import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
@@ -32,6 +34,7 @@ public class WebConnector {
     private final static boolean HEADLESS = true;
 
     private final static RemoteWebDriver driver;
+    private static final Dimension WINDOW_SIZE = new Dimension(1600, 900);
 
     /**
      * Static init to avoid lots of initialization causing bugs and timeouts!
@@ -43,6 +46,9 @@ public class WebConnector {
             System.setProperty("webdriver.chrome.driver", "/opt/chromedriver/chromedriver");
             driver = new ChromeDriver();
         }
+        
+
+		driver.manage().window().setSize(WINDOW_SIZE);
 
         driver.manage().timeouts()
                 .implicitlyWait(2, SECONDS)
