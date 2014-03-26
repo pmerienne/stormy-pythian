@@ -17,7 +17,6 @@ package stormy.pythian.features.support;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static stormy.pythian.features.support.Environment.BASE_HTML_PATH;
-
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Keys;
@@ -46,10 +45,8 @@ public class WebConnector {
             System.setProperty("webdriver.chrome.driver", "/opt/chromedriver/chromedriver");
             driver = new ChromeDriver();
         }
-        
 
-		driver.manage().window().setSize(WINDOW_SIZE);
-
+        driver.manage().window().setSize(WINDOW_SIZE);
         driver.manage().timeouts()
                 .implicitlyWait(2, SECONDS)
                 .setScriptTimeout(2, SECONDS)

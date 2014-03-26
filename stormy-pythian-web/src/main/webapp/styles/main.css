@@ -135,6 +135,10 @@ body {
 	cursor: pointer;
 }
 
+.modal-dialog {
+	width: 900px;
+}
+
 .modal-body {
 	height: 600px;
 	max-height: 650px;

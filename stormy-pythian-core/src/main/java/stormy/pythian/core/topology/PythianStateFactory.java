@@ -41,7 +41,7 @@ public class PythianStateFactory {
 
 	private PythianState createStateFactory(PythianStateConfiguration configuration) {
 		try {
-			PythianState pythianState = configuration.getImplementation().newInstance();
+			PythianState pythianState = configuration.retrieveImplementation().newInstance();
 			setProperties(pythianState, configuration.getProperties());
 
 			return pythianState;

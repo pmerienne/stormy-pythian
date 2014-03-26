@@ -16,6 +16,11 @@
 				</form>
 			</tab>
 			
+			<tab ng-repeat="state in component.states">
+				<tab-heading id="state-{{state.name.removeSpaces()}}-tab-heading"><i class="fa fa-exchange fa-lg"></i> {{state.name}} </tab-heading>
+				<state-form model="state"></state-form>
+			</tab>
+			
 			<tab>
 				<tab-heading id="input-mapping-tab-heading"><i class="fa fa-link fa-lg"></i> Input mapping </tab-heading>
 				

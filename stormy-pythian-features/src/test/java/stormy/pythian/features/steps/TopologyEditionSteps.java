@@ -19,9 +19,12 @@ import static org.fest.assertions.Assertions.assertThat;
 import java.util.List;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.Select;
 import stormy.pythian.features.support.Component;
 import stormy.pythian.features.support.Components;
 import stormy.pythian.features.support.Property;
+import stormy.pythian.features.support.States;
 import stormy.pythian.features.support.Topologies;
 import stormy.pythian.features.support.WebConnector;
 import cucumber.api.DataTable;
@@ -34,11 +37,13 @@ public class TopologyEditionSteps {
     private final WebConnector connector;
     private final Topologies topologies;
     private final Components components;
+    private final States states;
 
-    public TopologyEditionSteps(WebConnector connector, Topologies topologies, Components components) {
+    public TopologyEditionSteps(WebConnector connector, Topologies topologies, Components components, States states) {
         this.connector = connector;
         this.topologies = topologies;
         this.components = components;
+        this.states = states;
     }
 
     @Given("^a topology named \"([^\"]*)\" with the components:$")
@@ -78,7 +83,7 @@ public class TopologyEditionSteps {
         assertThat(hasConnections).isTrue();
     }
 
-    @When("^I set the \"([^\"]*)\" properties:$")
+    @When("^I set the \"([^\"]*)\" component properties:$")
     public void i_set_the_properties(String componentName, DataTable datatable) throws Throwable {
         List<Property> properties = datatable.asList(Property.class);
         components.set_properties(componentName, properties);
@@ -88,14 +93,55 @@ public class TopologyEditionSteps {
     public void the_component_should_have_the_following_properties(String componentName, DataTable datatable) throws Throwable {
         connector.click(By.xpath("//*[contains(@class,'diagram-component-title') and contains(text(),'" + componentName + "')]"));
         connector.click("properties-tab-heading");
-        
+
         List<Property> properties = datatable.asList(Property.class);
         for (Property property : properties) {
             String actualValue = components.get_property_value(componentName, property.type, property.name);
             assertThat(actualValue).isEqualTo(property.value);
         }
-        
+
         connector.press(Keys.ESCAPE);
+    }
+
+    @When("^I go to the \"([^\"]*)\" state view of \"([^\"]*)\"")
+    public void i_go_to_the_states_view(String stateName, String componentName) throws Throwable {
+        states.go_to_state_view(componentName, stateName);
+    }
+
+    @Then("^I should see a list of available states$")
+    public void i_should_see_a_list_of_available_states() throws Throwable {
+        WebElement element = connector.retrieve_element(By.id("state-description"));
+        Select select_element = new Select(element);
+        assertThat(select_element.getOptions()).isNotEmpty();
+    }
+
+    @When("^I choose \"([^\"]*)\" for the \"([^\"]*)\" state of \"([^\"]*)\"")
+    public void i_choose_the_state_description(String descriptionName, String stateName, String componentName) throws Throwable {
+        states.go_to_state_view(componentName, stateName);
+        states.set_state_description(descriptionName);
+        states.save_and_close();
+
+    }
+
+    @When("^I set the \"([^\"]*)\" state of \"([^\"]*)\" properties:$")
+    public void I_set_the_state_of_properties(String stateName, String componentName, DataTable datatable) throws Throwable {
+        List<Property> asList = datatable.asList(Property.class);
+
+        states.go_to_state_view(componentName, stateName);
+        states.set_properties(asList);
+        states.save_and_close();
+    }
+
+    @Then("^the \"([^\"]*)\" state of \"([^\"]*)\" should have the following properties:$")
+    public void the_state_of_should_have_the_following_properties(String stateName, String componentName, DataTable datatable) throws Throwable {
+        List<Property> properties = datatable.asList(Property.class);
+
+        states.go_to_state_view(componentName, stateName);
+        for (Property property : properties) {
+            String actualValue = states.get_property_value(property.type, property.name);
+            assertThat(actualValue).isEqualTo(property.value);
+        }
+        states.close();
     }
 
 }

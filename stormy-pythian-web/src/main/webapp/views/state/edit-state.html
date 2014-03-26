@@ -1,0 +1,11 @@
+<form>
+				
+	<select id="state-description" class="form-control" ng-options="description.name for description in availableDescriptions track by description.name" ng-model="state.description" ng-change="resetState()" >
+		<option value="" disabled>Choose type</option>
+	</select>
+	
+	<div class="form-group" ng-repeat="property in state.properties">
+		<property model="property" />
+	</div>
+	
+</form>
