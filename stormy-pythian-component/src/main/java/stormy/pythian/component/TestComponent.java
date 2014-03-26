@@ -29,6 +29,7 @@ import storm.trident.Stream;
 import storm.trident.TridentTopology;
 import storm.trident.operation.BaseFunction;
 import storm.trident.operation.TridentCollector;
+import storm.trident.state.StateFactory;
 import storm.trident.tuple.TridentTuple;
 import stormy.pythian.model.annotation.Documentation;
 import stormy.pythian.model.annotation.ExpectedFeature;
@@ -37,6 +38,7 @@ import stormy.pythian.model.annotation.Mapper;
 import stormy.pythian.model.annotation.MappingType;
 import stormy.pythian.model.annotation.OutputStream;
 import stormy.pythian.model.annotation.Property;
+import stormy.pythian.model.annotation.State;
 import stormy.pythian.model.annotation.Topology;
 import stormy.pythian.model.component.Component;
 import stormy.pythian.model.instance.InputFixedFeaturesMapper;
@@ -111,6 +113,9 @@ public class TestComponent implements Component {
 
     @Property(name = "Enum property 2", description = "I'm a mandatory enum", mandatory = true)
     private TestEnum enumProp2;
+
+    @State(name = "Test's state")
+    private StateFactory stateFactory;
     
     @Topology
     private TridentTopology topology;

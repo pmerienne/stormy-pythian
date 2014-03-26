@@ -107,8 +107,4 @@ app.controller('EditTopologyCtrl', function($scope, $location, $route, $routePar
 		});
 	});
 
-	DescriptionsResource.getStateDescriptions(function(descriptions) {
-		$scope.stateDescriptions = descriptions;
-	});
-
 });

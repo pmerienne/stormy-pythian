@@ -9,6 +9,7 @@ app.factory('ComponentService', function() {
 		this.inputStreams = description.inputStreams ? description.inputStreams.map(this.createInputStream): [];
 		this.outputStreams = description.outputStreams ? description.outputStreams.map(this.createOutputStream): [];
 		this.properties = description.properties ? description.properties.map(this.createProperty): [];
+		this.states = description.states ? description.states.map(this.createState): [];
 		this.x = 50;
 		this.y = 100;
 	};
@@ -48,6 +49,11 @@ app.factory('ComponentService', function() {
 		this.value = null;
 		this.description = description;
 	};
+
+	var State = function(description) {
+		this.name = description.name;
+		this.description = description;
+	};
 	
 	Component.prototype.createInputStream = function(description) {
 		return new InputStream(description);
@@ -61,6 +67,10 @@ app.factory('ComponentService', function() {
 		return new Property(description);
 	};
 
+	Component.prototype.createState = function(description) {
+		return new State(description);
+	};
+
 	Component.prototype.randomId = function() {
 	    return Math.random().toString(36).substr(2) + Math.random().toString(36).substr(2) ; 
 	};
@@ -68,6 +78,10 @@ app.factory('ComponentService', function() {
 	return {
 		createNewComponent : function(description) {
 			return new Component(description);
+		},
+		
+		createProperty : function(description) {
+			return new Property(description);
 		}
 	};
 });
