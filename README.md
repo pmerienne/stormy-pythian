@@ -8,7 +8,7 @@ Stormy-Pyhtian will help extracting value from data streams through different st
 * Get raw data (define/mix stream source)
 * Analyze data (analytics, vizualization)
 * Get good looking data (cleanup, featurization)
-* Evaluate Algorithms (accuracy, latency, throughout)
+* Evaluate Algorithms (accuracy, latency, throughput)
 * Deploy your data-flow
 
 This project intend to be a solution for many applications : 
