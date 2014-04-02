@@ -15,8 +15,8 @@
  */
 package stormy.pythian.state.memory;
 
+import static stormy.pythian.state.TransactionMode.NONE;
 import java.util.Map;
-
 import storm.trident.state.State;
 import storm.trident.state.StateFactory;
 import storm.trident.testing.MemoryMapState;
@@ -29,120 +29,120 @@ import backtype.storm.task.IMetricsContext;
 @Documentation(name = "In memory state", description = "Stores state in memory. This state is not meant to be used in production environnement.")
 public class InMemoryPythianState implements PythianState {
 
-	private static final long serialVersionUID = 8586345043929881545L;
+    private static final long serialVersionUID = 8586345043929881545L;
 
-	@Property(name = "Transaction mode")
-	private TransactionMode transactionMode;
+    @Property(name = "Transaction mode")
+    private TransactionMode transactionMode = NONE;
 
-	@Property(name = "Name", description = "This name will is used to identify the state. It should be unique")
-	private String name;
+    @Property(name = "Name", description = "This name will is used to identify the state. It should be unique")
+    private String name;
 
-	@Override
-	public StateFactory createStateFactory() {
-		switch (transactionMode) {
-		case TRANSACTIONAL:
-			return new TransactionalInMemoryStateFactory(name);
-		case NONE:
-			return new NoneTransactionalInMemoryStateFactory(name);
-		case OPAQUE:
-			return new OpaqueTransactionalInMemoryStateFactory(name);
-		default:
-			throw new IllegalStateException("Unsupported transaction mode : " + transactionMode);
-		}
-	}
+    @Override
+    public StateFactory createStateFactory() {
+        switch (transactionMode) {
+            case TRANSACTIONAL:
+                return new TransactionalInMemoryStateFactory(name);
+            case NONE:
+                return new NoneTransactionalInMemoryStateFactory(name);
+            case OPAQUE:
+                return new OpaqueTransactionalInMemoryStateFactory(name);
+            default:
+                throw new IllegalStateException("Unsupported transaction mode : " + transactionMode);
+        }
+    }
 
-	public abstract static class InMemoryStateFactory implements StateFactory {
+    public abstract static class InMemoryStateFactory implements StateFactory {
 
-		private static final long serialVersionUID = -3589505813476300002L;
+        private static final long serialVersionUID = -3589505813476300002L;
 
-		private final String uuid;
+        private final String uuid;
 
-		public InMemoryStateFactory(String uuid) {
-			this.uuid = uuid;
-		}
+        public InMemoryStateFactory(String uuid) {
+            this.uuid = uuid;
+        }
 
-		public String getUuid() {
-			return uuid;
-		}
+        public String getUuid() {
+            return uuid;
+        }
 
-		@SuppressWarnings("rawtypes")
-		@Override
-		public State makeState(Map conf, IMetricsContext metrics, int partitionIndex, int numPartitions) {
-			return createState(uuid);
-		}
+        @SuppressWarnings("rawtypes")
+        @Override
+        public State makeState(Map conf, IMetricsContext metrics, int partitionIndex, int numPartitions) {
+            return createState(uuid);
+        }
 
-		protected abstract State createState(String uuid);
+        protected abstract State createState(String uuid);
 
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + ((uuid == null) ? 0 : uuid.hashCode());
-			return result;
-		}
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + ((uuid == null) ? 0 : uuid.hashCode());
+            return result;
+        }
 
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			InMemoryStateFactory other = (InMemoryStateFactory) obj;
-			if (uuid == null) {
-				if (other.uuid != null)
-					return false;
-			} else if (!uuid.equals(other.uuid))
-				return false;
-			return true;
-		}
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            InMemoryStateFactory other = (InMemoryStateFactory) obj;
+            if (uuid == null) {
+                if (other.uuid != null)
+                    return false;
+            } else if (!uuid.equals(other.uuid))
+                return false;
+            return true;
+        }
 
-	}
+    }
 
-	public static class NoneTransactionalInMemoryStateFactory extends InMemoryStateFactory {
+    public static class NoneTransactionalInMemoryStateFactory extends InMemoryStateFactory {
 
-		public NoneTransactionalInMemoryStateFactory(String uuid) {
-			super(uuid);
-		}
+        public NoneTransactionalInMemoryStateFactory(String uuid) {
+            super(uuid);
+        }
 
-		private static final long serialVersionUID = 7032563580553707943L;
+        private static final long serialVersionUID = 7032563580553707943L;
 
-		@SuppressWarnings("rawtypes")
-		@Override
-		protected State createState(String uuid) {
-			return new MemoryMapState(uuid);
-		}
-	}
+        @SuppressWarnings("rawtypes")
+        @Override
+        protected State createState(String uuid) {
+            return new MemoryMapState(uuid);
+        }
+    }
 
-	public static class OpaqueTransactionalInMemoryStateFactory extends InMemoryStateFactory {
+    public static class OpaqueTransactionalInMemoryStateFactory extends InMemoryStateFactory {
 
-		private static final long serialVersionUID = -6433397890576750143L;
+        private static final long serialVersionUID = -6433397890576750143L;
 
-		public OpaqueTransactionalInMemoryStateFactory(String uuid) {
-			super(uuid);
-		}
+        public OpaqueTransactionalInMemoryStateFactory(String uuid) {
+            super(uuid);
+        }
 
-		@SuppressWarnings("rawtypes")
-		@Override
-		protected State createState(String uuid) {
-			return new MemoryMapState(uuid);
-		}
-	}
+        @SuppressWarnings("rawtypes")
+        @Override
+        protected State createState(String uuid) {
+            return new MemoryMapState(uuid);
+        }
+    }
 
-	public static class TransactionalInMemoryStateFactory extends InMemoryStateFactory {
+    public static class TransactionalInMemoryStateFactory extends InMemoryStateFactory {
 
-		private static final long serialVersionUID = -6512983913668194068L;
+        private static final long serialVersionUID = -6512983913668194068L;
 
-		public TransactionalInMemoryStateFactory(String uuid) {
-			super(uuid);
-		}
+        public TransactionalInMemoryStateFactory(String uuid) {
+            super(uuid);
+        }
 
-		@SuppressWarnings("rawtypes")
-		@Override
-		protected State createState(String uuid) {
-			return new MemoryMapState(uuid);
-		}
-	}
+        @SuppressWarnings("rawtypes")
+        @Override
+        protected State createState(String uuid) {
+            return new MemoryMapState(uuid);
+        }
+    }
 
 }

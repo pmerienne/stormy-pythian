@@ -16,35 +16,45 @@
 package stormy.pythian.model.instance;
 
 import static java.util.Arrays.asList;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class OutputUserSelectionFeaturesMapperTestBuilder {
 
-	private final List<String> allFeatures = new ArrayList<>();
-	private final List<String> newFeatures = new ArrayList<>();
+    private final List<String> allFeatures = new ArrayList<>();
+    private final List<String> newFeatures = new ArrayList<>();
 
-	public static OutputUserSelectionFeaturesMapperTestBuilder outputUserSelectionFeaturesMapper() {
-		return new OutputUserSelectionFeaturesMapperTestBuilder();
-	}
+    public static OutputUserSelectionFeaturesMapperTestBuilder outputUserSelectionFeaturesMapper() {
+        return new OutputUserSelectionFeaturesMapperTestBuilder();
+    }
 
-	public static OutputUserSelectionFeaturesMapperTestBuilder outputUserSelectionFeaturesMapper(String... allFeatures) {
-		OutputUserSelectionFeaturesMapperTestBuilder builder = new OutputUserSelectionFeaturesMapperTestBuilder();
-		return builder.with(allFeatures);
-	}
+    public static OutputUserSelectionFeaturesMapperTestBuilder outputUserSelectionFeaturesMapper(String... allFeatures) {
+        OutputUserSelectionFeaturesMapperTestBuilder builder = new OutputUserSelectionFeaturesMapperTestBuilder();
+        return builder.with(allFeatures);
+    }
 
-	public OutputUserSelectionFeaturesMapperTestBuilder with(String... allFeatures) {
-		this.allFeatures.addAll(asList(allFeatures));
-		return this;
-	}
+    public static OutputUserSelectionFeaturesMapperTestBuilder outputUserSelectionFeaturesMapper(List<String> allFeatures) {
+        OutputUserSelectionFeaturesMapperTestBuilder builder = new OutputUserSelectionFeaturesMapperTestBuilder();
+        builder.allFeatures.addAll(allFeatures);
+        return builder;
+    }
 
-	public OutputUserSelectionFeaturesMapperTestBuilder select(String... newFeatures) {
-		this.newFeatures.addAll(asList(newFeatures));
-		return this;
-	}
+    public OutputUserSelectionFeaturesMapperTestBuilder with(String... allFeatures) {
+        this.allFeatures.addAll(asList(allFeatures));
+        return this;
+    }
 
-	public OutputUserSelectionFeaturesMapper build() {
-		return new OutputUserSelectionFeaturesMapper(new FeaturesIndex(allFeatures), newFeatures);
-	}
+    public OutputUserSelectionFeaturesMapperTestBuilder select(String... newFeatures) {
+        this.newFeatures.addAll(asList(newFeatures));
+        return this;
+    }
+
+    public OutputUserSelectionFeaturesMapperTestBuilder select(List<String> newFeatures) {
+        this.newFeatures.addAll(newFeatures);
+        return this;
+    }
+
+    public OutputUserSelectionFeaturesMapper build() {
+        return new OutputUserSelectionFeaturesMapper(new FeaturesIndex(allFeatures), newFeatures);
+    }
 }

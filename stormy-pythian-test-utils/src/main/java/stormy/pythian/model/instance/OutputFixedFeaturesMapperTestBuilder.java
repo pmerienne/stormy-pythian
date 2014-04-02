@@ -46,6 +46,11 @@ public class OutputFixedFeaturesMapperTestBuilder {
 		return this;
 	}
 
+        public OutputFixedFeaturesMapperTestBuilder map(Map<String, String> mappings) {
+                this.mappings.putAll(mappings);
+                return this;
+        }
+        
 	public OutputFixedFeaturesMapper build() {
 		return new OutputFixedFeaturesMapper(new FeaturesIndex(features), mappings);
 	}
