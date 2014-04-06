@@ -13,34 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package stormy.pythian.component.learner.tridentml;
+package stormy.pythian.component.classifier.tridentml;
 
 import static stormy.pythian.model.annotation.ComponentType.LEARNER;
-import stormy.pythian.model.annotation.ComponentType;
 import stormy.pythian.model.annotation.Documentation;
 import stormy.pythian.model.annotation.Property;
 
-import com.github.pmerienne.trident.ml.classification.Classifier;
 import com.github.pmerienne.trident.ml.classification.PerceptronClassifier;
 
+@SuppressWarnings("serial")
 @Documentation(name = "Perceptron classifier", description = "Perceptron classifier from trident-ml", type = LEARNER)
 public class TridentMLPerceptronClassifier extends TridentMLClassifier<Boolean> {
 
-	private static final long serialVersionUID = 1L;
-
 	@Property(name = "Bias")
-	public Double bias = 0.0;
+	private Double bias = 0.0;
 
 	@Property(name = "Threshold")
-	public Double threshold = 0.5;
+	private Double threshold = 0.5;
 
 	@Property(name = "Learning rate")
-	public Double learningRate = 0.1;
+	private Double learningRate = 0.1;
 
 	@Override
-	public void init() {
-		Classifier<Boolean> classifier = new PerceptronClassifier(bias, threshold, learningRate);
-		initClassifierStreams(classifier);
+	public void initClassifier() {
+		this.classifier = new PerceptronClassifier(bias, threshold, learningRate);
 	}
 
 }

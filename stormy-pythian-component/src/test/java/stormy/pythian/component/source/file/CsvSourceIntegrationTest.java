@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package stormy.pythian.component.file;
+package stormy.pythian.component.source.file;
 
 import static java.io.File.createTempFile;
 import static java.util.Arrays.asList;
@@ -30,12 +30,13 @@ import java.io.IOException;
 import org.junit.Test;
 
 import storm.trident.Stream;
+import stormy.pythian.component.source.file.CsvSource;
 import stormy.pythian.model.instance.OutputUserSelectionFeaturesMapper;
 import stormy.pythian.testing.InstanceCollector;
 import stormy.pythian.testing.TridentIntegrationTest;
 import backtype.storm.utils.Utils;
 
-public class CsvSteamSourceIntegrationTest extends TridentIntegrationTest {
+public class CsvSourceIntegrationTest extends TridentIntegrationTest {
 
 	private static final int TOPOLOGY_START_TIME = 5000;
 
@@ -48,7 +49,7 @@ public class CsvSteamSourceIntegrationTest extends TridentIntegrationTest {
 
 		OutputUserSelectionFeaturesMapper outputMapper = outputUserSelectionFeaturesMapper("login", "firstname", "lastname").select("login", "firstname", "lastname").build();
 
-		CsvSteamSource component = new CsvSteamSource();
+		CsvSource component = new CsvSource();
 		setField(component, "filename", tmpFile.getAbsolutePath());
 		setField(component, "mapper", outputMapper);
 		setField(component, "topology", topology);

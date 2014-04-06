@@ -41,6 +41,11 @@ public class InstanceCollector extends BaseFilter {
 		COLLECTED.put(uuid, new ArrayList<Instance>());
 	}
 
+	public InstanceCollector(Stream stream) {
+		this();
+		stream.each(new Fields(NEW_INSTANCE_FIELD), this);
+	}
+
 	public List<Instance> getCollected() {
 		return COLLECTED.get(uuid);
 	}

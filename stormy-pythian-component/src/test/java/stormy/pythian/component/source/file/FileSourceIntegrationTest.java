@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package stormy.pythian.component.file;
+package stormy.pythian.component.source.file;
 
 import static backtype.storm.utils.Utils.sleep;
 import static java.io.File.createTempFile;
@@ -22,7 +22,7 @@ import static org.apache.commons.io.FileUtils.writeLines;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.springframework.test.util.ReflectionTestUtils.getField;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
-import static stormy.pythian.component.file.FileSteamSource.LINE_FEATURE;
+import static stormy.pythian.component.source.file.FileSource.LINE_FEATURE;
 import static stormy.pythian.model.instance.InstanceTestBuilder.instance;
 
 import java.io.File;
@@ -37,13 +37,14 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
 import storm.trident.Stream;
+import stormy.pythian.component.source.file.FileSource;
 import stormy.pythian.model.instance.FeaturesIndex;
 import stormy.pythian.model.instance.OutputFixedFeaturesMapper;
 import stormy.pythian.testing.InstanceCollector;
 import stormy.pythian.testing.TridentIntegrationTest;
 import backtype.storm.utils.Utils;
 
-public class FileSteamSourceIntegrationTest extends TridentIntegrationTest {
+public class FileSourceIntegrationTest extends TridentIntegrationTest {
 
 	private static final int TOPOLOGY_START_TIME = 5000;
 
@@ -60,7 +61,7 @@ public class FileSteamSourceIntegrationTest extends TridentIntegrationTest {
 		mappings.put(LINE_FEATURE, LINE_FEATURE);
 		OutputFixedFeaturesMapper mapper = new OutputFixedFeaturesMapper(index, mappings);
 
-		FileSteamSource component = new FileSteamSource();
+		FileSource component = new FileSource();
 		setField(component, "filename", tmpFile.getAbsolutePath());
 		setField(component, "mapper", mapper);
 		setField(component, "topology", topology);
@@ -97,7 +98,7 @@ public class FileSteamSourceIntegrationTest extends TridentIntegrationTest {
 		mappings.put(LINE_FEATURE, LINE_FEATURE);
 		OutputFixedFeaturesMapper mapper = new OutputFixedFeaturesMapper(index, mappings);
 
-		FileSteamSource component = new FileSteamSource();
+		FileSource component = new FileSource();
 		setField(component, "filename", tmpFile.getAbsolutePath());
 		setField(component, "mapper", mapper);
 		setField(component, "topology", topology);

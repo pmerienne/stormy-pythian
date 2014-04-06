@@ -188,7 +188,7 @@ public class Instance implements Serializable {
 	public Instance withLabel(Object label) {
 		Object[] newFeatures = new Object[features.length];
 		System.arraycopy(features, 0, newFeatures, 0, features.length);
-		return new Instance(this.label, newFeatures);
+		return new Instance(label, newFeatures);
 	}
 
 	public Object[] getSelectedFeatures(InputUserSelectionFeaturesMapper inputUserSelectionFeaturesMapper) {

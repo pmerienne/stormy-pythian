@@ -15,77 +15,35 @@
  */
 package stormy.pythian.component.preprocessor;
 
-import static stormy.pythian.model.annotation.MappingType.USER_SELECTION;
-import static stormy.pythian.model.instance.Instance.INSTANCE_FIELD;
-import storm.trident.Stream;
-import storm.trident.operation.BaseFunction;
-import storm.trident.operation.TridentCollector;
-import storm.trident.tuple.TridentTuple;
 import stormy.pythian.model.annotation.Documentation;
-import stormy.pythian.model.annotation.InputStream;
-import stormy.pythian.model.annotation.Mapper;
-import stormy.pythian.model.annotation.OutputStream;
-import stormy.pythian.model.component.Component;
 import stormy.pythian.model.instance.FeatureFunction;
 import stormy.pythian.model.instance.FeatureProcedure;
-import stormy.pythian.model.instance.InputUserSelectionFeaturesMapper;
 import stormy.pythian.model.instance.Instance;
-import backtype.storm.tuple.Fields;
-import backtype.storm.tuple.Values;
+
 import com.google.common.util.concurrent.AtomicDouble;
 
+@SuppressWarnings("serial")
 @Documentation(name = "Normalizer")
-public class Normalizer implements Component {
+public class Normalizer extends PreProcessor {
 
-    private static final long serialVersionUID = 3259186264532961799L;
+	@Override
+	public Instance process(Instance original) {
+		final AtomicDouble atomicMagnitude = new AtomicDouble(0.0);
+		original.process(mapper, new FeatureProcedure<Double>() {
+			@Override
+			public void process(Double feature) {
+				atomicMagnitude.getAndAdd(feature * feature);
+			}
+		});
+		final double magnitude = Math.sqrt(atomicMagnitude.get());
 
-    @InputStream(name = "in", type = USER_SELECTION)
-    private Stream in;
+		Instance newInstance = original.transform(mapper, new FeatureFunction<Double>() {
+			@Override
+			public Double transform(Double feature) {
+				return feature / magnitude;
+			}
+		});
 
-    @OutputStream(name = "out")
-    private Stream out;
-
-    @Mapper(stream = "in")
-    private InputUserSelectionFeaturesMapper mapper;
-
-    @Override
-    public void init() {
-        out = in.each(new Fields(INSTANCE_FIELD), new NormalizerFunction(mapper), new Fields(Instance.NEW_INSTANCE_FIELD));
-    }
-
-    private static class NormalizerFunction extends BaseFunction {
-
-        private static final long serialVersionUID = -5433556581807138157L;
-
-        private final InputUserSelectionFeaturesMapper mapper;
-
-        public NormalizerFunction(InputUserSelectionFeaturesMapper mapper) {
-            this.mapper = mapper;
-        }
-
-        @SuppressWarnings("serial")
-        @Override
-        public void execute(TridentTuple tuple, TridentCollector collector) {
-            Instance original = Instance.from(tuple);
-
-            final AtomicDouble atomicMagnitude = new AtomicDouble(0.0);
-            original.process(mapper, new FeatureProcedure<Double>() {
-                @Override
-                public void process(Double feature) {
-                    atomicMagnitude.getAndAdd(feature * feature);
-                }
-            });
-            final double magnitude = Math.sqrt(atomicMagnitude.get());
-
-            Instance newInstance = original.transform(mapper, new FeatureFunction<Double>() {
-                @Override
-                public Double transform(Double feature) {
-                    return feature / magnitude;
-                }
-            });
-
-            collector.emit(new Values(newInstance));
-        }
-
-    }
+		return newInstance;
+	}
 }
