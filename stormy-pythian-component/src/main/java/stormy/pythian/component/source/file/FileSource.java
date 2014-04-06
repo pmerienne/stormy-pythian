@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package stormy.pythian.component.file;
+package stormy.pythian.component.source.file;
 
 import static com.google.common.base.Objects.firstNonNull;
 import static org.apache.commons.io.FilenameUtils.getName;
@@ -49,8 +49,8 @@ import backtype.storm.task.TopologyContext;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Values;
 
-@Documentation(name = "File stream source", description = "Read and parse a given file", type = STREAM_SOURCE)
-public class FileSteamSource implements Component {
+@Documentation(name = "File source", description = "Read and parse a given file", type = STREAM_SOURCE)
+public class FileSource implements Component {
 
 	private static final long serialVersionUID = -1157270927374405269L;
 
@@ -165,7 +165,7 @@ public class FileSteamSource implements Component {
 					try {
 						Map<String, Object> features = new HashMap<>();
 						features.put(LINE_FEATURE, line);
-						
+
 						Instance instance = Instance.newInstance(mapper, features);
 						instances.add(instance);
 					} catch (Exception ex) {

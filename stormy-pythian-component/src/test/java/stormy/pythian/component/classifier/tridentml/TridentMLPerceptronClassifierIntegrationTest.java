@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package stormy.pythian.component.learner.tridentml;
+package stormy.pythian.component.classifier.tridentml;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.springframework.test.util.ReflectionTestUtils.getField;
@@ -26,6 +26,7 @@ import org.junit.Test;
 
 import storm.trident.Stream;
 import storm.trident.testing.MemoryMapState;
+import stormy.pythian.component.classifier.tridentml.TridentMLPerceptronClassifier;
 import stormy.pythian.model.instance.InputUserSelectionFeaturesMapper;
 import stormy.pythian.model.instance.OutputFixedFeaturesMapper;
 import stormy.pythian.testing.FixedInstanceSpout;
@@ -39,7 +40,7 @@ public class TridentMLPerceptronClassifierIntegrationTest extends TridentIntegra
 		// Given
 		InputUserSelectionFeaturesMapper updateInputMapper = inputUserSelectionFeaturesMapper("bias", "val1", "val2").select("bias", "val1", "val2").build();
 		InputUserSelectionFeaturesMapper queryInputMapper = inputUserSelectionFeaturesMapper("bias", "val1", "val2").select("bias", "val1", "val2").build();
-		OutputFixedFeaturesMapper predictionOutputMapper = outputFixedFeaturesMapper("bias", "val1", "val2", "prediction").map(TridentMLClassifier.PREDICTION_FEATURE, "prediction").build();
+		OutputFixedFeaturesMapper predictionOutputMapper = outputFixedFeaturesMapper("bias", "val1", "val2", "prediction").build();
 
 		FixedInstanceSpout updateSpout = new FixedInstanceSpout(//
 				instance().with(1.0).with(1.0).with(1.0).label(false).build(), //
@@ -76,9 +77,7 @@ public class TridentMLPerceptronClassifierIntegrationTest extends TridentIntegra
 		setField(classifier, "classifierName", "test perceptron");
 		classifier.init();
 
-		Stream out = (Stream) getField(classifier, "prediction");
-		InstanceCollector instanceCollector = new InstanceCollector();
-		instanceCollector.collect(out);
+		InstanceCollector instanceCollector = new InstanceCollector((Stream) getField(classifier, "prediction"));
 
 		// When
 		this.launchAndWait(updateSpout);
@@ -88,10 +87,10 @@ public class TridentMLPerceptronClassifierIntegrationTest extends TridentIntegra
 		this.wait(querySpout);
 
 		assertThat(instanceCollector.getCollected()).containsOnly( //
-				instance().with(1.0).with(1.0).with(1.0).with(false).build(), //
-				instance().with(1.0).with(-1.0).with(1.0).with(true).build(), //
-				instance().with(1.0).with(1.0).with(-1.0).with(true).build(), //
-				instance().with(1.0).with(-1.0).with(-1.0).with(true).build() //
+				instance().with(1.0).with(1.0).with(1.0).label(false).build(), //
+				instance().with(1.0).with(-1.0).with(1.0).label(true).build(), //
+				instance().with(1.0).with(1.0).with(-1.0).label(true).build(), //
+				instance().with(1.0).with(-1.0).with(-1.0).label(true).build() //
 				);
 	}
 
