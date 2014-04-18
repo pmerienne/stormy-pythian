@@ -25,6 +25,19 @@
 			<groupId>com.github.pmerienne</groupId>
 			<artifactId>stormy-pythian-service</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.github.pmerienne</groupId>
+			<artifactId>stormy-pythian-component</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.github.pmerienne</groupId>
+			<artifactId>stormy-pythian-state</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.github.pmerienne</groupId>
+			<artifactId>stormy-pythian-test-utils</artifactId>
+		</dependency>
+		
 
 		<!-- Test -->
 		<dependency>
@@ -45,13 +58,13 @@
 		<dependency>
 			<groupId>info.cukes</groupId>
 			<artifactId>cucumber-picocontainer</artifactId>
-			<version>1.1.4</version>
+			<version>1.1.6</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>info.cukes</groupId>
 			<artifactId>cucumber-junit</artifactId>
-			<version>1.1.4</version>
+			<version>1.1.6</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -76,14 +89,6 @@
 
 	<build>
 		<plugins>
-			<plugin>
-				<!-- block unit tests execution -->
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.16</version>
-				<configuration>
-					<skip>true</skip>
-				</configuration>
-			</plugin>
 			<plugin>
 				<artifactId>maven-failsafe-plugin</artifactId>
 				<version>2.16</version>
