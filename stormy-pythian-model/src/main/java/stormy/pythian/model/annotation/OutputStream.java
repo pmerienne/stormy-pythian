@@ -15,8 +15,6 @@
  */
 package stormy.pythian.model.annotation;
 
-import static stormy.pythian.model.annotation.MappingType.FIXED_FEATURES;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -29,9 +27,5 @@ public @interface OutputStream {
 	String name();
 
 	String from() default "";
-
-	ExpectedFeature[] newFeatures() default {};
-
-	MappingType type() default FIXED_FEATURES;
 
 }

@@ -17,7 +17,6 @@ package stormy.pythian.core.utils;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
-import static stormy.pythian.model.annotation.MappingType.USER_SELECTION;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -29,14 +28,14 @@ import storm.trident.TridentTopology;
 import storm.trident.state.StateFactory;
 import stormy.pythian.core.configuration.PropertyConfiguration;
 import stormy.pythian.model.annotation.Configuration;
-import stormy.pythian.model.annotation.Mapper;
 import stormy.pythian.model.annotation.InputStream;
+import stormy.pythian.model.annotation.NameMapper;
 import stormy.pythian.model.annotation.OutputStream;
 import stormy.pythian.model.annotation.Property;
 import stormy.pythian.model.annotation.State;
 import stormy.pythian.model.annotation.Topology;
 import stormy.pythian.model.component.Component;
-import stormy.pythian.model.instance.InputFixedFeaturesMapper;
+import stormy.pythian.model.instance.NamedFeaturesMapper;
 import backtype.storm.Config;
 
 @SuppressWarnings("serial")
@@ -46,10 +45,10 @@ public class ReflectionHelperTest {
     public void should_find_input_streams() {
         // Given
         class TestComponent implements Component {
-            @InputStream(name = "in1", type = USER_SELECTION)
+            @InputStream(name = "in1")
             public Stream clock;
 
-            @InputStream(name = "in2", type = USER_SELECTION)
+            @InputStream(name = "in2")
             public Stream words;
 
             @Override
@@ -111,10 +110,10 @@ public class ReflectionHelperTest {
         // Given
         class TestComponent implements Component {
 
-            @InputStream(name = "in1", type = USER_SELECTION)
+            @InputStream(name = "in1")
             public Stream test;
 
-            @InputStream(name = "in2", type = USER_SELECTION)
+            @InputStream(name = "in2")
             public Stream words;
 
             @Override
@@ -235,8 +234,8 @@ public class ReflectionHelperTest {
         // Given
         class TestComponent implements Component {
 
-            @Mapper(stream = "in")
-            public InputFixedFeaturesMapper mapper;
+            @NameMapper(stream = "in", expectedFeatures = {})
+            public NamedFeaturesMapper mapper;
 
             @Override
             public void init() {
@@ -244,7 +243,7 @@ public class ReflectionHelperTest {
         }
 
         TestComponent testComponent = new TestComponent();
-        InputFixedFeaturesMapper mapper = mock(InputFixedFeaturesMapper.class);
+        NamedFeaturesMapper mapper = mock(NamedFeaturesMapper.class);
 
         // When
         ReflectionHelper.setFeaturesMapper(testComponent, "in", mapper);

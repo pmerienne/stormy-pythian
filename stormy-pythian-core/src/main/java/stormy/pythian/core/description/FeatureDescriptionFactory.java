@@ -19,39 +19,25 @@ import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Component;
 import stormy.pythian.model.annotation.ExpectedFeature;
-import stormy.pythian.model.annotation.InputStream;
-import stormy.pythian.model.annotation.OutputStream;
+import stormy.pythian.model.annotation.NameMapper;
 
 @Component
 public class FeatureDescriptionFactory {
 
-    public FeatureDescription createDescription(ExpectedFeature feature) {
+    public List<FeatureDescription> createDescriptions(NameMapper annotation) {
+        List<FeatureDescription> descriptors = new ArrayList<>();
+
+        ExpectedFeature[] expectedFeatures = annotation.expectedFeatures();
+        if (expectedFeatures != null) {
+            for (ExpectedFeature feature : expectedFeatures) {
+                descriptors.add(createDescription(feature));
+            }
+        }
+
+        return descriptors;
+    }
+
+    private FeatureDescription createDescription(ExpectedFeature feature) {
         return new FeatureDescription(feature.name(), feature.type());
-    }
-
-    public List<FeatureDescription> createDescriptions(InputStream inputStream) {
-        List<FeatureDescription> descriptors = new ArrayList<>();
-
-        ExpectedFeature[] expectedFeatures = inputStream.expectedFeatures();
-        if (expectedFeatures != null) {
-            for (ExpectedFeature feature : expectedFeatures) {
-                descriptors.add(createDescription(feature));
-            }
-        }
-
-        return descriptors;
-    }
-
-    public List<FeatureDescription> createDescriptions(OutputStream outputStream) {
-        List<FeatureDescription> descriptors = new ArrayList<>();
-
-        ExpectedFeature[] expectedFeatures = outputStream.newFeatures();
-        if (expectedFeatures != null) {
-            for (ExpectedFeature feature : expectedFeatures) {
-                descriptors.add(createDescription(feature));
-            }
-        }
-
-        return descriptors;
     }
 }

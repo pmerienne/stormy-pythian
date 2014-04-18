@@ -17,14 +17,11 @@ package stormy.pythian.component;
 
 import static org.apache.commons.lang.RandomStringUtils.randomAlphabetic;
 import static stormy.pythian.model.annotation.ComponentType.NO_TYPE;
-import static stormy.pythian.model.annotation.MappingType.FIXED_FEATURES;
-import static stormy.pythian.model.annotation.MappingType.USER_SELECTION;
 import static stormy.pythian.model.instance.Instance.NEW_INSTANCE_FIELD;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import org.apache.commons.lang.RandomStringUtils;
 import storm.trident.Stream;
 import storm.trident.TridentTopology;
 import storm.trident.operation.BaseFunction;
@@ -34,18 +31,16 @@ import storm.trident.tuple.TridentTuple;
 import stormy.pythian.model.annotation.Documentation;
 import stormy.pythian.model.annotation.ExpectedFeature;
 import stormy.pythian.model.annotation.InputStream;
-import stormy.pythian.model.annotation.Mapper;
-import stormy.pythian.model.annotation.MappingType;
+import stormy.pythian.model.annotation.ListMapper;
+import stormy.pythian.model.annotation.NameMapper;
 import stormy.pythian.model.annotation.OutputStream;
 import stormy.pythian.model.annotation.Property;
 import stormy.pythian.model.annotation.State;
 import stormy.pythian.model.annotation.Topology;
 import stormy.pythian.model.component.Component;
-import stormy.pythian.model.instance.InputFixedFeaturesMapper;
-import stormy.pythian.model.instance.InputUserSelectionFeaturesMapper;
 import stormy.pythian.model.instance.Instance;
-import stormy.pythian.model.instance.OutputFixedFeaturesMapper;
-import stormy.pythian.model.instance.OutputUserSelectionFeaturesMapper;
+import stormy.pythian.model.instance.ListedFeaturesMapper;
+import stormy.pythian.model.instance.NamedFeaturesMapper;
 import backtype.storm.spout.SpoutOutputCollector;
 import backtype.storm.task.TopologyContext;
 import backtype.storm.topology.OutputFieldsDeclarer;
@@ -58,44 +53,43 @@ import backtype.storm.utils.Utils;
 @Documentation(name = "Test", description = "Use me as a test for component edition", type = NO_TYPE)
 public class TestComponent implements Component {
 
-    @InputStream(name = "Input 1", type = FIXED_FEATURES, expectedFeatures = {
+    @InputStream(name = "Input 1")
+    private Stream input1;
+
+    @NameMapper(stream = "Input 1", expectedFeatures = {
             @ExpectedFeature(name = "Double", type = Double.class),
             @ExpectedFeature(name = "Integer", type = Integer.class),
             @ExpectedFeature(name = "String", type = String.class),
     })
-    private Stream input1;
+    private NamedFeaturesMapper intput1Mapper;
 
-    @Mapper(stream = "Input 1")
-    private InputFixedFeaturesMapper intput1Mapper;
-    
-
-    @InputStream(name = "Input 2", type = MappingType.USER_SELECTION)
+    @InputStream(name = "Input 2")
     private Stream input2;
-    
-    @Mapper(stream = "Input 2")
-    private InputUserSelectionFeaturesMapper intput2Mapper;
-    
-    @OutputStream(name = "Output 1", from = "Input 1", newFeatures = {@ExpectedFeature(name = "Date", type = Date.class)})
+
+    @ListMapper(stream = "Input 2")
+    private ListedFeaturesMapper intput2Mapper;
+
+    @OutputStream(name = "Output 1", from = "Input 1")
     private Stream output1;
 
-    @Mapper(stream = "Output 1")
-    private OutputFixedFeaturesMapper output1Mapper;
-    
-    @OutputStream(name = "Output 2", from = "Input 2", newFeatures = {@ExpectedFeature(name = "Feature count", type = Integer.class)})
+    @NameMapper(stream = "Output 1", expectedFeatures = { @ExpectedFeature(name = "Date", type = Date.class) })
+    private NamedFeaturesMapper output1Mapper;
+
+    @OutputStream(name = "Output 2", from = "Input 2")
     private Stream output2;
 
-    @Mapper(stream = "Output 2")
-    private OutputFixedFeaturesMapper output2Mapper;
+    @NameMapper(stream = "Output 2", expectedFeatures = { @ExpectedFeature(name = "Feature count", type = Integer.class) })
+    private NamedFeaturesMapper output2Mapper;
 
-    @OutputStream(name = "Output 3", type = USER_SELECTION)
+    @OutputStream(name = "Output 3")
     private Stream output3;
 
-    @Mapper(stream = "Output 3")
-    private OutputUserSelectionFeaturesMapper output3Mapper;
-    
+    @ListMapper(stream = "Output 3")
+    private ListedFeaturesMapper output3Mapper;
+
     @Property(name = "String property", description = "I'm a mandatory string", mandatory = true)
     private String stringProp;
-    
+
     @Property(name = "Integer property", description = "I'm a integer", mandatory = false)
     private Integer integerProp;
 
@@ -116,53 +110,55 @@ public class TestComponent implements Component {
 
     @State(name = "Test's state")
     private StateFactory stateFactory;
-    
+
     @Topology
     private TridentTopology topology;
-    
+
     @Override
     public void init() {
         output1 = input1.each(new BaseFunction() {
             @Override
             public void execute(TridentTuple tuple, TridentCollector collector) {
-                Instance originalInstance = Instance.from(tuple);
-                Instance newInstance = originalInstance.withFeature(output1Mapper, "Date", new Date());
-                collector.emit(new Values(newInstance));
+                Instance instance = Instance.get(tuple, (NamedFeaturesMapper) null, output1Mapper);
+                instance.setFeature("Date", new Date());
+                collector.emit(new Values(instance));
             }
         }, new Fields(NEW_INSTANCE_FIELD));
-        
-        
+
         output2 = input2.each(new BaseFunction() {
             @Override
             public void execute(TridentTuple tuple, TridentCollector collector) {
-                Instance originalInstance = Instance.from(tuple);
-                Instance newInstance = originalInstance.withFeature(output2Mapper, "Feature count", output2Mapper.size());
-                collector.emit(new Values(newInstance));
+                Instance instance = Instance.get(tuple, (NamedFeaturesMapper) null, output2Mapper);
+                instance.setFeature("Feature count", output2Mapper.size());
+                collector.emit(new Values(instance));
             }
         }, new Fields(NEW_INSTANCE_FIELD));
-        
+
         output3 = topology.newStream(randomAlphabetic(6), new BaseRichSpout() {
-            
+
             private SpoutOutputCollector _collector;
 
             @Override
             public void declareOutputFields(OutputFieldsDeclarer declarer) {
                 declarer.declare(new Fields(NEW_INSTANCE_FIELD));
             }
-            
+
             @Override
-            public void open(Map conf, TopologyContext context, SpoutOutputCollector collector) {
+            public void open(@SuppressWarnings("rawtypes") Map conf, TopologyContext context, SpoutOutputCollector collector) {
                 _collector = collector;
             }
-            
+
             @Override
             public void nextTuple() {
                 Utils.sleep(200);
                 List<Integer> features = new ArrayList<>();
-                for(int i = 0; i < output2Mapper.size(); i++) {
+                for (int i = 0; i < output2Mapper.size(); i++) {
                     features.add(i);
                 }
-                Instance newInstance = Instance.newInstance(output3Mapper, features);
+
+                Instance newInstance = Instance.create(output3Mapper);
+                newInstance.addFeatures(features);
+
                 _collector.emit(new Values(newInstance));
             }
         });

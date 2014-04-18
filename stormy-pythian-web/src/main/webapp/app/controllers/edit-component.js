@@ -11,14 +11,6 @@ app.controller('EditComponentCtrl', function($scope, $modalInstance, component, 
 		$modalInstance.close(null);
 	};
 
-	$scope.isUserSelectionMapping = function(inputStreamDescription) {
-		return inputStreamDescription.mappingType == "USER_SELECTION"; 
-	};
-
-	$scope.isFixedFeaturesMapping = function(inputStreamDescription) {
-		return inputStreamDescription.mappingType == "FIXED"; 
-	};
-
 	$scope.retrieveAvailableFeatures = function(inputStreamName) {
 		var componentId = $scope.component.id;
 		return $scope.retrieveRecursivelyAvailableFeatures(componentId, inputStreamName);
@@ -57,9 +49,9 @@ app.controller('EditComponentCtrl', function($scope, $modalInstance, component, 
 		}
 		
 		var newFeatures = null;
-		if(outputStream.description.type == 'USER_SELECTION') {
+		if(outputStream.description.type == 'LISTED') {
 			newFeatures = outputStream.selectedFeatures;
-		} else if(outputStream.description.type == 'FIXED_FEATURES') {
+		} else if(outputStream.description.type == 'NAMED') {
 			newFeatures = Object.keys(outputStream.mappings).map(function(key){return outputStream.mappings[key];});
 		}
 		if(newFeatures == null) {

@@ -16,8 +16,6 @@
 package stormy.pythian.core.description;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
-import static stormy.pythian.model.annotation.MappingType.FIXED_FEATURES;
-import static stormy.pythian.model.annotation.MappingType.USER_SELECTION;
 import java.util.ArrayList;
 import java.util.List;
 import stormy.pythian.model.annotation.MappingType;
@@ -37,32 +35,11 @@ public class OutputStreamDescription {
         this.type = null;
     }
 
-    public OutputStreamDescription(String name, String from, List<FeatureDescription> newFeatures) {
+    public OutputStreamDescription(String name, String from, MappingType type, List<FeatureDescription> newFeatures) {
         this.name = name;
-        this.from = isBlank(from) ? null : from;
+        this.from = from;
         this.newFeatures = newFeatures;
-        this.type = FIXED_FEATURES;
-    }
-
-    public OutputStreamDescription(String name, String from) {
-        this.name = name;
-        this.from = isBlank(from) ? null : from;
-        this.newFeatures = null;
-        this.type = USER_SELECTION;
-    }
-
-    public OutputStreamDescription(String name) {
-        this.name = name;
-        this.from = null;
-        this.newFeatures = null;
-        this.type = USER_SELECTION;
-    }
-
-    public OutputStreamDescription(String name, List<FeatureDescription> newFeatures) {
-        this.name = name;
-        this.from = null;
-        this.newFeatures = newFeatures;
-        this.type = FIXED_FEATURES;
+        this.type = type;
     }
 
     public void setName(String name) {

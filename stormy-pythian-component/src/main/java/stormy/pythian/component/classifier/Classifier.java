@@ -15,14 +15,11 @@
  */
 package stormy.pythian.component.classifier;
 
-import static stormy.pythian.model.annotation.MappingType.USER_SELECTION;
 import static stormy.pythian.model.instance.Instance.INSTANCE_FIELD;
 import static stormy.pythian.model.instance.Instance.NEW_INSTANCE_FIELD;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import storm.trident.Stream;
 import storm.trident.TridentState;
 import storm.trident.operation.TridentCollector;
@@ -32,140 +29,137 @@ import storm.trident.state.StateFactory;
 import storm.trident.state.map.MapState;
 import storm.trident.tuple.TridentTuple;
 import stormy.pythian.model.annotation.InputStream;
-import stormy.pythian.model.annotation.Mapper;
+import stormy.pythian.model.annotation.ListMapper;
 import stormy.pythian.model.annotation.OutputStream;
 import stormy.pythian.model.annotation.Property;
 import stormy.pythian.model.annotation.State;
 import stormy.pythian.model.component.Component;
-import stormy.pythian.model.instance.InputUserSelectionFeaturesMapper;
 import stormy.pythian.model.instance.Instance;
-import stormy.pythian.model.instance.OutputFixedFeaturesMapper;
+import stormy.pythian.model.instance.ListedFeaturesMapper;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Values;
-
 import com.github.pmerienne.trident.ml.util.KeysUtil;
 
 @SuppressWarnings("serial")
 public abstract class Classifier<L> implements Component {
 
-	@InputStream(name = "update", type = USER_SELECTION)
-	private transient Stream update;
+    @InputStream(name = "update")
+    private transient Stream update;
 
-	@Mapper(stream = "update")
-	protected InputUserSelectionFeaturesMapper updateInputMapper;
+    @ListMapper(stream = "update")
+    protected ListedFeaturesMapper updateInputMapper;
 
-	@InputStream(name = "query", type = USER_SELECTION)
-	private transient Stream query;
+    @InputStream(name = "query")
+    private transient Stream query;
 
-	@Mapper(stream = "query")
-	protected InputUserSelectionFeaturesMapper queryInputMapper;
+    @ListMapper(stream = "query")
+    protected ListedFeaturesMapper queryInputMapper;
 
-	@OutputStream(name = "prediction", from = "query")
-	private transient Stream prediction;
+    @OutputStream(name = "prediction", from = "query")
+    private transient Stream prediction;
 
-	@Mapper(stream = "prediction")
-	protected OutputFixedFeaturesMapper predictionOutputMapper;
+    @State(name = "Classifier's model")
+    private transient StateFactory stateFactory;
 
-	@State(name = "Classifier's model")
-	private transient StateFactory stateFactory;
+    @Property(name = "Classifier name", mandatory = true)
+    private String classifierName;
 
-	@Property(name = "Classifier name", mandatory = true)
-	private String classifierName;
+    protected abstract void update(L label, List<Object> features);
 
-	protected abstract void update(L label, Object[] features);
+    protected abstract L classify(List<Object> features);
 
-	protected abstract L classify(Object[] features);
+    protected abstract void initClassifier();
 
-	protected abstract void initClassifier();
-	
-	@Override
-	public void init() {
-		initClassifier();
-		TridentState classifierState = update.partitionPersist(stateFactory, new Fields(INSTANCE_FIELD), new ClassifierUpdater<L>(classifierName, this, updateInputMapper));
-		prediction = query.stateQuery(classifierState, new Fields(INSTANCE_FIELD), new ClassifyQuery<L>(classifierName, queryInputMapper), new Fields(NEW_INSTANCE_FIELD));
-	}
+    @Override
+    public void init() {
+        initClassifier();
+        TridentState classifierState = update.partitionPersist(stateFactory, new Fields(INSTANCE_FIELD), new ClassifierUpdater<L>(classifierName, this, updateInputMapper));
+        prediction = query.stateQuery(classifierState, new Fields(INSTANCE_FIELD), new ClassifyQuery<L>(classifierName, queryInputMapper), new Fields(NEW_INSTANCE_FIELD));
+    }
 
-	private static class ClassifierUpdater<L> extends BaseStateUpdater<MapState<Classifier<L>>> {
+    private static class ClassifierUpdater<L> extends BaseStateUpdater<MapState<Classifier<L>>> {
 
-		private final String classifierName;
-		private final Classifier<L> initialClassifier;
-		private final InputUserSelectionFeaturesMapper mapper;
+        private final String classifierName;
+        private final Classifier<L> initialClassifier;
+        private final ListedFeaturesMapper mapper;
 
-		public ClassifierUpdater(String classifierName, Classifier<L> initialClassifier, InputUserSelectionFeaturesMapper mapper) {
-			this.classifierName = classifierName;
-			this.initialClassifier = initialClassifier;
-			this.mapper = mapper;
-		}
+        public ClassifierUpdater(String classifierName, Classifier<L> initialClassifier, ListedFeaturesMapper mapper) {
+            this.classifierName = classifierName;
+            this.initialClassifier = initialClassifier;
+            this.mapper = mapper;
+        }
 
-		@Override
-		public void updateState(MapState<Classifier<L>> state, List<TridentTuple> tuples, TridentCollector collector) {
-			// Get model
-			List<Classifier<L>> classifiers = state.multiGet(KeysUtil.toKeys(this.classifierName));
-			Classifier<L> classifier = null;
-			if (classifiers != null && !classifiers.isEmpty()) {
-				classifier = classifiers.get(0);
-			}
+        @Override
+        @SuppressWarnings("unchecked")
+        public void updateState(MapState<Classifier<L>> state, List<TridentTuple> tuples, TridentCollector collector) {
+            // Get model
+            List<Classifier<L>> classifiers = state.multiGet(KeysUtil.toKeys(this.classifierName));
+            Classifier<L> classifier = null;
+            if (classifiers != null && !classifiers.isEmpty()) {
+                classifier = classifiers.get(0);
+            }
 
-			// Init it if necessary
-			if (classifier == null) {
-				classifier = this.initialClassifier;
-			}
+            // Init it if necessary
+            if (classifier == null) {
+                classifier = this.initialClassifier;
+            }
 
-			// Update model
-			for (TridentTuple tuple : tuples) {
-				Instance instance = Instance.from(tuple);
-				Object[] features = instance.getSelectedFeatures(mapper);
-				L label = (L) instance.getLabel();
-				classifier.update(label, features);
-			}
+            // Update model
+            for (TridentTuple tuple : tuples) {
+                Instance instance = Instance.get(tuple, mapper);
+                List<Object> features = instance.getFeatures();
+                L label = (L) instance.getLabel();
+                classifier.update(label, features);
+            }
 
-			// Save model
-			state.multiPut(KeysUtil.toKeys(this.classifierName), Arrays.asList(classifier));
-		}
-	}
+            // Save model
+            state.multiPut(KeysUtil.toKeys(this.classifierName), Arrays.asList(classifier));
+        }
+    }
 
-	private static class ClassifyQuery<L> extends BaseQueryFunction<MapState<Classifier<L>>, L> {
+    private static class ClassifyQuery<L> extends BaseQueryFunction<MapState<Classifier<L>>, Instance> {
 
-		private final String classifierName;
-		private final InputUserSelectionFeaturesMapper mapper;
+        private final String classifierName;
+        private final ListedFeaturesMapper mapper;
 
-		public ClassifyQuery(String classifierName, InputUserSelectionFeaturesMapper mapper) {
-			this.classifierName = classifierName;
-			this.mapper = mapper;
-		}
+        public ClassifyQuery(String classifierName, ListedFeaturesMapper mapper) {
+            this.classifierName = classifierName;
+            this.mapper = mapper;
+        }
 
-		@Override
-		public List<L> batchRetrieve(MapState<Classifier<L>> state, List<TridentTuple> tuples) {
-			List<L> labels = new ArrayList<L>();
+        @Override
+        public List<Instance> batchRetrieve(MapState<Classifier<L>> state, List<TridentTuple> tuples) {
+            List<Instance> instances = new ArrayList<Instance>();
 
-			List<Classifier<L>> classifiers = state.multiGet(KeysUtil.toKeys(this.classifierName));
-			if (classifiers != null && !classifiers.isEmpty()) {
-				Classifier<L> classifier = classifiers.get(0);
-				if (classifier == null) {
-					for (int i = 0; i < tuples.size(); i++) {
-						labels.add(null);
-					}
-				} else {
+            List<Classifier<L>> classifiers = state.multiGet(KeysUtil.toKeys(this.classifierName));
+            if (classifiers != null && !classifiers.isEmpty()) {
+                Classifier<L> classifier = classifiers.get(0);
+                if (classifier == null) {
+                    for (int i = 0; i < tuples.size(); i++) {
+                        instances.add(null);
+                    }
+                } else {
 
-					for (TridentTuple tuple : tuples) {
-						Instance instance = Instance.from(tuple);
-						Object[] features = instance.getSelectedFeatures(mapper);
-						L label = classifier.classify(features);
-						labels.add(label);
-					}
-				}
-			} else {
-				for (int i = 0; i < tuples.size(); i++) {
-					labels.add(null);
-				}
-			}
+                    for (TridentTuple tuple : tuples) {
+                        Instance instance = Instance.get(tuple, mapper);
+                        List<Object> features = instance.getFeatures();
 
-			return labels;
-		}
+                        L label = classifier.classify(features);
+                        instance.setLabel(label);
+                        instances.add(instance);
+                    }
+                }
+            } else {
+                for (int i = 0; i < tuples.size(); i++) {
+                    instances.add(null);
+                }
+            }
 
-		public void execute(TridentTuple tuple, L label, TridentCollector collector) {
-			collector.emit(new Values(Instance.from(tuple).withLabel(label)));
-		}
+            return instances;
+        }
 
-	}
+        public void execute(TridentTuple tuple, Instance instance, TridentCollector collector) {
+            collector.emit(new Values(instance));
+        }
+    }
 }

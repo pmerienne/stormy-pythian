@@ -35,16 +35,15 @@ import storm.trident.state.StateFactory;
 import stormy.pythian.core.configuration.PropertyConfiguration;
 import stormy.pythian.model.annotation.Configuration;
 import stormy.pythian.model.annotation.InputStream;
-import stormy.pythian.model.annotation.Mapper;
+import stormy.pythian.model.annotation.ListMapper;
+import stormy.pythian.model.annotation.NameMapper;
 import stormy.pythian.model.annotation.OutputStream;
 import stormy.pythian.model.annotation.Property;
 import stormy.pythian.model.annotation.State;
 import stormy.pythian.model.annotation.Topology;
 import stormy.pythian.model.component.Component;
-import stormy.pythian.model.instance.InputFixedFeaturesMapper;
-import stormy.pythian.model.instance.InputUserSelectionFeaturesMapper;
-import stormy.pythian.model.instance.OutputFixedFeaturesMapper;
-import stormy.pythian.model.instance.OutputUserSelectionFeaturesMapper;
+import stormy.pythian.model.instance.ListedFeaturesMapper;
+import stormy.pythian.model.instance.NamedFeaturesMapper;
 import backtype.storm.Config;
 import com.google.common.base.Predicate;
 
@@ -134,9 +133,9 @@ public class ReflectionHelper {
     }
 
     @SuppressWarnings("unchecked")
-    public static void setFeaturesMapper(Component component, String streamName, InputFixedFeaturesMapper mapper) {
+    public static void setFeaturesMapper(Component component, String streamName, NamedFeaturesMapper mapper) {
         try {
-            Set<Field> fields = getAllFields(component.getClass(), withFeaturesMapper(streamName));
+            Set<Field> fields = getAllFields(component.getClass(), withNameMapper(streamName));
             if (fields != null && !fields.isEmpty()) {
                 Field field = fields.iterator().next();
                 writeField(field, component, mapper, true);
@@ -147,35 +146,9 @@ public class ReflectionHelper {
     }
 
     @SuppressWarnings("unchecked")
-    public static void setFeaturesMapper(Component component, String streamName, InputUserSelectionFeaturesMapper mapper) {
+    public static void setFeaturesMapper(Component component, String streamName, ListedFeaturesMapper mapper) {
         try {
-            Set<Field> fields = getAllFields(component.getClass(), withFeaturesMapper(streamName));
-            if (fields != null && !fields.isEmpty()) {
-                Field field = fields.iterator().next();
-                writeField(field, component, mapper, true);
-            }
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Unable to set features mapper for " + streamName, e);
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    public static void setFeaturesMapper(Component component, String streamName, OutputFixedFeaturesMapper mapper) {
-        try {
-            Set<Field> fields = getAllFields(component.getClass(), withFeaturesMapper(streamName));
-            if (fields != null && !fields.isEmpty()) {
-                Field field = fields.iterator().next();
-                writeField(field, component, mapper, true);
-            }
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Unable to set features mapper for " + streamName, e);
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    public static void setFeaturesMapper(Component component, String streamName, OutputUserSelectionFeaturesMapper mapper) {
-        try {
-            Set<Field> fields = getAllFields(component.getClass(), withFeaturesMapper(streamName));
+            Set<Field> fields = getAllFields(component.getClass(), withListMapper(streamName));
             if (fields != null && !fields.isEmpty()) {
                 Field field = fields.iterator().next();
                 writeField(field, component, mapper, true);
@@ -208,6 +181,28 @@ public class ReflectionHelper {
             }
         } catch (Exception e) {
             throw new IllegalArgumentException("Unable to set stream " + name, e);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public static NameMapper getNameMapper(Class<?> clazz, String stream) {
+        Set<Field> fields = getAllFields(clazz, withNameMapper(stream));
+        if (fields != null && !fields.isEmpty()) {
+            Field field = fields.iterator().next();
+            return field.getAnnotation(NameMapper.class);
+        } else {
+            return null;
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public static ListMapper getListMapper(Class<?> clazz, String stream) {
+        Set<Field> fields = getAllFields(clazz, withListMapper(stream));
+        if (fields != null && !fields.isEmpty()) {
+            Field field = fields.iterator().next();
+            return field.getAnnotation(ListMapper.class);
+        } else {
+            return null;
         }
     }
 
@@ -260,18 +255,6 @@ public class ReflectionHelper {
         };
     }
 
-    private static <T extends AnnotatedElement> Predicate<T> withFeaturesMapper(final String streamName) {
-        return new Predicate<T>() {
-            public boolean apply(T input) {
-                if (input == null || !input.isAnnotationPresent(Mapper.class)) {
-                    return false;
-                }
-
-                return input.getAnnotation(Mapper.class).stream().equals(streamName);
-            }
-        };
-    }
-
     private static <T extends AnnotatedElement> Predicate<T> withState(final String stateName) {
         return new Predicate<T>() {
             public boolean apply(T input) {
@@ -280,6 +263,30 @@ public class ReflectionHelper {
                 }
 
                 return input.getAnnotation(State.class).name().equals(stateName);
+            }
+        };
+    }
+
+    private static <T extends AnnotatedElement> Predicate<T> withNameMapper(final String stream) {
+        return new Predicate<T>() {
+            public boolean apply(T input) {
+                if (input == null || !input.isAnnotationPresent(NameMapper.class)) {
+                    return false;
+                }
+
+                return input.getAnnotation(NameMapper.class).stream().equals(stream);
+            }
+        };
+    }
+
+    private static <T extends AnnotatedElement> Predicate<T> withListMapper(final String stream) {
+        return new Predicate<T>() {
+            public boolean apply(T input) {
+                if (input == null || !input.isAnnotationPresent(ListMapper.class)) {
+                    return false;
+                }
+
+                return input.getAnnotation(ListMapper.class).stream().equals(stream);
             }
         };
     }

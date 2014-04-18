@@ -15,39 +15,28 @@
  */
 package stormy.pythian.component.statistic.aggregation;
 
-import static stormy.pythian.component.statistic.aggregation.Constants.COUNT_FEATURE;
-import stormy.pythian.component.statistic.aggregation.StatisticAggregator.AggregableStatistic;
-import stormy.pythian.model.instance.Instance;
-import stormy.pythian.model.instance.OutputFixedFeaturesMapper;
-
 public class AggregableCount implements AggregableStatistic<Long> {
 
-	private static final long serialVersionUID = 845845674309635484L;
+    private static final long serialVersionUID = 845845674309635484L;
 
-	private final OutputFixedFeaturesMapper mapper;
+    @Override
+    public Long init(Number feature) {
+        return 1L;
+    }
 
-	public AggregableCount(OutputFixedFeaturesMapper mapper) {
-		this.mapper = mapper;
-	}
+    @Override
+    public Long combine(Long val1, Long val2) {
+        return val1 + val2;
+    }
 
-	@Override
-	public Long init(Number feature) {
-		return 1L;
-	}
+    @Override
+    public Long zero() {
+        return 0L;
+    }
 
-	@Override
-	public Long combine(Long val1, Long val2) {
-		return val1 + val2;
-	}
-
-	@Override
-	public Long zero() {
-		return 0L;
-	}
-
-	@Override
-	public Instance update(Instance original, Long count) {
-		return original.withFeature(mapper, COUNT_FEATURE, count == null ? 0.0 : count);
-	}
+    @Override
+    public Object toFeature(Long value) {
+        return value;
+    }
 
 }

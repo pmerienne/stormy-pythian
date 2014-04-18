@@ -13,11 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package stormy.pythian.model.instance;
+package stormy.pythian.model.annotation;
 
-import java.io.Serializable;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-public interface FeatureProcedure<T> extends Serializable {
+@Target(ElementType.FIELD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface NameMapper {
 
-	void process(T feature);
+    String stream();
+
+    ExpectedFeature[] expectedFeatures();
 }

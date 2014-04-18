@@ -15,39 +15,43 @@
  */
 package stormy.pythian.component.classifier.tridentml;
 
+import java.util.List;
 import com.github.pmerienne.trident.ml.classification.Classifier;
 
 @SuppressWarnings("serial")
 public abstract class TridentMLClassifier<L> extends stormy.pythian.component.classifier.Classifier<L> {
 
-	protected Classifier<L> classifier;
+    protected Classifier<L> classifier;
 
-	@Override
-	protected void update(L label, Object[] rawFeatures) {
-		double[] features = new double[rawFeatures.length];
-		for (int i = 0; i < rawFeatures.length; i++) {
-			if (rawFeatures[i] instanceof Number) {
-				features[i] = ((Number) rawFeatures[i]).doubleValue();
-			} else {
-				features[i] = 0.0;
-			}
-		}
+    @Override
+    protected void update(L label, List<Object> rawFeatures) {
+        double[] features = toFeatureArray(rawFeatures);
+        this.classifier.update(label, features);
+    }
 
-		this.classifier.update(label, features);
-	}
+    @Override
+    protected L classify(List<Object> rawFeatures) {
+        double[] features = toFeatureArray(rawFeatures);
+        L prediction = this.classifier.classify(features);
+        return prediction;
+    }
 
-	@Override
-	protected L classify(Object[] rawFeatures) {
-		double[] features = new double[rawFeatures.length];
-		for (int i = 0; i < rawFeatures.length; i++) {
-			if (rawFeatures[i] instanceof Number) {
-				features[i] = ((Number) rawFeatures[i]).doubleValue();
-			} else {
-				features[i] = 0.0;
-			}
-		}
+    private double[] toFeatureArray(List<Object> rawFeatures) {
+        double[] features = new double[rawFeatures.size()];
 
-		L prediction = this.classifier.classify(features);
-		return prediction;
-	}
+        for (int i = 0; i < rawFeatures.size(); i++) {
+            Object rawFeature = rawFeatures.get(i);
+            if (rawFeature instanceof Number) {
+                features[i] = ((Number) rawFeature).doubleValue();
+            } else {
+                try {
+                    features[i] = Double.parseDouble(rawFeature.toString());
+                } catch (Exception e) {
+                    features[i] = 0.0;
+                }
+            }
+        }
+
+        return features;
+    }
 }

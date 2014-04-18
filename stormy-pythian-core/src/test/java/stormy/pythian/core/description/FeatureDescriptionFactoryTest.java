@@ -18,77 +18,39 @@ package stormy.pythian.core.description;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
 import java.util.List;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.runners.MockitoJUnitRunner;
-
 import stormy.pythian.model.annotation.ExpectedFeature;
-import stormy.pythian.model.annotation.InputStream;
-import stormy.pythian.model.annotation.OutputStream;
+import stormy.pythian.model.annotation.NameMapper;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FeatureDescriptionFactoryTest {
 
-	@InjectMocks
-	private FeatureDescriptionFactory factory;
+    @InjectMocks
+    private FeatureDescriptionFactory factory;
 
-	@Test
-	public void should_create_descriptor() {
-		// Given
-		ExpectedFeature doubleFeature = mock(ExpectedFeature.class);
-		when(doubleFeature.name()).thenReturn("double");
-		when(doubleFeature.type()).thenReturn(Double.class);
+    @Test
+    public void should_create_descriptors() {
+        // Given
+        ExpectedFeature doubleFeature = mock(ExpectedFeature.class);
+        when(doubleFeature.name()).thenReturn("double");
+        when(doubleFeature.type()).thenReturn(Double.class);
 
-		// When
-		FeatureDescription descriptor = factory.createDescription(doubleFeature);
+        ExpectedFeature integerFeature = mock(ExpectedFeature.class);
+        when(integerFeature.name()).thenReturn("integer");
+        when(integerFeature.type()).thenReturn(Integer.class);
 
-		// Then
-		assertThat(descriptor).isEqualTo(new FeatureDescription("double", Double.class));
-	}
+        NameMapper inputStream = mock(NameMapper.class);
+        when(inputStream.expectedFeatures()).thenReturn(new ExpectedFeature[] { doubleFeature, integerFeature });
 
-	@Test
-	public void should_create_descriptors_from_inputstream() {
-		// Given
-		ExpectedFeature doubleFeature = mock(ExpectedFeature.class);
-		when(doubleFeature.name()).thenReturn("double");
-		when(doubleFeature.type()).thenReturn(Double.class);
+        // When
+        List<FeatureDescription> descriptors = factory.createDescriptions(inputStream);
 
-		ExpectedFeature integerFeature = mock(ExpectedFeature.class);
-		when(integerFeature.name()).thenReturn("integer");
-		when(integerFeature.type()).thenReturn(Integer.class);
+        // Then
+        assertThat(descriptors).containsOnly(new FeatureDescription("double", Double.class), new FeatureDescription("integer", Integer.class));
+    }
 
-		InputStream inputStream = mock(InputStream.class);
-		when(inputStream.expectedFeatures()).thenReturn(new ExpectedFeature[] { doubleFeature, integerFeature });
-
-		// When
-		List<FeatureDescription> descriptors = factory.createDescriptions(inputStream);
-
-		// Then
-		assertThat(descriptors).containsOnly(new FeatureDescription("double", Double.class), new FeatureDescription("integer", Integer.class));
-	}
-
-	@Test
-	public void should_create_descriptors_from_outputstream() {
-		// Given
-		ExpectedFeature doubleFeature = mock(ExpectedFeature.class);
-		when(doubleFeature.name()).thenReturn("double");
-		when(doubleFeature.type()).thenReturn(Double.class);
-
-		ExpectedFeature integerFeature = mock(ExpectedFeature.class);
-		when(integerFeature.name()).thenReturn("integer");
-		when(integerFeature.type()).thenReturn(Integer.class);
-
-		OutputStream outputStream = mock(OutputStream.class);
-		when(outputStream.newFeatures()).thenReturn(new ExpectedFeature[] { doubleFeature, integerFeature });
-
-		// When
-		List<FeatureDescription> descriptors = factory.createDescriptions(outputStream);
-
-		// Then
-		assertThat(descriptors).containsOnly(new FeatureDescription("double", Double.class), new FeatureDescription("integer", Integer.class));
-	}
 }

@@ -1,12 +1,9 @@
 package stormy.pythian.component.source;
 
 import static org.apache.commons.lang.RandomStringUtils.randomAlphabetic;
-import static stormy.pythian.model.annotation.MappingType.USER_SELECTION;
 import static stormy.pythian.model.instance.Instance.NEW_INSTANCE_FIELD;
-
 import java.util.List;
 import java.util.Map;
-
 import storm.trident.Stream;
 import storm.trident.TridentTopology;
 import storm.trident.operation.TridentCollector;
@@ -24,7 +21,7 @@ import backtype.storm.tuple.Values;
 @SuppressWarnings("serial")
 public abstract class NamedFeaturesSource implements Component {
 
-	@OutputStream(name = "output", type = USER_SELECTION)
+	@OutputStream(name = "output")
 	private transient Stream out;
 
 	@Property(name = "Max batch size")

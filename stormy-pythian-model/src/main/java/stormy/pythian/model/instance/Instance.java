@@ -15,262 +15,221 @@
  */
 package stormy.pythian.model.instance;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import java.io.Serializable;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import com.google.common.base.Preconditions;
 import storm.trident.tuple.TridentTuple;
 
 public class Instance implements Serializable {
 
-	private static final long serialVersionUID = 4970738933759230736L;
+    private static final long serialVersionUID = 4970738933759230736L;
 
-	public final static String INSTANCE_FIELD = "INSTANCE_FIELD";
-	public final static String NEW_INSTANCE_FIELD = "NEW_INSTANCE_FIELD";
+    public final static String INSTANCE_FIELD = "INSTANCE_FIELD";
+    public final static String NEW_INSTANCE_FIELD = "NEW_INSTANCE_FIELD";
 
-	private final Object label;
-	private final Object[] features;
-	
-	public static Instance from(TridentTuple tuple) {
-		try {
-			return (Instance) tuple.getValueByField(INSTANCE_FIELD);
-		} catch (Exception ex) {
-			throw new IllegalStateException("No instance found in tuple " + tuple, ex);
-		}
-	}
+    private transient ListedFeaturesMapper inputListedFeaturesMapper;
+    private transient NamedFeaturesMapper inputNamedFeaturesMapper;
+    private transient ListedFeaturesMapper outputListedFeaturesMapper;
+    private transient NamedFeaturesMapper outputNamedFeaturesMapper;
 
-	public static Instance newInstance(OutputFixedFeaturesMapper mapper, Map<String, Object> newFeaturesWithName) {
-		Object[] newFeatures = new Object[mapper.size()];
+    Object label;
+    Map<String, Object> features;
 
-		for (String featureName : newFeaturesWithName.keySet()) {
-			int index = mapper.getFeatureIndex(featureName);
-			if (index < 0) {
-				throw new IllegalArgumentException("Feature " + featureName + " does not exist");
-			}
+    public Instance() {
+        this.label = null;
+        this.features = new HashMap<>();
+    }
 
-			newFeatures[index] = newFeaturesWithName.get(featureName);
+    public int size() {
+        return this.features.size();
+    }
 
-		}
+    public boolean hasLabel() {
+        return this.label != null;
+    }
 
-		return new Instance(null, newFeatures);
-	}
-	
-	public static Instance newInstance(OutputUserSelectionFeaturesMapper mapper, List<?> features) {
-		Object[] newFeatures = new Object[mapper.size()];
+    public Object getLabel() {
+        return this.label;
+    }
 
-		for(int i = 0; i < mapper.size(); i++) {
-			newFeatures[i] = features.get(i);
-		}
+    public void setLabel(Object label) {
+        this.label = label;
+    }
 
-		return new Instance(null, newFeatures);
-	}
+    @SuppressWarnings("unchecked")
+    public <T> T getFeature(String featureName) {
+        checkNotNull(featureName, "Feature name is mandatory");
+        checkNotNull(inputNamedFeaturesMapper, "Cannot get feature : no input named features mapper");
 
-	public static Instance newInstance(OutputFixedFeaturesMapper mapper, Object label, Map<String, Object> newFeaturesWithName) {
-		Object[] newFeatures = new Object[mapper.size()];
+        String realFeatureName = inputNamedFeaturesMapper.getFeatureName(featureName);
+        return (T) features.get(realFeatureName);
+    }
 
-		for (String featureName : newFeaturesWithName.keySet()) {
-			int index = mapper.getFeatureIndex(featureName);
-			if (index < 0) {
-				throw new IllegalArgumentException("Feature " + featureName + " does not exist");
-			}
+    @SuppressWarnings("unchecked")
+    public <T> List<T> getFeatures() {
+        checkNotNull(inputListedFeaturesMapper, "Cannot get features : no input listed features mapper");
+        List<T> features = new ArrayList<>(inputListedFeaturesMapper.size());
 
-			newFeatures[index] = newFeaturesWithName.get(featureName);
+        List<String> selectedFeatureNames = inputListedFeaturesMapper.getSelectedFeatures();
+        for (String selectedFeatureName : selectedFeatureNames) {
+            features.add((T) this.features.get(selectedFeatureName));
+        }
 
-		}
+        return features;
+    }
 
-		return new Instance(label, newFeatures);
-	}
+    public <T> void setFeature(String featureName, T feature) {
+        checkNotNull(outputNamedFeaturesMapper, "Cannot set feature : no output named features mapper");
+        String realFeatureName = outputNamedFeaturesMapper.getFeatureName(featureName);
+        features.put(realFeatureName, feature);
+    }
 
-	Instance() {
-		this.features = new Object[0];
-		this.label = null;
-	}
+    public <T> void setFeatures(Map<String, T> features) {
+        for (String featureName : features.keySet()) {
+            setFeature(featureName, features.get(featureName));
+        }
+    }
 
-	Instance(Object label, int size) {
-		this.label = label;
-		this.features = new Object[size];
-	}
+    public <T> void addFeatures(List<T> newFeatures) {
+        checkNotNull(outputListedFeaturesMapper, "Cannot set features : no output listed features mapper");
+        Preconditions.checkArgument(
+                outputListedFeaturesMapper.size() == newFeatures.size(),
+                "Cannot add features, expecting %s new features, got %s", outputListedFeaturesMapper.size(), newFeatures.size());
 
-	Instance(Object label, Object[] features) {
-		this.label = label;
-		this.features = features;
-	}
+        List<String> selection = outputListedFeaturesMapper.getSelectedFeatures();
+        for (int i = 0; i < selection.size(); i++) {
+            this.features.put(selection.get(i), newFeatures.get(i));
+        }
+    }
 
-	@SuppressWarnings("unchecked")
-	public <T> T getInputFeature(InputFixedFeaturesMapper inputFixedFeaturesMapper, String featureName) {
-		int index = inputFixedFeaturesMapper.getFeatureIndex(featureName);
-		return (T) (index < 0 ? null : features[index]);
-	}
-	@SuppressWarnings("unchecked")
-	public <T> T getOutputFeature(OutputFixedFeaturesMapper outputMapper, String featureName) {
-		int index = outputMapper.getFeatureIndex(featureName);
-		return (T) (index < 0 ? null : features[index]);
-	}
+    @SuppressWarnings("unchecked")
+    public <T> void process(FeatureProcessor<T> processor) {
+        checkNotNull(inputListedFeaturesMapper, "Cannot process features : no intput listed features mapper");
+        List<String> selectedFeatureNames = inputListedFeaturesMapper.getSelectedFeatures();
 
+        for (String featureName : selectedFeatureNames) {
+            T feature = (T) this.features.get(featureName);
+            this.features.put(featureName, processor.process(feature));
 
-	public <T> Instance withFeature(InputFixedFeaturesMapper inputFixedFeaturesMapper, String featureName, T feature) {
-		int index = inputFixedFeaturesMapper.getFeatureIndex(featureName);
-		if (index < 0) {
-			throw new IllegalArgumentException("Feature " + featureName + " does not exist");
-		}
+        }
+    }
 
-		Object[] newFeatures = new Object[features.length];
-		System.arraycopy(features, 0, newFeatures, 0, features.length);
+    public static Instance create(ListedFeaturesMapper outputMapper) {
+        Instance instance = new Instance();
+        instance.to(outputMapper);
+        return instance;
+    }
 
-		newFeatures[index] = feature;
+    public static Instance create(NamedFeaturesMapper outputMapper) {
+        Instance instance = new Instance();
+        instance.to(outputMapper);
+        return instance;
+    }
 
-		return new Instance(this.label, newFeatures);
-	}
+    public static Instance get(TridentTuple tuple) {
+        try {
+            Instance instance = (Instance) tuple.getValueByField(INSTANCE_FIELD);
+            return instance;
+        } catch (Exception ex) {
+            throw new IllegalStateException("No instance found in tuple " + tuple, ex);
+        }
+    }
 
-	public Instance withFeatures(InputFixedFeaturesMapper inputFixedFeaturesMapper, Map<String, Object> newFeaturesWithName) {
-		Object[] newFeatures = new Object[features.length];
-		System.arraycopy(features, 0, newFeatures, 0, features.length);
+    public static Instance get(TridentTuple tuple, ListedFeaturesMapper inputMapper) {
+        Instance instance = Instance.get(tuple);
+        return instance.from(inputMapper);
+    }
 
-		for (String featureName : newFeaturesWithName.keySet()) {
-			int index = inputFixedFeaturesMapper.getFeatureIndex(featureName);
-			if (index < 0) {
-				throw new IllegalArgumentException("Feature " + featureName + " does not exist");
-			}
+    public static Instance get(TridentTuple tuple, NamedFeaturesMapper inputMapper) {
+        Instance instance = Instance.get(tuple);
+        return instance.from(inputMapper);
+    }
 
-			newFeatures[index] = newFeaturesWithName.get(featureName);
+    public static Instance get(TridentTuple tuple, ListedFeaturesMapper inputMapper, ListedFeaturesMapper outputMapper) {
+        Instance instance = Instance.get(tuple);
+        return instance.from(inputMapper).to(outputMapper);
+    }
 
-		}
+    public static Instance get(TridentTuple tuple, ListedFeaturesMapper inputMapper, NamedFeaturesMapper outputMapper) {
+        Instance instance = Instance.get(tuple);
+        return instance.from(inputMapper).to(outputMapper);
+    }
 
-		return new Instance(this.label, newFeatures);
-	}
+    public static Instance get(TridentTuple tuple, NamedFeaturesMapper inputMapper, ListedFeaturesMapper outputMapper) {
+        Instance instance = Instance.get(tuple);
+        return instance.from(inputMapper).to(outputMapper);
+    }
 
-	public <T> Instance withFeature(OutputFixedFeaturesMapper mapper, String featureName, T feature) {
-		int index = mapper.getFeatureIndex(featureName);
-		if (index < 0) {
-			throw new IllegalArgumentException("Feature " + featureName + " does not exist");
-		}
+    public static Instance get(TridentTuple tuple, NamedFeaturesMapper inputMapper, NamedFeaturesMapper outputMapper) {
+        Instance instance = Instance.get(tuple);
+        return instance.from(inputMapper).to(outputMapper);
+    }
 
-		Object[] newFeatures = new Object[mapper.size()];
-		System.arraycopy(features, 0, newFeatures, 0, features.length);
+    private Instance from(ListedFeaturesMapper inputListedFeaturesMapper) {
+        this.inputListedFeaturesMapper = inputListedFeaturesMapper;
+        this.inputNamedFeaturesMapper = null;
+        return this;
+    }
 
-		newFeatures[index] = feature;
+    private Instance from(NamedFeaturesMapper inputNamedFeaturesMapper) {
+        this.inputListedFeaturesMapper = null;
+        this.inputNamedFeaturesMapper = inputNamedFeaturesMapper;
+        return this;
+    }
 
-		return new Instance(this.label, newFeatures);
-	}
+    private Instance to(ListedFeaturesMapper outputListedFeaturesMapper) {
+        this.outputListedFeaturesMapper = outputListedFeaturesMapper;
+        this.outputNamedFeaturesMapper = null;
+        return this;
+    }
 
-	public Instance withFeatures(OutputFixedFeaturesMapper mapper, Map<String, Object> newFeaturesWithName) {
-		Object[] newFeatures = new Object[mapper.size()];
-		System.arraycopy(features, 0, newFeatures, 0, features.length);
+    private Instance to(NamedFeaturesMapper outputNamedFeaturesMapper) {
+        this.outputListedFeaturesMapper = null;
+        this.outputNamedFeaturesMapper = outputNamedFeaturesMapper;
+        return this;
+    }
 
-		for (String featureName : newFeaturesWithName.keySet()) {
-			int index = mapper.getFeatureIndex(featureName);
-			if (index < 0) {
-				throw new IllegalArgumentException("Feature " + featureName + " does not exist");
-			}
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((features == null) ? 0 : features.hashCode());
+        result = prime * result + ((label == null) ? 0 : label.hashCode());
+        return result;
+    }
 
-			newFeatures[index] = newFeaturesWithName.get(featureName);
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Instance other = (Instance) obj;
+        if (features == null) {
+            if (other.features != null)
+                return false;
+        } else if (!features.equals(other.features))
+            return false;
+        if (label == null) {
+            if (other.label != null)
+                return false;
+        } else if (!label.equals(other.label))
+            return false;
+        return true;
+    }
 
-		}
+    @Override
+    public String toString() {
+        return "Instance [label=" + label + ", features=" + features + "]";
+    }
 
-		return new Instance(this.label, newFeatures);
-	}
-
-	public Instance withFeatures(OutputUserSelectionFeaturesMapper mapper,Object... newFeatures) {
-		Object[] newFeaturesArray = new Object[mapper.size()];
-		System.arraycopy(features, 0, newFeaturesArray, 0, features.length);
-		
-		int[] newFeatureIndexes = mapper.getNewFeatureIndexes();
-		for(int i = 0; i < newFeatureIndexes.length; i++) {
-			int index = newFeatureIndexes[i];
-			Object newFeature = newFeatures[i];
-			newFeaturesArray[index] = newFeature;
-		}
-
-		return new Instance(this.label, newFeaturesArray);
-	}
-	
-	public Instance withLabel(Object label) {
-		Object[] newFeatures = new Object[features.length];
-		System.arraycopy(features, 0, newFeatures, 0, features.length);
-		return new Instance(label, newFeatures);
-	}
-
-	public Object[] getSelectedFeatures(InputUserSelectionFeaturesMapper inputUserSelectionFeaturesMapper) {
-		int[] selectedIndex = inputUserSelectionFeaturesMapper.getSelectedIndex();
-
-		Object[] selectedFeatures = new Object[selectedIndex.length];
-		int i = 0;
-		for (int index : selectedIndex) {
-			selectedFeatures[i] = features[index];
-			i++;
-		}
-
-		return selectedFeatures;
-	}
-
-	@SuppressWarnings("unchecked")
-	public <T> void process(InputUserSelectionFeaturesMapper inputUserSelectionFeaturesMapper, FeatureProcedure<T> featureProcedure) {
-		int[] selectedIndex = inputUserSelectionFeaturesMapper.getSelectedIndex();
-		for (int index : selectedIndex) {
-			featureProcedure.process((T) features[index]);
-		}
-
-	}
-
-	@SuppressWarnings("unchecked")
-	public <T> Instance transform(InputUserSelectionFeaturesMapper inputUserSelectionFeaturesMapper, FeatureFunction<T> function) {
-		Object[] newFeatures = new Object[features.length];
-		System.arraycopy(features, 0, newFeatures, 0, features.length);
-
-		int[] selectedIndex = inputUserSelectionFeaturesMapper.getSelectedIndex();
-		for (int index : selectedIndex) {
-			newFeatures[index] = function.transform((T) features[index]);
-		}
-
-		return new Instance(this.label, newFeatures);
-	}
-
-	public int size() {
-		return this.features.length;
-	}
-	
-	public boolean hasLabel() {
-		return this.label != null;
-	}
-
-	public Object getLabel() {
-		return this.label;
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + Arrays.hashCode(features);
-		result = prime * result + ((label == null) ? 0 : label.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Instance other = (Instance) obj;
-		if (!Arrays.equals(features, other.features))
-			return false;
-		if (label == null) {
-			if (other.label != null)
-				return false;
-		} else if (!label.equals(other.label))
-			return false;
-		return true;
-	}
-
-	@Override
-	public String toString() {
-		return "Instance [label=" + label + ", features=" + Arrays.toString(features) + "]";
-	}
-	
-	
-
+    public static interface FeatureProcessor<T> {
+        T process(T feature);
+    }
 }

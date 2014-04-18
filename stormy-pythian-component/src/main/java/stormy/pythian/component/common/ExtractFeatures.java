@@ -16,63 +16,59 @@
 package stormy.pythian.component.common;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import java.util.ArrayList;
+import java.util.List;
 import storm.trident.operation.BaseFunction;
 import storm.trident.operation.TridentCollector;
 import storm.trident.tuple.TridentTuple;
-import stormy.pythian.model.instance.InputFixedFeaturesMapper;
-import stormy.pythian.model.instance.InputUserSelectionFeaturesMapper;
 import stormy.pythian.model.instance.Instance;
+import stormy.pythian.model.instance.ListedFeaturesMapper;
+import stormy.pythian.model.instance.NamedFeaturesMapper;
 import backtype.storm.tuple.Values;
 
 public class ExtractFeatures extends BaseFunction {
 
-	private static final long serialVersionUID = -2823417821288444544L;
+    private static final long serialVersionUID = -2823417821288444544L;
 
-	private final InputUserSelectionFeaturesMapper userSelectionFeaturesMapper;
+    private final ListedFeaturesMapper listedFeaturesMapper;
+    private final NamedFeaturesMapper namedFeaturesMapper;
 
-	private final InputFixedFeaturesMapper fixedFeaturesMapper;
-	private final String[] featureNames;
+    private final String[] featureNames;
 
-	public ExtractFeatures(InputFixedFeaturesMapper mapper, String... featureNames) {
-		checkNotNull(mapper);
-		checkNotNull(featureNames);
+    public ExtractFeatures(NamedFeaturesMapper mapper, String... featureNames) {
+        checkNotNull(mapper);
+        checkNotNull(featureNames);
 
-		this.userSelectionFeaturesMapper = null;
-		this.fixedFeaturesMapper = mapper;
-		this.featureNames = featureNames;
-	}
+        this.listedFeaturesMapper = null;
+        this.namedFeaturesMapper = mapper;
+        this.featureNames = featureNames;
+    }
 
-	public ExtractFeatures(InputUserSelectionFeaturesMapper userSelectionFeaturesMapper) {
-		checkNotNull(userSelectionFeaturesMapper);
+    public ExtractFeatures(ListedFeaturesMapper userSelectionFeaturesMapper) {
+        checkNotNull(userSelectionFeaturesMapper);
 
-		this.userSelectionFeaturesMapper = userSelectionFeaturesMapper;
-		this.fixedFeaturesMapper = null;
-		this.featureNames = null;
-	}
+        this.listedFeaturesMapper = userSelectionFeaturesMapper;
+        this.namedFeaturesMapper = null;
+        this.featureNames = null;
+    }
 
-	@Override
-	public void execute(TridentTuple tuple, TridentCollector collector) {
-		Instance instance = Instance.from(tuple);
-		Object[] features = getFeatures(instance);
-		collector.emit(new Values(features));
-	}
+    @Override
+    public void execute(TridentTuple tuple, TridentCollector collector) {
+        List<Object> features = null;
 
-	private Object[] getFeatures(Instance instance) {
-		if (userSelectionFeaturesMapper != null) {
-			Object[] selectedFeatures = instance.getSelectedFeatures(userSelectionFeaturesMapper);
-			return selectedFeatures;
-		} else if (fixedFeaturesMapper != null && featureNames != null) {
-			Object[] features = new Object[featureNames.length];
+        if (listedFeaturesMapper != null) {
+            Instance instance = Instance.get(tuple, listedFeaturesMapper);
+            features = instance.getFeatures();
+        } else if (namedFeaturesMapper != null) {
+            Instance instance = Instance.get(tuple, namedFeaturesMapper);
 
-			for (int i = 0; i < featureNames.length; i++) {
-				String featureName = featureNames[i];
-				features[i] = instance.getInputFeature(fixedFeaturesMapper, featureName);
-			}
+            features = new ArrayList<>(featureNames.length);
+            for (String featureName : featureNames) {
+                features.add(instance.getFeature(featureName));
+            }
+        }
 
-			return features;
-		} else {
-			throw new IllegalStateException("Either userSelectionFeaturesMapper or fixedFeaturesMapper should be set");
-		}
-	}
+        collector.emit(new Values(features.toArray()));
+    }
 
 }
