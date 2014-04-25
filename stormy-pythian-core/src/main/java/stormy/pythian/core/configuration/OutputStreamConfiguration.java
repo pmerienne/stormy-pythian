@@ -17,7 +17,6 @@ package stormy.pythian.core.configuration;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

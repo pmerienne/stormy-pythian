@@ -107,23 +107,23 @@ public class StatisticProvider implements Component {
     private Stream initOutputStream(AggregableStatistic<?> aggregableStatistic) {
         TridentState statistics = in
                 .shuffle()
-                .persistentAggregate(stateFactory, new Fields(INSTANCE_FIELD), new StatisticAggregator(inputMapper, aggregableStatistic), new Fields(STATISTIC_FIELD));
+                .persistentAggregate(stateFactory, new Fields(INSTANCE_FIELD), new StatisticAggregator<>(inputMapper, aggregableStatistic), new Fields(STATISTIC_FIELD));
 
         return in
                 .stateQuery(statistics, new SnapshotGet(), new Fields(STATISTIC_FIELD))
-                .each(new Fields(INSTANCE_FIELD, STATISTIC_FIELD), new AddStatisticFeatures(aggregableStatistic, inputMapper, outputMapper), new Fields(NEW_INSTANCE_FIELD));
+                .each(new Fields(INSTANCE_FIELD, STATISTIC_FIELD), new AddStatisticFeatures<>(aggregableStatistic, inputMapper, outputMapper), new Fields(NEW_INSTANCE_FIELD));
     }
 
     private Stream initGroupedOutputStream(AggregableStatistic<?> aggregableStatistic) {
         TridentState statistics = in
                 .each(new Fields(INSTANCE_FIELD), new ExtractFeatures(inputMapper, GROUP_BY_FEATURE), new Fields(GROUP_BY_FIELD))
                 .groupBy(new Fields(GROUP_BY_FIELD))
-                .persistentAggregate(stateFactory, new Fields(INSTANCE_FIELD), new StatisticAggregator(inputMapper, aggregableStatistic), new Fields(STATISTIC_FIELD));
+                .persistentAggregate(stateFactory, new Fields(INSTANCE_FIELD), new StatisticAggregator<>(inputMapper, aggregableStatistic), new Fields(STATISTIC_FIELD));
 
         return in
                 .each(new Fields(INSTANCE_FIELD), new ExtractFeatures(inputMapper, GROUP_BY_FEATURE), new Fields(GROUP_BY_FIELD))
                 .stateQuery(statistics, new Fields(GROUP_BY_FIELD), new MapGet(), new Fields(STATISTIC_FIELD))
-                .each(new Fields(INSTANCE_FIELD, STATISTIC_FIELD), new AddStatisticFeatures(aggregableStatistic, inputMapper, outputMapper), new Fields(NEW_INSTANCE_FIELD));
+                .each(new Fields(INSTANCE_FIELD, STATISTIC_FIELD), new AddStatisticFeatures<>(aggregableStatistic, inputMapper, outputMapper), new Fields(NEW_INSTANCE_FIELD));
     }
 
     private Stream initWindowedOutputStream(AggregableStatistic<?> aggregableStatistic) {
@@ -139,7 +139,7 @@ public class StatisticProvider implements Component {
                 .stateQuery(statistics, new Fields(SLOT_FIELD), new MapGet(), new Fields(SLOT_STATISTIC_FIELD))
                 .groupBy(new Fields(INSTANCE_FIELD))
                 .aggregate(new Fields(INSTANCE_FIELD, SLOT_STATISTIC_FIELD), new GlobalStatisticAggregator<>(aggregableStatistic), new Fields(STATISTIC_FIELD))
-                .each(new Fields(INSTANCE_FIELD, STATISTIC_FIELD), new AddStatisticFeatures(aggregableStatistic, inputMapper, outputMapper), new Fields(NEW_INSTANCE_FIELD));
+                .each(new Fields(INSTANCE_FIELD, STATISTIC_FIELD), new AddStatisticFeatures<>(aggregableStatistic, inputMapper, outputMapper), new Fields(NEW_INSTANCE_FIELD));
     }
 
     private Stream initGroupedAndWindowedOutputStream(AggregableStatistic<?> aggregableStatistic) {
@@ -156,7 +156,7 @@ public class StatisticProvider implements Component {
                 .stateQuery(statistics, new Fields(GROUP_BY_FIELD, SLOT_FIELD), new MapGet(), new Fields(SLOT_STATISTIC_FIELD))
                 .groupBy(new Fields(INSTANCE_FIELD))
                 .aggregate(new Fields(INSTANCE_FIELD, SLOT_STATISTIC_FIELD), new GlobalStatisticAggregator<>(aggregableStatistic), new Fields(STATISTIC_FIELD))
-                .each(new Fields(INSTANCE_FIELD, STATISTIC_FIELD), new AddStatisticFeatures(aggregableStatistic, inputMapper, outputMapper), new Fields(NEW_INSTANCE_FIELD));
+                .each(new Fields(INSTANCE_FIELD, STATISTIC_FIELD), new AddStatisticFeatures<>(aggregableStatistic, inputMapper, outputMapper), new Fields(NEW_INSTANCE_FIELD));
     }
 
     private static class DateToSlotIndex extends BaseFunction {
