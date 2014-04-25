@@ -40,10 +40,12 @@ public class CsvSource extends ListedFeaturesSource {
                 try {
                     List<?> features = newArrayList(Splitter.on(",").limit(mapper.size()).trimResults().split(line));
 
-                    Instance instance = Instance.newInstance(mapper, features);
+                    Instance instance = Instance.create(mapper);
+                    instance.addFeatures(features);
+
                     instances.add(instance);
                 } catch (Exception ex) {
-                    LOGGER.warn("Skipped instance : " + line);
+                    LOGGER.warn(ex.getMessage() + " : Instance skipped '" + line + "'");
                 }
             }
 

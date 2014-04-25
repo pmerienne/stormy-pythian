@@ -16,6 +16,5 @@
 package stormy.pythian.model.annotation;
 
 public enum MappingType {
-
-	USER_SELECTION, FIXED_FEATURES;
+    LISTED, NAMED, NONE;
 }

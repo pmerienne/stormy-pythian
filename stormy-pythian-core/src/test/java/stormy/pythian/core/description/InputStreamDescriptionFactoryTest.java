@@ -17,117 +17,132 @@ package stormy.pythian.core.description;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.when;
-import static stormy.pythian.model.annotation.MappingType.FIXED_FEATURES;
-import static stormy.pythian.model.annotation.MappingType.USER_SELECTION;
-
+import static stormy.pythian.model.annotation.MappingType.LISTED;
+import static stormy.pythian.model.annotation.MappingType.NAMED;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-
 import storm.trident.Stream;
 import stormy.pythian.model.annotation.Documentation;
 import stormy.pythian.model.annotation.InputStream;
+import stormy.pythian.model.annotation.ListMapper;
+import stormy.pythian.model.annotation.NameMapper;
 import stormy.pythian.model.component.Component;
+import stormy.pythian.model.instance.ListedFeaturesMapper;
 
 @SuppressWarnings("serial")
 @RunWith(MockitoJUnitRunner.class)
 public class InputStreamDescriptionFactoryTest {
 
-	@InjectMocks
-	private InputStreamDescriptionFactory factory;
+    @InjectMocks
+    private InputStreamDescriptionFactory factory;
 
-	@Mock
-	private FeatureDescriptionFactory featureDescriptorFactory;
+    @Mock
+    private FeatureDescriptionFactory featureDescriptorFactory;
 
-	@Test
-	public void should_retrieve_input_stream_descriptions() {
-		// Given
-		@Documentation(name = "Test component")
-		class TestComponent implements Component {
+    @Test
+    public void should_retrieve_input_stream_descriptions() {
+        // Given
+        @Documentation(name = "Test component")
+        class TestComponent implements Component {
 
-			@InputStream(name = "in1", type = USER_SELECTION)
-			private Stream in1;
+            @InputStream(name = "in1")
+            private Stream in1;
 
-			@InputStream(name = "in2", type = FIXED_FEATURES, expectedFeatures = {})
-			private Stream in2;
+            @ListMapper(stream = "in1")
+            private ListedFeaturesMapper in1Mapper;
 
-			@Override
-			public void init() {
-			}
-		}
+            @InputStream(name = "in2")
+            private Stream in2;
 
-		List<FeatureDescription> expectedFeatures = new ArrayList<>();
+            @NameMapper(stream = "in2", expectedFeatures = {})
+            private ListedFeaturesMapper in2Mapper;
 
-		when(featureDescriptorFactory.createDescriptions(Mockito.isA(InputStream.class))) //
-				.thenReturn(expectedFeatures);
+            @Override
+            public void init() {
+            }
+        }
 
-		// When
-		List<InputStreamDescription> actualDescriptions = factory.createInputStreamDescriptions(TestComponent.class);
+        List<FeatureDescription> expectedFeatures = new ArrayList<>();
 
-		// Then
-		assertThat(actualDescriptions).containsOnly( //
-				new InputStreamDescription("in1", USER_SELECTION), //
-				new InputStreamDescription("in2", FIXED_FEATURES, expectedFeatures) //
-				);
-	}
+        when(featureDescriptorFactory.createDescriptions(Mockito.isA(NameMapper.class))) //
+                .thenReturn(expectedFeatures);
 
-	@Test(expected = IllegalArgumentException.class)
-	public void should_throw_illegal_argument_exception_when_input_stream_annotation_not_applied_on_stream() {
-		// Given
-		@Documentation(name = "Test component")
-		class TestComponent implements Component {
+        // When
+        List<InputStreamDescription> actualDescriptions = factory.createInputStreamDescriptions(TestComponent.class);
 
-			@InputStream(name = "in", type = USER_SELECTION)
-			private Object in;
+        // Then
+        assertThat(actualDescriptions).containsOnly( //
+                new InputStreamDescription("in1", LISTED), //
+                new InputStreamDescription("in2", NAMED, expectedFeatures) //
+                );
+    }
 
-			@Override
-			public void init() {
-			}
-		}
+    @Test(expected = IllegalArgumentException.class)
+    public void should_throw_illegal_argument_exception_when_input_stream_annotation_not_applied_on_stream() {
+        // Given
+        @Documentation(name = "Test component")
+        class TestComponent implements Component {
 
-		// When
-		factory.createInputStreamDescriptions(TestComponent.class);
-	}
+            @InputStream(name = "in")
+            private Object in;
 
-	@Test
-	public void should_retrieve_inherited_input_stream_descriptions() {
-		// Given
-		@Documentation(name = "Test component")
-		class AbstractTestComponent implements Component {
+            @ListMapper(stream = "in")
+            private ListedFeaturesMapper inMapper;
 
-			@InputStream(name = "in1", type = USER_SELECTION)
-			private Stream in1;
+            @Override
+            public void init() {
+            }
+        }
 
-			@InputStream(name = "in2", type = FIXED_FEATURES, expectedFeatures = {})
-			private Stream in2;
+        // When
+        factory.createInputStreamDescriptions(TestComponent.class);
+    }
 
-			@Override
-			public void init() {
-			}
-		}
-		
-		class TestComponent extends AbstractTestComponent {
-			
-		}
+    @Test
+    public void should_retrieve_inherited_input_stream_descriptions() {
+        // Given
+        @Documentation(name = "Test component")
+        class AbstractTestComponent implements Component {
 
-		List<FeatureDescription> expectedFeatures = new ArrayList<>();
+            @InputStream(name = "in1")
+            private Stream in1;
 
-		when(featureDescriptorFactory.createDescriptions(Mockito.isA(InputStream.class))) //
-				.thenReturn(expectedFeatures);
+            @ListMapper(stream = "in1")
+            private ListedFeaturesMapper in1Mapper;
 
-		// When
-		List<InputStreamDescription> actualDescriptions = factory.createInputStreamDescriptions(TestComponent.class);
+            @InputStream(name = "in2")
+            private Stream in2;
 
-		// Then
-		assertThat(actualDescriptions).containsOnly( //
-				new InputStreamDescription("in1", USER_SELECTION), //
-				new InputStreamDescription("in2", FIXED_FEATURES, expectedFeatures) //
-				);
-	}
+            @NameMapper(stream = "in2", expectedFeatures = {})
+            private ListedFeaturesMapper in2Mapper;
+
+            @Override
+            public void init() {
+            }
+        }
+
+        class TestComponent extends AbstractTestComponent {
+
+        }
+
+        List<FeatureDescription> expectedFeatures = new ArrayList<>();
+
+        when(featureDescriptorFactory.createDescriptions(Mockito.isA(NameMapper.class))) //
+                .thenReturn(expectedFeatures);
+
+        // When
+        List<InputStreamDescription> actualDescriptions = factory.createInputStreamDescriptions(TestComponent.class);
+
+        // Then
+        assertThat(actualDescriptions).containsOnly( //
+                new InputStreamDescription("in1", LISTED), //
+                new InputStreamDescription("in2", NAMED, expectedFeatures) //
+                );
+    }
 }

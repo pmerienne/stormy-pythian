@@ -17,9 +17,9 @@ app.factory('ComponentService', function() {
 	var InputStream = function(description) {
 		this.description = description;
 
-		if("USER_SELECTION" == description.type) {
+		if("LISTED" == description.type) {
 			this.selectedFeatures = [];
-		} else if("FIXED_FEATURES" == description.type) {
+		} else if("NAMED" == description.type) {
 			this.mappings = {};
 			if(description.expectedFeatures) {
 				for(var i = 0; i < description.expectedFeatures.length; i++) {
@@ -32,9 +32,9 @@ app.factory('ComponentService', function() {
 	var OutputStream = function(description) {
 		this.description = description;
 		
-		if("USER_SELECTION" == description.type) {
+		if("LISTED" == description.type) {
 			this.selectedFeatures = [];
-		} else if("FIXED_FEATURES" == description.type) {
+		} else if("NAMED" == description.type) {
 			this.mappings = {};
 			if(description.newFeatures) {
 				for(var i = 0; i < description.newFeatures.length; i++) {

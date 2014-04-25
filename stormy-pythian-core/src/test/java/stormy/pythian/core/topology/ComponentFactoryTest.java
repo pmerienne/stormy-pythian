@@ -22,7 +22,9 @@ import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static stormy.pythian.model.annotation.MappingType.USER_SELECTION;
+import static stormy.pythian.model.annotation.MappingType.LISTED;
+import static stormy.pythian.model.annotation.MappingType.NAMED;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -45,16 +47,15 @@ import stormy.pythian.core.description.InputStreamDescription;
 import stormy.pythian.core.description.OutputStreamDescription;
 import stormy.pythian.model.annotation.Configuration;
 import stormy.pythian.model.annotation.InputStream;
-import stormy.pythian.model.annotation.Mapper;
+import stormy.pythian.model.annotation.ListMapper;
+import stormy.pythian.model.annotation.NameMapper;
 import stormy.pythian.model.annotation.OutputStream;
 import stormy.pythian.model.annotation.Property;
 import stormy.pythian.model.annotation.State;
 import stormy.pythian.model.annotation.Topology;
 import stormy.pythian.model.component.Component;
-import stormy.pythian.model.instance.FeaturesIndex;
-import stormy.pythian.model.instance.InputUserSelectionFeaturesMapper;
-import stormy.pythian.model.instance.OutputFixedFeaturesMapper;
-import stormy.pythian.model.instance.OutputUserSelectionFeaturesMapper;
+import stormy.pythian.model.instance.ListedFeaturesMapper;
+import stormy.pythian.model.instance.NamedFeaturesMapper;
 import backtype.storm.Config;
 
 @SuppressWarnings("serial")
@@ -76,8 +77,7 @@ public class ComponentFactoryTest {
         ComponentConfiguration configuration = new ComponentConfiguration(randomAlphabetic(6), new ComponentDescription(TestComponent.class));
 
         // When
-        Component component = factory.createComponent(configuration, new HashMap<String, StateFactory>(), new HashMap<String, Stream>(), new HashMap<String, FeaturesIndex>(),
-                new HashMap<String, FeaturesIndex>());
+        Component component = factory.createComponent(configuration, new HashMap<String, StateFactory>(), new HashMap<String, Stream>());
 
         // Then
         assertThat(component).isInstanceOf(TestComponent.class);
@@ -93,8 +93,7 @@ public class ComponentFactoryTest {
         configuration.add(new PropertyConfiguration("distributed", true));
 
         // When
-        Component component = factory.createComponent(configuration, new HashMap<String, StateFactory>(), new HashMap<String, Stream>(), new HashMap<String, FeaturesIndex>(),
-                new HashMap<String, FeaturesIndex>());
+        Component component = factory.createComponent(configuration, new HashMap<String, StateFactory>(), new HashMap<String, Stream>());
 
         // Then
         TestComponent testComponent = (TestComponent) component;
@@ -114,8 +113,7 @@ public class ComponentFactoryTest {
         when(originalInputStream.applyAssembly(isA(ReplaceInstanceField.class))).thenReturn(switchedStream);
 
         // When
-        Component component = factory.createComponent(configuration, new HashMap<String, StateFactory>(), inputStreams, new HashMap<String, FeaturesIndex>(),
-                new HashMap<String, FeaturesIndex>());
+        Component component = factory.createComponent(configuration, new HashMap<String, StateFactory>(), inputStreams);
 
         // Then
         assertThat(component).isInstanceOf(TestComponent.class);
@@ -134,8 +132,7 @@ public class ComponentFactoryTest {
         inputStreams.put("in1", expectedStream);
 
         // When
-        TestComponent component = (TestComponent) factory.createComponent(configuration, new HashMap<String, StateFactory>(), inputStreams, new HashMap<String, FeaturesIndex>(),
-                new HashMap<String, FeaturesIndex>());
+        TestComponent component = (TestComponent) factory.createComponent(configuration, new HashMap<String, StateFactory>(), inputStreams);
 
         // Then
         assertThat(component.topology).isEqualTo(tridentTopology);
@@ -151,8 +148,7 @@ public class ComponentFactoryTest {
         inputStreams.put("in1", expectedStream);
 
         // When
-        TestComponent component = (TestComponent) factory.createComponent(configuration, new HashMap<String, StateFactory>(), inputStreams, new HashMap<String, FeaturesIndex>(),
-                new HashMap<String, FeaturesIndex>());
+        TestComponent component = (TestComponent) factory.createComponent(configuration, new HashMap<String, StateFactory>(), inputStreams);
 
         // Then
         assertThat(component.configuration).isEqualTo(config);
@@ -162,24 +158,18 @@ public class ComponentFactoryTest {
     @Test
     public void should_set_intput_stream_mapper() {
         // Given
-        InputStreamDescription inputStreamDescription = new InputStreamDescription("in1", USER_SELECTION);
+        InputStreamDescription inputStreamDescription = new InputStreamDescription("in1", LISTED);
         List<String> selectedFeatures = Arrays.asList("age", "viewCount");
         InputStreamConfiguration inputStreamConfiguration = new InputStreamConfiguration(inputStreamDescription, selectedFeatures);
-
-        FeaturesIndex expectedIndex = mock(FeaturesIndex.class);
-        HashMap<String, FeaturesIndex> inputFeaturesIndexes = new HashMap<String, FeaturesIndex>();
-        inputFeaturesIndexes.put("in1", expectedIndex);
-
 
         ComponentConfiguration configuration = new ComponentConfiguration(randomAlphabetic(6), new ComponentDescription(TestComponent.class));
         configuration.add(inputStreamConfiguration);
 
         // When
-        TestComponent component = (TestComponent) factory.createComponent(configuration, new HashMap<String, StateFactory>(), EMPTY_MAP, inputFeaturesIndexes,
-                new HashMap<String, FeaturesIndex>());
+        TestComponent component = (TestComponent) factory.createComponent(configuration, new HashMap<String, StateFactory>(), EMPTY_MAP);
 
         // Then
-        assertThat(component.in1Mapper).isEqualTo(new InputUserSelectionFeaturesMapper(expectedIndex, selectedFeatures));
+        assertThat(component.in1Mapper).isEqualTo(new ListedFeaturesMapper(selectedFeatures));
     }
 
     @SuppressWarnings("unchecked")
@@ -188,21 +178,16 @@ public class ComponentFactoryTest {
         // Given
         Map<String, String> mappings = new HashMap<>();
         mappings.put("inside", "outside");
-        OutputStreamDescription outputStreamDescription = new OutputStreamDescription("out1", asList(new FeatureDescription("outside", Object.class)));
-
-        FeaturesIndex expectedIndex = mock(FeaturesIndex.class);
-        HashMap<String, FeaturesIndex> outputFeaturesIndexes = new HashMap<String, FeaturesIndex>();
-        outputFeaturesIndexes.put("out1", expectedIndex);
+        OutputStreamDescription outputStreamDescription = new OutputStreamDescription("out1", "", NAMED, asList(new FeatureDescription("outside", Object.class)));
 
         ComponentConfiguration configuration = new ComponentConfiguration(randomAlphabetic(6), new ComponentDescription(TestComponent.class));
         configuration.add(new OutputStreamConfiguration(outputStreamDescription, mappings));
 
         // When
-        TestComponent component = (TestComponent) factory.createComponent(configuration, new HashMap<String, StateFactory>(), EMPTY_MAP, new HashMap<String, FeaturesIndex>(),
-                outputFeaturesIndexes);
+        TestComponent component = (TestComponent) factory.createComponent(configuration, new HashMap<String, StateFactory>(), EMPTY_MAP);
 
         // Then
-        assertThat(component.out1Mapper).isEqualTo(new OutputFixedFeaturesMapper(expectedIndex, mappings));
+        assertThat(component.out1Mapper).isEqualTo(new NamedFeaturesMapper(mappings));
     }
 
     @SuppressWarnings("unchecked")
@@ -210,21 +195,16 @@ public class ComponentFactoryTest {
     public void should_set_user_selection_output_stream_mapper() {
         // Given
         List<String> selectedFeatures = asList("path", "response time", "ip");
-        OutputStreamDescription outputStreamDescription = new OutputStreamDescription("out2");
-
-        FeaturesIndex expectedIndex = mock(FeaturesIndex.class);
-        HashMap<String, FeaturesIndex> outputFeaturesIndexes = new HashMap<String, FeaturesIndex>();
-        outputFeaturesIndexes.put("out2", expectedIndex);
+        OutputStreamDescription outputStreamDescription = new OutputStreamDescription("out2", "", LISTED, new ArrayList<FeatureDescription>());
 
         ComponentConfiguration configuration = new ComponentConfiguration(randomAlphabetic(6), new ComponentDescription(TestComponent.class));
         configuration.add(new OutputStreamConfiguration(outputStreamDescription, selectedFeatures));
 
         // When
-        TestComponent component = (TestComponent) factory.createComponent(configuration, new HashMap<String, StateFactory>(), EMPTY_MAP, new HashMap<String, FeaturesIndex>(),
-                outputFeaturesIndexes);
+        TestComponent component = (TestComponent) factory.createComponent(configuration, new HashMap<String, StateFactory>(), EMPTY_MAP);
 
         // Then
-        assertThat(component.out2Mapper).isEqualTo(new OutputUserSelectionFeaturesMapper(expectedIndex, selectedFeatures));
+        assertThat(component.out2Mapper).isEqualTo(new ListedFeaturesMapper(selectedFeatures));
     }
 
     @Test
@@ -237,8 +217,7 @@ public class ComponentFactoryTest {
         ComponentConfiguration configuration = new ComponentConfiguration(randomAlphabetic(6), new ComponentDescription(TestComponent.class));
 
         // When
-        Component component = factory.createComponent(configuration, topologyStateFactories, new HashMap<String, Stream>(), new HashMap<String, FeaturesIndex>(),
-                new HashMap<String, FeaturesIndex>());
+        Component component = factory.createComponent(configuration, topologyStateFactories, new HashMap<String, Stream>());
 
         // Then
         TestComponent testComponent = (TestComponent) component;
@@ -256,20 +235,20 @@ public class ComponentFactoryTest {
         @Property(name = "distributed")
         public Boolean isDistributed;
 
-        @InputStream(name = "in1", type = USER_SELECTION)
+        @InputStream(name = "in1")
         public Stream in1;
 
         @OutputStream(from = "in1", name = "out1")
         public Stream outputStream;
 
-        @Mapper(stream = "in1")
-        public InputUserSelectionFeaturesMapper in1Mapper;
+        @ListMapper(stream = "in1")
+        public ListedFeaturesMapper in1Mapper;
 
-        @Mapper(stream = "out1")
-        public OutputFixedFeaturesMapper out1Mapper;
+        @NameMapper(stream = "out1", expectedFeatures = {})
+        public NamedFeaturesMapper out1Mapper;
 
-        @Mapper(stream = "out2")
-        public OutputUserSelectionFeaturesMapper out2Mapper;
+        @ListMapper(stream = "out2")
+        public ListedFeaturesMapper out2Mapper;
 
         @State(name = "Word count")
         private StateFactory stateFactory;

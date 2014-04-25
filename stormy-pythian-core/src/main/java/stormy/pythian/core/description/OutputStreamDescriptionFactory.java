@@ -24,7 +24,10 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import storm.trident.Stream;
+import stormy.pythian.core.utils.ReflectionHelper;
+import stormy.pythian.model.annotation.ListMapper;
 import stormy.pythian.model.annotation.MappingType;
+import stormy.pythian.model.annotation.NameMapper;
 import stormy.pythian.model.annotation.OutputStream;
 
 @Component
@@ -44,28 +47,27 @@ public class OutputStreamDescriptionFactory {
             }
 
             OutputStream annotation = field.getAnnotation(OutputStream.class);
-            OutputStreamDescription description = createDescription(annotation);
+            OutputStreamDescription description = createOutputStreamDescription(componentClass, annotation);
             descriptions.add(description);
         }
 
         return descriptions;
     }
 
-    private OutputStreamDescription createDescription(OutputStream annotation) {
-        OutputStreamDescription description;
-        switch (annotation.type()) {
-            case FIXED_FEATURES:
-                List<FeatureDescription> newFeatures = featureDescriptorFactory.createDescriptions(annotation);
-                description = new OutputStreamDescription(annotation.name(), annotation.from(), newFeatures);
-                break;
-            case USER_SELECTION:
-                description = new OutputStreamDescription(annotation.name(), annotation.from());
-                break;
-            default:
-                throw new IllegalStateException("@OutputStream supports only type like : " + MappingType.values());
-        }
+    private OutputStreamDescription createOutputStreamDescription(Class<?> componentClass, OutputStream annotation) {
+        String streamName = annotation.name();
 
-        return description;
+        NameMapper nameMapper = ReflectionHelper.getNameMapper(componentClass, streamName);
+        ListMapper listMapper = ReflectionHelper.getListMapper(componentClass, streamName);
+
+        if (nameMapper != null) {
+            List<FeatureDescription> expectedFeatures = featureDescriptorFactory.createDescriptions(nameMapper);
+            return new OutputStreamDescription(streamName, annotation.from(), MappingType.NAMED, expectedFeatures);
+        } else if (listMapper != null) {
+            return new OutputStreamDescription(streamName, annotation.from(), MappingType.LISTED, new ArrayList<FeatureDescription>());
+        } else {
+            return new OutputStreamDescription(streamName, annotation.from(), MappingType.NONE, new ArrayList<FeatureDescription>());
+        }
     }
 
 }

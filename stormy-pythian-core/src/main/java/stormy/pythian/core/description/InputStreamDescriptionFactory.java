@@ -17,6 +17,7 @@ package stormy.pythian.core.description;
 
 import static org.reflections.ReflectionUtils.getAllFields;
 import static org.reflections.ReflectionUtils.withAnnotation;
+import static stormy.pythian.model.annotation.MappingType.LISTED;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +25,11 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import storm.trident.Stream;
+import stormy.pythian.core.utils.ReflectionHelper;
 import stormy.pythian.model.annotation.InputStream;
+import stormy.pythian.model.annotation.ListMapper;
+import stormy.pythian.model.annotation.MappingType;
+import stormy.pythian.model.annotation.NameMapper;
 
 @Component
 public class InputStreamDescriptionFactory {
@@ -42,26 +47,27 @@ public class InputStreamDescriptionFactory {
                 throw new IllegalArgumentException(InputStream.class + " can only be applied to " + Stream.class);
             }
 
-            InputStreamDescription inputStreamDescription = createInputStreamDescription(inputStreamField);
+            InputStreamDescription inputStreamDescription = createInputStreamDescription(componentClass, inputStreamField);
             inputStreamDescriptions.add(inputStreamDescription);
         }
 
         return inputStreamDescriptions;
     }
 
-    private InputStreamDescription createInputStreamDescription(Field inputStreamField) {
+    private InputStreamDescription createInputStreamDescription(Class<?> componentClass, Field inputStreamField) {
         InputStream annotation = inputStreamField.getAnnotation(InputStream.class);
+        String streamName = annotation.name();
 
-        InputStreamDescription inputStreamDescription = null;
-        switch (annotation.type()) {
-            case USER_SELECTION:
-                inputStreamDescription = new InputStreamDescription(annotation.name(), annotation.type(), new ArrayList<FeatureDescription>());
-                break;
-            case FIXED_FEATURES:
-                List<FeatureDescription> expectedFeatures = featureDescriptorFactory.createDescriptions(annotation);
-                inputStreamDescription = new InputStreamDescription(annotation.name(), annotation.type(), expectedFeatures);
+        NameMapper nameMapper = ReflectionHelper.getNameMapper(componentClass, streamName);
+        ListMapper listMapper = ReflectionHelper.getListMapper(componentClass, streamName);
+
+        if (nameMapper != null) {
+            List<FeatureDescription> expectedFeatures = featureDescriptorFactory.createDescriptions(nameMapper);
+            return new InputStreamDescription(streamName, MappingType.NAMED, expectedFeatures);
+        } else if (listMapper != null) {
+            return new InputStreamDescription(streamName, LISTED, new ArrayList<FeatureDescription>());
+        } else {
+            return new InputStreamDescription(streamName, MappingType.NONE);
         }
-        return inputStreamDescription;
     }
-
 }

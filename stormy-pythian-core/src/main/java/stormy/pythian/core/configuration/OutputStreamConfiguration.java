@@ -89,11 +89,11 @@ public class OutputStreamConfiguration {
         return mappings;
     }
 
-    public Collection<String> retrieveNewFeatures() {
+    public List<String> retrieveNewFeatures() {
         switch (description.getType()) {
-            case FIXED_FEATURES:
-                return mappings.values();
-            case USER_SELECTION:
+            case NAMED:
+                return new ArrayList<>(mappings.values());
+            case LISTED:
                 return selectedFeatures;
             default:
                 throw new IllegalStateException("Mapping type " + description.getType() + " isn't supported!");

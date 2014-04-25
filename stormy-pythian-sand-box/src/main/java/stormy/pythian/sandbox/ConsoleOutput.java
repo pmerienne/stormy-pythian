@@ -16,54 +16,51 @@
 package stormy.pythian.sandbox;
 
 import static stormy.pythian.model.instance.Instance.INSTANCE_FIELD;
-
-import java.util.Arrays;
-
+import java.util.List;
 import storm.trident.Stream;
 import storm.trident.operation.BaseFilter;
 import storm.trident.tuple.TridentTuple;
 import stormy.pythian.model.annotation.Documentation;
 import stormy.pythian.model.annotation.InputStream;
-import stormy.pythian.model.annotation.Mapper;
-import stormy.pythian.model.annotation.MappingType;
+import stormy.pythian.model.annotation.ListMapper;
 import stormy.pythian.model.component.Component;
-import stormy.pythian.model.instance.InputUserSelectionFeaturesMapper;
 import stormy.pythian.model.instance.Instance;
+import stormy.pythian.model.instance.ListedFeaturesMapper;
 import backtype.storm.tuple.Fields;
 
 @Documentation(name = "Console output")
 public class ConsoleOutput implements Component {
 
-	private static final long serialVersionUID = -3662417254204156228L;
+    private static final long serialVersionUID = -3662417254204156228L;
 
-	@InputStream(name = "in", type = MappingType.USER_SELECTION)
-	private Stream in;
+    @InputStream(name = "in")
+    private Stream in;
 
-	@Mapper(stream = "in")
-	private InputUserSelectionFeaturesMapper mapper;
+    @ListMapper(stream = "in")
+    private ListedFeaturesMapper mapper;
 
-	@Override
-	public void init() {
-		in.each(new Fields(INSTANCE_FIELD), new PrintToConsole(mapper));
-	}
+    @Override
+    public void init() {
+        in.each(new Fields(INSTANCE_FIELD), new PrintToConsole(mapper));
+    }
 
-	@SuppressWarnings("serial")
-	private static class PrintToConsole extends BaseFilter {
+    @SuppressWarnings("serial")
+    private static class PrintToConsole extends BaseFilter {
 
-		private final InputUserSelectionFeaturesMapper mapper;
+        private final ListedFeaturesMapper mappings;
 
-		public PrintToConsole(InputUserSelectionFeaturesMapper mapper) {
-			this.mapper = mapper;
-		}
+        public PrintToConsole(ListedFeaturesMapper mapper) {
+            this.mappings = mapper;
+        }
 
-		@Override
-		public boolean isKeep(TridentTuple tuple) {
-			Instance instance = Instance.from(tuple);
+        @Override
+        public boolean isKeep(TridentTuple tuple) {
+            Instance instance = Instance.get(tuple, mappings);
 
-			Object[] selectedFeatures = instance.getSelectedFeatures(mapper);
-			System.out.println("Features : " + Arrays.toString(selectedFeatures));
+            List<Object> selectedFeatures = instance.getFeatures();
+            System.out.println("Features : " + selectedFeatures);
 
-			return true;
-		}
-	}
+            return true;
+        }
+    }
 }

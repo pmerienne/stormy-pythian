@@ -20,74 +20,61 @@ import static org.apache.commons.lang.RandomStringUtils.randomAlphabetic;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
 import java.util.HashMap;
 import java.util.Map;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-
 import storm.trident.Stream;
 import storm.trident.state.StateFactory;
 import stormy.pythian.core.configuration.ComponentConfiguration;
 import stormy.pythian.core.configuration.PythianToplogyConfiguration;
 import stormy.pythian.model.component.Component;
-import stormy.pythian.model.instance.FeaturesIndex;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PythianTopologyTest {
 
-	@InjectMocks
-	PythianTopology topology;
+    @InjectMocks
+    PythianTopology topology;
 
-	@Mock
-	ComponentFactory componentFactory;
+    @Mock
+    ComponentFactory componentFactory;
 
-	@Mock
-	AvailableComponentPool componentPool;
+    @Mock
+    AvailableComponentPool componentPool;
 
-	@Mock
-	private FeaturesIndexFactory featuresIndexFactory;
+    @Mock
+    private PythianStateFactory pythianStateFactory;
 
-	@Mock
-	private PythianStateFactory pythianStateFactory;
+    @Test
+    public void should_create_components() {
+        // Given
+        String componentId = randomAlphabetic(6);
 
-	@SuppressWarnings("unchecked")
-	@Test
-	public void should_create_components() {
-		// Given
-		String componentId = randomAlphabetic(6);
+        PythianToplogyConfiguration topologyConfiguration = mock(PythianToplogyConfiguration.class);
 
-		PythianToplogyConfiguration topologyConfiguration = mock(PythianToplogyConfiguration.class);
+        ComponentConfiguration componentConfiguration = mock(ComponentConfiguration.class);
+        when(componentConfiguration.getId()).thenReturn(componentId);
+        when(topologyConfiguration.getComponents()).thenReturn(asList(componentConfiguration));
 
-		ComponentConfiguration componentConfiguration = mock(ComponentConfiguration.class);
-		when(componentConfiguration.getId()).thenReturn(componentId);
-		when(topologyConfiguration.getComponents()).thenReturn(asList(componentConfiguration));
+        Map<String, StateFactory> expectedStateFactories = new HashMap<>();
 
-		Map<String, StateFactory> expectedStateFactories = new HashMap<>();
+        Component component = mock(Component.class);
+        Map<String, Stream> inputStreams = new HashMap<>();
 
-		Component component = mock(Component.class);
-		Map<String, Stream> inputStreams = new HashMap<>();
+        when(componentPool.isEmpty()).thenReturn(false, true);
+        when(componentPool.getAvailableComponent()).thenReturn(componentConfiguration);
+        when(componentPool.getAvailableInputStreams(componentConfiguration)).thenReturn(inputStreams);
+        when(pythianStateFactory.createStateFactories(componentConfiguration)).thenReturn(expectedStateFactories);
+        when(componentFactory.createComponent(componentConfiguration, expectedStateFactories, inputStreams)).thenReturn(component);
 
-		Map<String, FeaturesIndex> inputFeaturesIndexes = mock(Map.class);
-		Map<String, FeaturesIndex> outputFeaturesIndexes = mock(Map.class);
+        // Then
+        topology.build(topologyConfiguration);
 
-		when(componentPool.isEmpty()).thenReturn(false, true);
-		when(componentPool.getAvailableComponent()).thenReturn(componentConfiguration);
-		when(componentPool.getAvailableInputStreams(componentConfiguration)).thenReturn(inputStreams);
-		when(featuresIndexFactory.createInputFeaturesIndexes(componentConfiguration)).thenReturn(inputFeaturesIndexes);
-		when(featuresIndexFactory.createOutputFeaturesIndexes(componentConfiguration)).thenReturn(outputFeaturesIndexes);
-		when(pythianStateFactory.createStateFactories(componentConfiguration)).thenReturn(expectedStateFactories);
-		when(componentFactory.createComponent(componentConfiguration, expectedStateFactories, inputStreams, inputFeaturesIndexes, outputFeaturesIndexes)).thenReturn(component);
-
-		// Then
-		topology.build(topologyConfiguration);
-
-		// Then
-		verify(componentPool).registerBuildedComponent(component, componentConfiguration);
-	}
+        // Then
+        verify(componentPool).registerBuildedComponent(component, componentConfiguration);
+    }
 
 }

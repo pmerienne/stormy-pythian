@@ -12,11 +12,11 @@ Scenario: Stream text file
 	And a component "stormy.pythian.component.source.file.FileSource" configured with:
 		| name		|	Type	|	value			|
 		| File		|	String	|	/tmp/lorem.txt	|
-	And the component has the output "lines" named mappings:
+	And the component has the output "output" mappings:
 		|	file line		|	line			|
 	When the component is deployed
     And I wait 2 seconds
-    Then the component's output "lines" should have emit only:
+    Then the component's output "output" should have emit only:
     	|	line:STRING															|
     	| 	Lorem ipsum dolor sit amet, consectetur adipisicing elit			|
     	| 	sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.	|
@@ -29,7 +29,7 @@ Scenario: File source supports new lines
 	And a component "stormy.pythian.component.source.file.FileSource" configured with:
 		| name		|	Type	|	value			|
 		| File		|	String	|	/tmp/lorem.txt	|
-	And the component has the output "lines" named mappings:
+	And the component has the output "output" mappings:
 		|	file line		|	line			|
 	When the component is deployed
     And I wait 2 seconds
@@ -38,7 +38,7 @@ Scenario: File source supports new lines
 		sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
 		"""
     And I wait 1 second
-    Then the component's output "lines" should have emit only:
+    Then the component's output "output" should have emit only:
     	|	line:STRING															|
     	| 	Lorem ipsum dolor sit amet, consectetur adipisicing elit			|
     	| 	sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.	|

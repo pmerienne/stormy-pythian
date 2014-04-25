@@ -15,35 +15,33 @@
  */
 package stormy.pythian.component.preprocessor;
 
+import static java.lang.Math.sqrt;
+import java.util.List;
 import stormy.pythian.model.annotation.Documentation;
-import stormy.pythian.model.instance.FeatureFunction;
-import stormy.pythian.model.instance.FeatureProcedure;
 import stormy.pythian.model.instance.Instance;
-
-import com.google.common.util.concurrent.AtomicDouble;
+import stormy.pythian.model.instance.Instance.FeatureProcessor;
 
 @SuppressWarnings("serial")
 @Documentation(name = "Normalizer")
 public class Normalizer extends PreProcessor {
 
-	@Override
-	public Instance process(Instance original) {
-		final AtomicDouble atomicMagnitude = new AtomicDouble(0.0);
-		original.process(mapper, new FeatureProcedure<Double>() {
-			@Override
-			public void process(Double feature) {
-				atomicMagnitude.getAndAdd(feature * feature);
-			}
-		});
-		final double magnitude = Math.sqrt(atomicMagnitude.get());
+    @Override
+    public Instance process(Instance instance) {
+        List<Double> features = instance.getFeatures();
 
-		Instance newInstance = original.transform(mapper, new FeatureFunction<Double>() {
-			@Override
-			public Double transform(Double feature) {
-				return feature / magnitude;
-			}
-		});
+        double magnitude = 0;
+        for (Double feature : features) {
+            magnitude += feature * feature;
+        }
+        
+        final double realMagnitude = sqrt(magnitude);
+        instance.process(new FeatureProcessor<Double>() {
+            @Override
+            public Double process(Double feature) {
+                return feature / realMagnitude;
+            }
+        });
 
-		return newInstance;
-	}
+        return instance;
+    }
 }

@@ -21,7 +21,6 @@ import static org.apache.commons.lang.RandomStringUtils.randomAlphabetic;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.fest.assertions.MapAssert.entry;
 import static org.mockito.Mockito.mock;
-import static stormy.pythian.model.annotation.MappingType.USER_SELECTION;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -35,170 +34,169 @@ import stormy.pythian.model.annotation.InputStream;
 import stormy.pythian.model.annotation.OutputStream;
 import stormy.pythian.model.component.Component;
 
-
 @SuppressWarnings("serial")
 public class AvailableComponentPoolTest {
 
-	@Test
-	public void should_retrieve_available_component() {
-		// Given
-		ComponentDescription descriptor = new ComponentDescription(TestComponent.class);
-		ComponentConfiguration configuration = new ComponentConfiguration(randomUUID().toString(), descriptor);
+    @Test
+    public void should_retrieve_available_component() {
+        // Given
+        ComponentDescription descriptor = new ComponentDescription(TestComponent.class);
+        ComponentConfiguration configuration = new ComponentConfiguration(randomUUID().toString(), descriptor);
 
-		List<ComponentConfiguration> configurations = Arrays.asList(configuration);
+        List<ComponentConfiguration> configurations = Arrays.asList(configuration);
 
-		AvailableComponentPool pool = new AvailableComponentPool(configurations, new ArrayList<ConnectionConfiguration>());
+        AvailableComponentPool pool = new AvailableComponentPool(configurations, new ArrayList<ConnectionConfiguration>());
 
-		// When
-		ComponentConfiguration actualComponent = pool.getAvailableComponent();
+        // When
+        ComponentConfiguration actualComponent = pool.getAvailableComponent();
 
-		// Then
-		assertThat(actualComponent).isEqualTo(configuration);
-	}
+        // Then
+        assertThat(actualComponent).isEqualTo(configuration);
+    }
 
-	@Test
-	public void should_know_when_empty() {
-		// Given
-		ComponentDescription descriptor = new ComponentDescription(TestComponent.class);
-                ComponentConfiguration configuration = new ComponentConfiguration(randomUUID().toString(), descriptor);
+    @Test
+    public void should_know_when_empty() {
+        // Given
+        ComponentDescription descriptor = new ComponentDescription(TestComponent.class);
+        ComponentConfiguration configuration = new ComponentConfiguration(randomUUID().toString(), descriptor);
 
-		List<ComponentConfiguration> configurations = Arrays.asList(configuration);
+        List<ComponentConfiguration> configurations = Arrays.asList(configuration);
 
-		AvailableComponentPool pool = new AvailableComponentPool(configurations, new ArrayList<ConnectionConfiguration>());
+        AvailableComponentPool pool = new AvailableComponentPool(configurations, new ArrayList<ConnectionConfiguration>());
 
-		// When
-		ComponentConfiguration actualConfiguration = pool.getAvailableComponent();
+        // When
+        ComponentConfiguration actualConfiguration = pool.getAvailableComponent();
 
-		assertThat(pool.isEmpty()).isFalse();
-		Component component = mock(Component.class);
-		pool.registerBuildedComponent(component, actualConfiguration);
+        assertThat(pool.isEmpty()).isFalse();
+        Component component = mock(Component.class);
+        pool.registerBuildedComponent(component, actualConfiguration);
 
-		// Then
-		assertThat(pool.isEmpty()).isTrue();
-	}
+        // Then
+        assertThat(pool.isEmpty()).isTrue();
+    }
 
-	@Test
-	public void should_not_retrieve_not_available_component() {
-		// Given
-		ComponentDescription descriptor = new ComponentDescription(TestComponentWithInputStreams.class);
-                ComponentConfiguration configuration = new ComponentConfiguration(randomUUID().toString(), descriptor);
+    @Test
+    public void should_not_retrieve_not_available_component() {
+        // Given
+        ComponentDescription descriptor = new ComponentDescription(TestComponentWithInputStreams.class);
+        ComponentConfiguration configuration = new ComponentConfiguration(randomUUID().toString(), descriptor);
 
-		List<ComponentConfiguration> configurations = Arrays.asList(configuration);
+        List<ComponentConfiguration> configurations = Arrays.asList(configuration);
 
-		AvailableComponentPool pool = new AvailableComponentPool(configurations, new ArrayList<ConnectionConfiguration>());
+        AvailableComponentPool pool = new AvailableComponentPool(configurations, new ArrayList<ConnectionConfiguration>());
 
-		// When
-		ComponentConfiguration actualComponent = pool.getAvailableComponent();
+        // When
+        ComponentConfiguration actualComponent = pool.getAvailableComponent();
 
-		// Then
-		assertThat(actualComponent).isNull();
-	}
+        // Then
+        assertThat(actualComponent).isNull();
+    }
 
-	@Test
-	public void should_register_builded_component() {
-		// Given
-		ComponentConfiguration componentWithOutputStream = createConfiguration(TestComponentWithOuputStream.class);
-		ComponentConfiguration componentWithInputStreams = createConfiguration(TestComponentWithInputStreams.class);
+    @Test
+    public void should_register_builded_component() {
+        // Given
+        ComponentConfiguration componentWithOutputStream = createConfiguration(TestComponentWithOuputStream.class);
+        ComponentConfiguration componentWithInputStreams = createConfiguration(TestComponentWithInputStreams.class);
 
-		List<ComponentConfiguration> configurations = Arrays.asList(componentWithInputStreams, componentWithOutputStream);
+        List<ComponentConfiguration> configurations = Arrays.asList(componentWithInputStreams, componentWithOutputStream);
 
-		List<ConnectionConfiguration> connections = new ArrayList<ConnectionConfiguration>();
-		connections.add(new ConnectionConfiguration(componentWithOutputStream.getId(), "out", componentWithInputStreams.getId(), "in1"));
-		connections.add(new ConnectionConfiguration(componentWithOutputStream.getId(), "out", componentWithInputStreams.getId(), "in2"));
+        List<ConnectionConfiguration> connections = new ArrayList<ConnectionConfiguration>();
+        connections.add(new ConnectionConfiguration(componentWithOutputStream.getId(), "out", componentWithInputStreams.getId(), "in1"));
+        connections.add(new ConnectionConfiguration(componentWithOutputStream.getId(), "out", componentWithInputStreams.getId(), "in2"));
 
-		AvailableComponentPool pool = new AvailableComponentPool(configurations, connections);
+        AvailableComponentPool pool = new AvailableComponentPool(configurations, connections);
 
-		TestComponentWithOuputStream component1 = new TestComponentWithOuputStream();
-		component1.out = mock(Stream.class);
+        TestComponentWithOuputStream component1 = new TestComponentWithOuputStream();
+        component1.out = mock(Stream.class);
 
-		TestComponentWithInputStreams component2 = new TestComponentWithInputStreams();
-		component2.in1 = mock(Stream.class);
-		component2.in2 = mock(Stream.class);
+        TestComponentWithInputStreams component2 = new TestComponentWithInputStreams();
+        component2.in1 = mock(Stream.class);
+        component2.in2 = mock(Stream.class);
 
-		// When
-		ComponentConfiguration actualConfiguration1 = pool.getAvailableComponent();
-		pool.registerBuildedComponent(component1, actualConfiguration1);
+        // When
+        ComponentConfiguration actualConfiguration1 = pool.getAvailableComponent();
+        pool.registerBuildedComponent(component1, actualConfiguration1);
 
-		ComponentConfiguration actualConfiguration2 = pool.getAvailableComponent();
-		pool.registerBuildedComponent(component2, actualConfiguration2);
+        ComponentConfiguration actualConfiguration2 = pool.getAvailableComponent();
+        pool.registerBuildedComponent(component2, actualConfiguration2);
 
-		// Then
-		assertThat(actualConfiguration1).isEqualTo(componentWithOutputStream);
-		assertThat(actualConfiguration2).isEqualTo(componentWithInputStreams);
-		assertThat(pool.isEmpty()).isTrue();
-	}
+        // Then
+        assertThat(actualConfiguration1).isEqualTo(componentWithOutputStream);
+        assertThat(actualConfiguration2).isEqualTo(componentWithInputStreams);
+        assertThat(pool.isEmpty()).isTrue();
+    }
 
-	@Test
-	public void should_find_available_input_streams() {
-		// Given
-		ComponentConfiguration streamSourceConfiguration = createConfiguration(TestComponentWithOnlyOutput.class);
-		TestComponentWithOnlyOutput streamSource = new TestComponentWithOnlyOutput();
-		streamSource.out = mock(Stream.class);
+    @Test
+    public void should_find_available_input_streams() {
+        // Given
+        ComponentConfiguration streamSourceConfiguration = createConfiguration(TestComponentWithOnlyOutput.class);
+        TestComponentWithOnlyOutput streamSource = new TestComponentWithOnlyOutput();
+        streamSource.out = mock(Stream.class);
 
-		ComponentConfiguration componentConfiguration = createConfiguration(TestComponentWithInputStreams.class);
-		List<ComponentConfiguration> configurations = asList(componentConfiguration);
+        ComponentConfiguration componentConfiguration = createConfiguration(TestComponentWithInputStreams.class);
+        List<ComponentConfiguration> configurations = asList(componentConfiguration);
 
-		List<ConnectionConfiguration> connections = new ArrayList<ConnectionConfiguration>();
-		connections.add(new ConnectionConfiguration(streamSourceConfiguration.getId(), "out", componentConfiguration.getId(), "in1"));
-		connections.add(new ConnectionConfiguration(streamSourceConfiguration.getId(), "out", componentConfiguration.getId(), "in2"));
+        List<ConnectionConfiguration> connections = new ArrayList<ConnectionConfiguration>();
+        connections.add(new ConnectionConfiguration(streamSourceConfiguration.getId(), "out", componentConfiguration.getId(), "in1"));
+        connections.add(new ConnectionConfiguration(streamSourceConfiguration.getId(), "out", componentConfiguration.getId(), "in2"));
 
-		AvailableComponentPool pool = new AvailableComponentPool(configurations, connections);
-		pool.registerBuildedComponent(streamSource, streamSourceConfiguration);
+        AvailableComponentPool pool = new AvailableComponentPool(configurations, connections);
+        pool.registerBuildedComponent(streamSource, streamSourceConfiguration);
 
-		// When
-		Map<String, Stream> actualInputStreams = pool.getAvailableInputStreams(componentConfiguration);
+        // When
+        Map<String, Stream> actualInputStreams = pool.getAvailableInputStreams(componentConfiguration);
 
-		// Then
-		assertThat(actualInputStreams).includes(entry("in1", streamSource.out), entry("in2", streamSource.out));
-	}
+        // Then
+        assertThat(actualInputStreams).includes(entry("in1", streamSource.out), entry("in2", streamSource.out));
+    }
 
-	private ComponentConfiguration createConfiguration(Class<? extends Component> clazz) {
-		ComponentDescription descriptor = new ComponentDescription(clazz);
-		ComponentConfiguration component = new ComponentConfiguration(randomAlphabetic(6), descriptor);
+    private ComponentConfiguration createConfiguration(Class<? extends Component> clazz) {
+        ComponentDescription descriptor = new ComponentDescription(clazz);
+        ComponentConfiguration component = new ComponentConfiguration(randomAlphabetic(6), descriptor);
 
-		return component;
-	}
+        return component;
+    }
 
-	public static class TestComponent implements Component {
-		@Override
-		public void init() {
+    public static class TestComponent implements Component {
+        @Override
+        public void init() {
 
-		}
-	}
+        }
+    }
 
-	public static class TestComponentWithInputStreams implements Component {
+    public static class TestComponentWithInputStreams implements Component {
 
-		@InputStream(name = "in1", type = USER_SELECTION)
-		public Stream in1;
+        @InputStream(name = "in1")
+        public Stream in1;
 
-		@InputStream(name = "in2", type = USER_SELECTION)
-		public Stream in2;
+        @InputStream(name = "in2")
+        public Stream in2;
 
-		@Override
-		public void init() {
+        @Override
+        public void init() {
 
-		}
-	}
+        }
+    }
 
-	public static class TestComponentWithOuputStream implements Component {
+    public static class TestComponentWithOuputStream implements Component {
 
-		@OutputStream(from = "", name = "out")
-		public Stream out;
+        @OutputStream(from = "", name = "out")
+        public Stream out;
 
-		@Override
-		public void init() {
+        @Override
+        public void init() {
 
-		}
-	}
+        }
+    }
 
-	public static class TestComponentWithOnlyOutput implements Component {
+    public static class TestComponentWithOnlyOutput implements Component {
 
-		@OutputStream(from = "", name = "out")
-		public Stream out;
+        @OutputStream(from = "", name = "out")
+        public Stream out;
 
-		@Override
-		public void init() {
+        @Override
+        public void init() {
 
-		}
-	}
+        }
+    }
 }

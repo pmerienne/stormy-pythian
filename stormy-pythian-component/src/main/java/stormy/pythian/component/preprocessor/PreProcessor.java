@@ -15,54 +15,53 @@
  */
 package stormy.pythian.component.preprocessor;
 
-import static stormy.pythian.model.annotation.MappingType.USER_SELECTION;
 import static stormy.pythian.model.instance.Instance.INSTANCE_FIELD;
 import storm.trident.Stream;
 import storm.trident.operation.BaseFunction;
 import storm.trident.operation.TridentCollector;
 import storm.trident.tuple.TridentTuple;
 import stormy.pythian.model.annotation.InputStream;
-import stormy.pythian.model.annotation.Mapper;
+import stormy.pythian.model.annotation.ListMapper;
 import stormy.pythian.model.annotation.OutputStream;
 import stormy.pythian.model.component.Component;
-import stormy.pythian.model.instance.InputUserSelectionFeaturesMapper;
 import stormy.pythian.model.instance.Instance;
+import stormy.pythian.model.instance.ListedFeaturesMapper;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Values;
 
 @SuppressWarnings("serial")
 public abstract class PreProcessor implements Component {
 
-	@InputStream(name = "in", type = USER_SELECTION)
-	private transient Stream in;
+    @InputStream(name = "in")
+    private transient Stream in;
 
-	@OutputStream(name = "out")
-	private transient Stream out;
+    @OutputStream(name = "out")
+    private transient Stream out;
 
-	@Mapper(stream = "in")
-	protected InputUserSelectionFeaturesMapper mapper;
+    @ListMapper(stream = "in")
+    protected ListedFeaturesMapper mapper;
 
-	@Override
-	public void init() {
-		out = in.each(new Fields(INSTANCE_FIELD), new PreProcessingFunction(this), new Fields(Instance.NEW_INSTANCE_FIELD));
-	}
+    @Override
+    public void init() {
+        out = in.each(new Fields(INSTANCE_FIELD), new PreProcessingFunction(this), new Fields(Instance.NEW_INSTANCE_FIELD));
+    }
 
-	protected abstract Instance process(Instance original);
+    protected abstract Instance process(Instance original);
 
-	private static class PreProcessingFunction extends BaseFunction {
+    private static class PreProcessingFunction extends BaseFunction {
 
-		private final PreProcessor processor;
+        private final PreProcessor processor;
 
-		public PreProcessingFunction(PreProcessor processor) {
-			this.processor = processor;
-		}
+        public PreProcessingFunction(PreProcessor processor) {
+            this.processor = processor;
+        }
 
-		@Override
-		public void execute(TridentTuple tuple, TridentCollector collector) {
-			Instance original = Instance.from(tuple);
-			Instance newInstance = processor.process(original);
-			collector.emit(new Values(newInstance));
-		}
+        @Override
+        public void execute(TridentTuple tuple, TridentCollector collector) {
+            Instance original = Instance.get(tuple, processor.mapper);
+            Instance newInstance = processor.process(original);
+            collector.emit(new Values(newInstance));
+        }
 
-	}
+    }
 }

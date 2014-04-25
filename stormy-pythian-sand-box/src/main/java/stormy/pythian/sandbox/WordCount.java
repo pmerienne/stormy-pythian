@@ -16,7 +16,6 @@
 package stormy.pythian.sandbox;
 
 import static stormy.pythian.model.annotation.ComponentType.ANALYTICS;
-import static stormy.pythian.model.annotation.MappingType.FIXED_FEATURES;
 import static stormy.pythian.model.instance.Instance.INSTANCE_FIELD;
 import storm.trident.Stream;
 import storm.trident.TridentState;
@@ -29,91 +28,88 @@ import storm.trident.tuple.TridentTuple;
 import stormy.pythian.model.annotation.Documentation;
 import stormy.pythian.model.annotation.ExpectedFeature;
 import stormy.pythian.model.annotation.InputStream;
-import stormy.pythian.model.annotation.Mapper;
+import stormy.pythian.model.annotation.NameMapper;
 import stormy.pythian.model.annotation.OutputStream;
 import stormy.pythian.model.annotation.State;
 import stormy.pythian.model.component.Component;
-import stormy.pythian.model.instance.InputFixedFeaturesMapper;
 import stormy.pythian.model.instance.Instance;
-import stormy.pythian.model.instance.OutputFixedFeaturesMapper;
+import stormy.pythian.model.instance.NamedFeaturesMapper;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Values;
 
 @Documentation(name = "Word count", type = ANALYTICS)
 public class WordCount implements Component {
 
-	private static final long serialVersionUID = 1822765078810762926L;
+    private static final long serialVersionUID = 1822765078810762926L;
 
-	public static final String WORD_FEATURE = "word";
-	public static final String COUNT_FEATURE = "count";
+    public static final String WORD_FEATURE = "word";
+    public static final String COUNT_FEATURE = "count";
 
-	@InputStream(name = "in", type = FIXED_FEATURES, expectedFeatures = { @ExpectedFeature(name = WORD_FEATURE, type = String.class) })
-	private Stream in;
+    @InputStream(name = "in")
+    private Stream in;
 
-	@OutputStream(name = "out", from = "in", newFeatures = { @ExpectedFeature(name = COUNT_FEATURE, type = Integer.class) })
-	private Stream out;
+    @OutputStream(name = "out", from = "in")
+    private Stream out;
 
-	@Mapper(stream = "in")
-	private InputFixedFeaturesMapper inputMapper;
+    @NameMapper(stream = "in", expectedFeatures = { @ExpectedFeature(name = WORD_FEATURE, type = String.class) })
+    private NamedFeaturesMapper inputMapper;
 
-	@Mapper(stream = "out")
-	private OutputFixedFeaturesMapper outputMapper;
-	
-	@State(name = "count state")
-	private StateFactory stateFactory;
+    @NameMapper(stream = "out", expectedFeatures = { @ExpectedFeature(name = COUNT_FEATURE, type = Integer.class) })
+    private NamedFeaturesMapper outputMapper;
 
-	@Override
-	public void init() {
-		TridentState wordCounts = in//
-				.each(new Fields(INSTANCE_FIELD), new ExtractFeature(WORD_FEATURE, inputMapper), new Fields(WORD_FEATURE)) //
-				.groupBy(new Fields(WORD_FEATURE)) //
-				.persistentAggregate(stateFactory, new Fields(WORD_FEATURE), new Count(), new Fields(COUNT_FEATURE)); //
+    @State(name = "count state")
+    private StateFactory stateFactory;
 
-		out = in //
-		.each(new Fields(INSTANCE_FIELD), new ExtractFeature(WORD_FEATURE, inputMapper), new Fields(WORD_FEATURE)) //
-				.stateQuery(wordCounts, new Fields(WORD_FEATURE), new MapGet(), new Fields(COUNT_FEATURE)) //
-				.each(new Fields(INSTANCE_FIELD, COUNT_FEATURE), new AddCountFeature(outputMapper), new Fields(Instance.NEW_INSTANCE_FIELD));
+    @Override
+    public void init() {
+        TridentState wordCounts = in//
+                .each(new Fields(INSTANCE_FIELD), new ExtractFeature(WORD_FEATURE, inputMapper), new Fields(WORD_FEATURE)) //
+                .groupBy(new Fields(WORD_FEATURE)) //
+                .persistentAggregate(stateFactory, new Fields(WORD_FEATURE), new Count(), new Fields(COUNT_FEATURE)); //
 
-	}
+        out = in //
+        .each(new Fields(INSTANCE_FIELD), new ExtractFeature(WORD_FEATURE, inputMapper), new Fields(WORD_FEATURE)) //
+                .stateQuery(wordCounts, new Fields(WORD_FEATURE), new MapGet(), new Fields(COUNT_FEATURE)) //
+                .each(new Fields(INSTANCE_FIELD, COUNT_FEATURE), new AddCountFeature(outputMapper), new Fields(Instance.NEW_INSTANCE_FIELD));
 
-	@SuppressWarnings("serial")
-	private static class ExtractFeature extends BaseFunction {
+    }
 
-		private final String featureName;
-		private final InputFixedFeaturesMapper inputMapper;
+    @SuppressWarnings("serial")
+    private static class ExtractFeature extends BaseFunction {
 
-		public ExtractFeature(String featureName, InputFixedFeaturesMapper mapper) {
-			this.featureName = featureName;
-			this.inputMapper = mapper;
-		}
+        private final String featureName;
+        private final NamedFeaturesMapper inputMapper;
 
-		@Override
-		public void execute(TridentTuple tuple, TridentCollector collector) {
-			Instance instance = Instance.from(tuple);
-			Object feature = instance.getInputFeature(inputMapper, featureName);
-			collector.emit(new Values(feature));
-		}
+        public ExtractFeature(String featureName, NamedFeaturesMapper mapper) {
+            this.featureName = featureName;
+            this.inputMapper = mapper;
+        }
 
-	}
+        @Override
+        public void execute(TridentTuple tuple, TridentCollector collector) {
+            Instance instance = Instance.get(tuple, inputMapper);
+            Object feature = instance.getFeature(featureName);
+            collector.emit(new Values(feature));
+        }
 
-	@SuppressWarnings("serial")
-	private static class AddCountFeature extends BaseFunction {
+    }
 
-		private final OutputFixedFeaturesMapper outMapper;
+    @SuppressWarnings("serial")
+    private static class AddCountFeature extends BaseFunction {
 
-		public AddCountFeature(OutputFixedFeaturesMapper outMapper) {
-			this.outMapper = outMapper;
-		}
+        private final NamedFeaturesMapper outMappings;
 
-		@Override
-		public void execute(TridentTuple tuple, TridentCollector collector) {
-			Instance original = Instance.from(tuple);
+        public AddCountFeature(NamedFeaturesMapper outMapper) {
+            this.outMappings = outMapper;
+        }
 
-			Long count = tuple.getLongByField(COUNT_FEATURE);
-			Instance updated = original.withFeature(outMapper, COUNT_FEATURE, count);
-
-			collector.emit(new Values(updated));
-		}
-	}
+        @Override
+        public void execute(TridentTuple tuple, TridentCollector collector) {
+            Long count = tuple.getLongByField(COUNT_FEATURE);
+            Instance instance = Instance.get(tuple, (NamedFeaturesMapper) null, outMappings);
+            instance.setFeature(COUNT_FEATURE, count);
+            collector.emit(new Values(instance));
+        }
+    }
 
 }

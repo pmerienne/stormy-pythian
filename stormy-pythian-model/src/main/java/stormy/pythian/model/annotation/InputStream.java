@@ -26,8 +26,4 @@ public @interface InputStream {
 
 	String name();
 
-	MappingType type();
-
-	ExpectedFeature[] expectedFeatures() default {};
-
 }

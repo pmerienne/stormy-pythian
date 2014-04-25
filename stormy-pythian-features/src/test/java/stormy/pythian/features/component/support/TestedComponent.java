@@ -1,10 +1,6 @@
 package stormy.pythian.features.component.support;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
-import static stormy.pythian.model.instance.InputUserSelectionFeaturesMapperTestBuilder.inputUserSelectionFeaturesMapper;
-import static stormy.pythian.model.instance.OutputFixedFeaturesMapperTestBuilder.outputFixedFeaturesMapper;
-import static stormy.pythian.model.instance.OutputUserSelectionFeaturesMapperTestBuilder.outputUserSelectionFeaturesMapper;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,10 +11,9 @@ import stormy.pythian.core.configuration.PropertyConfiguration;
 import stormy.pythian.core.utils.ReflectionHelper;
 import stormy.pythian.model.component.Component;
 import stormy.pythian.model.component.PythianState;
-import stormy.pythian.model.instance.InputUserSelectionFeaturesMapper;
 import stormy.pythian.model.instance.Instance;
-import stormy.pythian.model.instance.OutputFixedFeaturesMapper;
-import stormy.pythian.model.instance.OutputUserSelectionFeaturesMapper;
+import stormy.pythian.model.instance.ListedFeaturesMapper;
+import stormy.pythian.model.instance.NamedFeaturesMapper;
 import stormy.pythian.testing.InstanceCollector;
 import stormy.pythian.testing.InstanceFeederSpout;
 import backtype.storm.Config;
@@ -52,7 +47,7 @@ public class TestedComponent {
         output_collectors = new HashMap<>();
         feeders = new HashMap<>();
         config = new Config();
-        config.setMessageTimeoutSecs(1);
+        config.setMessageTimeoutSecs(5);
     }
 
     public void init_component(String componentClassName) throws Exception {
@@ -65,19 +60,23 @@ public class TestedComponent {
         ReflectionHelper.setProperties(component, properties);
     }
 
-    public void set_input_listed_features(String streamName, List<String> selectedFeature) {
-        InputUserSelectionFeaturesMapper mapper = inputUserSelectionFeaturesMapper(selectedFeature).select(selectedFeature).build();
+    public void set_input_listed_features(String streamName, List<String> selected_features) {
+        ListedFeaturesMapper mapper = new ListedFeaturesMapper(selected_features);
+        ReflectionHelper.setFeaturesMapper(component, streamName, mapper);
+    }
+
+    public void set_input_mappings(String streamName, Map<String, String> mappings) {
+        NamedFeaturesMapper mapper = new NamedFeaturesMapper(mappings);
         ReflectionHelper.setFeaturesMapper(component, streamName, mapper);
     }
 
     public void set_output_listed_feature(String outputStreamName, List<String> features) {
-        OutputUserSelectionFeaturesMapper outputMapper = outputUserSelectionFeaturesMapper(features).select(features).build();
+        ListedFeaturesMapper outputMapper = new ListedFeaturesMapper(features);
         ReflectionHelper.setFeaturesMapper(component, outputStreamName, outputMapper);
     }
 
     public void set_output_mapped_feature(String outputStreamName, Map<String, String> mappings) {
-        String[] features = new ArrayList<>(mappings.values()).toArray(new String[0]);
-        OutputFixedFeaturesMapper outputMapper = outputFixedFeaturesMapper(features).map(mappings).build();
+        NamedFeaturesMapper outputMapper = new NamedFeaturesMapper(mappings);
         ReflectionHelper.setFeaturesMapper(component, outputStreamName, outputMapper);
     }
 
@@ -97,7 +96,7 @@ public class TestedComponent {
             InstanceFeederSpout feeder = new InstanceFeederSpout();
             feeders.put(streamName, feeder);
 
-            Stream feederStream = trident_topology.newStream(streamName + "-feeder", feeder);
+            Stream feederStream = trident_topology.newStream(streamName + "-feeder-" + randomAlphanumeric(6), feeder);
             ReflectionHelper.setInputStream(component, streamName, feederStream);
         }
 

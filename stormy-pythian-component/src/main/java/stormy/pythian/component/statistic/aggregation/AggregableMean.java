@@ -15,87 +15,77 @@
  */
 package stormy.pythian.component.statistic.aggregation;
 
-import static stormy.pythian.component.statistic.aggregation.Constants.MEAN_FEATURE;
 import stormy.pythian.component.statistic.aggregation.AggregableMean.MeanState;
-import stormy.pythian.component.statistic.aggregation.StatisticAggregator.AggregableStatistic;
-import stormy.pythian.model.instance.Instance;
-import stormy.pythian.model.instance.OutputFixedFeaturesMapper;
 
 public class AggregableMean implements AggregableStatistic<MeanState> {
 
-	private static final long serialVersionUID = 845845674309635484L;
+    private static final long serialVersionUID = 845845674309635484L;
 
-	private final OutputFixedFeaturesMapper mapper;
+    @Override
+    public MeanState init(Number feature) {
+        return new MeanState(feature.doubleValue(), 1L);
+    }
 
-	public AggregableMean(OutputFixedFeaturesMapper mapper) {
-		this.mapper = mapper;
-	}
+    @Override
+    public MeanState combine(MeanState val1, MeanState val2) {
+        return new MeanState(val1.sum + val2.sum, val1.count + val2.count);
+    }
 
-	@Override
-	public MeanState init(Number feature) {
-		return new MeanState(feature.doubleValue(), 1L);
-	}
+    @Override
+    public MeanState zero() {
+        return new MeanState(0, 0);
+    }
 
-	@Override
-	public MeanState combine(MeanState val1, MeanState val2) {
-		return new MeanState(val1.sum + val2.sum, val1.count + val2.count);
-	}
+    @Override
+    public Object toFeature(MeanState value) {
+        return value.getMean();
+    }
 
-	@Override
-	public MeanState zero() {
-		return new MeanState(0, 0);
-	}
+    public static class MeanState {
+        private final double sum;
+        private final long count;
 
-	@Override
-	public Instance update(Instance original, MeanState statistic) {
-		return original.withFeature(mapper, MEAN_FEATURE, statistic == null ? null : statistic.getMean());
-	}
+        public MeanState(double sum, long count) {
+            this.sum = sum;
+            this.count = count;
+        }
 
-	public static class MeanState {
-		private final double sum;
-		private final long count;
+        public double getMean() {
+            return sum / count;
+        }
 
-		public MeanState(double sum, long count) {
-			this.sum = sum;
-			this.count = count;
-		}
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + (int) (count ^ (count >>> 32));
+            long temp;
+            temp = Double.doubleToLongBits(sum);
+            result = prime * result + (int) (temp ^ (temp >>> 32));
+            return result;
+        }
 
-		public double getMean() {
-			return sum / count;
-		}
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            MeanState other = (MeanState) obj;
+            if (count != other.count)
+                return false;
+            if (Double.doubleToLongBits(sum) != Double.doubleToLongBits(other.sum))
+                return false;
+            return true;
+        }
 
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + (int) (count ^ (count >>> 32));
-			long temp;
-			temp = Double.doubleToLongBits(sum);
-			result = prime * result + (int) (temp ^ (temp >>> 32));
-			return result;
-		}
+        @Override
+        public String toString() {
+            return "MeanState [sum=" + sum + ", count=" + count + "]";
+        }
 
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			MeanState other = (MeanState) obj;
-			if (count != other.count)
-				return false;
-			if (Double.doubleToLongBits(sum) != Double.doubleToLongBits(other.sum))
-				return false;
-			return true;
-		}
-
-		@Override
-		public String toString() {
-			return "MeanState [sum=" + sum + ", count=" + count + "]";
-		}
-
-	}
+    }
 
 }

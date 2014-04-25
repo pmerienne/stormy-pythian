@@ -27,14 +27,14 @@
 				<form role="form" ng-repeat="inputStream in component.inputStreams">
 					<h3>{{inputStream.description.name}}</h3>
 					
-					<div ng-show="inputStream.description.type == 'FIXED_FEATURES'">
+					<div ng-show="inputStream.description.type == 'NAMED'">
 						<div class="form-group" ng-repeat="(componentName, topologyName) in inputStream.mappings">
 							<label>{{componentName}}</label>
 							<select class="form-control" ng-model="inputStream.mappings[componentName]"  ng-options="value as value for value in retrieveAvailableFeatures(inputStream.description.name)" ng-required="true"></select>
 						</div>
 					</div>
 					
-					<div ng-show="inputStream.description.type == 'USER_SELECTION'">
+					<div ng-show="inputStream.description.type == 'LISTED'">
 						<select class="form-control" multiple ng-model="inputStream.selectedFeatures" ng-required="true"
 								ng-options="value as value for value in retrieveAvailableFeatures(inputStream.description.name)">
 						</select>
@@ -48,14 +48,14 @@
 				<form role="form" ng-repeat="outputStream in component.outputStreams">
 					<h3>{{outputStream.description.name}}</h3>
 					
-					<div ng-show="outputStream.description.type == 'FIXED_FEATURES'">
+					<div ng-show="outputStream.description.type == 'NAMED'">
 						<div class="form-group" ng-repeat="(componentName, topologyName) in outputStream.mappings">
 							<label>{{componentName}}</label>
 							<input class="form-control" ng-model="outputStream.mappings[componentName]">
 						</div>
 					</div>
 					
-					<div ng-show="outputStream.description.type == 'USER_SELECTION'">
+					<div ng-show="outputStream.description.type == 'LISTED'">
 						<div class="input-group form-group" ng-repeat="selectedFeature in outputStream.selectedFeatures track by $index">
 							<input class="form-control" ng-model="outputStream.selectedFeatures[$index]" type="text"/>
 							<span class="input-group-addon btn" ng-click="outputStream.selectedFeatures.splice($index, 1)">x</span>

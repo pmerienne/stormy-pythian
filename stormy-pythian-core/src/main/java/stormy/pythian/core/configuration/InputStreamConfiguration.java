@@ -59,9 +59,9 @@ public class InputStreamConfiguration {
 
     public Collection<String> retrieveStreamFeatures() {
         switch (description.getType()) {
-            case FIXED_FEATURES:
+            case NAMED:
                 return mappings.values();
-            case USER_SELECTION:
+            case LISTED:
                 return selectedFeatures;
             default:
                 throw new IllegalStateException("Mapping type " + description.getType() + " isn't supported!");

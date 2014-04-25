@@ -1,12 +1,14 @@
 package stormy.pythian.features.component.steps;
 
 import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
+import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.fest.assertions.Assertions.assertThat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang.StringUtils;
+import org.joda.time.DateTime;
 import stormy.pythian.core.configuration.PropertyConfiguration;
 import stormy.pythian.features.component.support.TestedComponent;
 import stormy.pythian.model.component.PythianState;
@@ -48,7 +50,12 @@ public class ConfigureComponentSteps {
         tested_component.set_input_listed_features(streamName, selectedFeature);
     }
 
-    @Given("^the component has the output \"(.*?)\" named mappings:$")
+    @Given("^the component has the input \"([^\"]*)\" mappings:$")
+    public void the_component_has_the_input_mappings(String streamName, Map<String, String> mappings) throws Throwable {
+        tested_component.set_input_mappings(streamName, mappings);
+    }
+
+    @Given("^the component has the output \"(.*?)\" mappings:$")
     public void the_component_has_the_output_named_features(String outputStreamName, Map<String, String> mappings) throws Throwable {
         tested_component.set_output_mapped_feature(outputStreamName, mappings);
     }
@@ -80,7 +87,7 @@ public class ConfigureComponentSteps {
     public void the_output_should_have_emit_only(String outputStreamName, DataTable expectedInstancesDataTable) throws Throwable {
         List<Instance> expectedInstances = toInstances(expectedInstancesDataTable);
         List<Instance> actualInstances = tested_component.retrieve_emited_instance(outputStreamName);
-        assertThat(actualInstances).containsExactly(expectedInstances.toArray());
+        assertThat(actualInstances).containsOnly(expectedInstances.toArray());
     }
 
     @When("^I emit to the input \"(.*?)\":$")
@@ -111,12 +118,15 @@ public class ConfigureComponentSteps {
         int labelColumn = -1;
         List<String> topCells = dataTable.topCells();
         Map<Integer, TypeConverter> converters = new HashMap<>();
+        Map<Integer, String> names = new HashMap<>();
         int i = 0;
         for (String topCell : topCells) {
             String[] strings = topCell.split(":");
             converters.put(i, TypeConverter.from(strings[1]));
             if (equalsIgnoreCase("label", strings[0])) {
                 labelColumn = i;
+            } else {
+                names.put(i, strings[0]);
             }
             i++;
         }
@@ -129,7 +139,7 @@ public class ConfigureComponentSteps {
                 if (column == labelColumn) {
                     builder.label(feature);
                 } else {
-                    builder.with(feature);
+                    builder.with(names.get(column), feature);
                 }
             }
             instances.add(builder.build());
@@ -149,19 +159,31 @@ public class ConfigureComponentSteps {
         DOUBLE {
             @Override
             public Object convert(String type, String value) {
-                return Double.valueOf(value);
+                return isBlank(value) ? null : Double.valueOf(value);
             }
         },
         INTEGER {
             @Override
             public Object convert(String type, String value) {
-                return Integer.valueOf(value);
+                return isBlank(value) ? null : Integer.valueOf(value);
+            }
+        },
+        LONG {
+            @Override
+            public Object convert(String type, String value) {
+                return isBlank(value) ? null : Long.valueOf(value);
             }
         },
         BOOLEAN {
             @Override
             public Object convert(String type, String value) {
-                return Boolean.valueOf(value);
+                return isBlank(value) ? null : Boolean.valueOf(value);
+            }
+        },
+        DATE {
+            @Override
+            public Object convert(String type, String value) {
+                return DateTime.parse(value).toDate();
             }
         },
         ENUM {
