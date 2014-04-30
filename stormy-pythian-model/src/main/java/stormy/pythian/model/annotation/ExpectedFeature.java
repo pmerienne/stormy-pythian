@@ -15,17 +15,18 @@
  */
 package stormy.pythian.model.annotation;
 
+import static stormy.pythian.model.instance.FeatureType.ANY;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import stormy.pythian.model.instance.FeatureType;
 
 @Target(ElementType.ANNOTATION_TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ExpectedFeature {
 
-	@SuppressWarnings("rawtypes")
-	Class type() default Object.class;
+    FeatureType type() default ANY;
 
-	String name();
+    String name();
 }

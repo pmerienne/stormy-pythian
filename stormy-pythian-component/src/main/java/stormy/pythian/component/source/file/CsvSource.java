@@ -12,7 +12,9 @@ import org.apache.log4j.Logger;
 import stormy.pythian.component.source.ListedFeaturesSource;
 import stormy.pythian.model.annotation.Documentation;
 import stormy.pythian.model.annotation.Property;
+import stormy.pythian.model.instance.Feature;
 import stormy.pythian.model.instance.Instance;
+import stormy.pythian.model.instance.TextFeature;
 import com.google.common.base.Splitter;
 
 @SuppressWarnings("serial")
@@ -38,7 +40,11 @@ public class CsvSource extends ListedFeaturesSource {
             String line;
             while (instances.size() < maxBatchSize && (line = file.readLine()) != null) {
                 try {
-                    List<?> features = newArrayList(Splitter.on(",").limit(mapper.size()).trimResults().split(line));
+                    List<String> parts = newArrayList(Splitter.on(",").limit(mapper.size()).trimResults().split(line));
+                    List<Feature<?>> features = new ArrayList<>(parts.size());
+                    for (String part : parts) {
+                        features.add(new TextFeature(part));
+                    }
 
                     Instance instance = Instance.create(mapper);
                     instance.addFeatures(features);

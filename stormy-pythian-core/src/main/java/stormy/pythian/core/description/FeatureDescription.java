@@ -15,6 +15,7 @@
  */
 package stormy.pythian.core.description;
 
+import stormy.pythian.model.instance.FeatureType;
 import com.google.common.base.Function;
 
 public class FeatureDescription {
@@ -26,14 +27,14 @@ public class FeatureDescription {
     };
 
     private String name;
-    private Class<?> type;
+    private FeatureType type;
 
     public FeatureDescription() {
         this.name = null;
         this.type = null;
     }
 
-    public FeatureDescription(String name, Class<?> type) {
+    public FeatureDescription(String name, FeatureType type) {
         this.name = name;
         this.type = type;
     }
@@ -42,7 +43,7 @@ public class FeatureDescription {
         return name;
     }
 
-    public Class<?> getType() {
+    public FeatureType getType() {
         return type;
     }
 
@@ -50,7 +51,7 @@ public class FeatureDescription {
         this.name = name;
     }
 
-    public void setType(Class<?> type) {
+    public void setType(FeatureType type) {
         this.type = type;
     }
 
@@ -59,7 +60,7 @@ public class FeatureDescription {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((name == null) ? 0 : name.hashCode());
-        result = prime * result + ((type == null) ? 0 : type.getName().hashCode());
+        result = prime * result + ((type == null) ? 0 : type.hashCode());
         return result;
     }
 
@@ -77,10 +78,7 @@ public class FeatureDescription {
                 return false;
         } else if (!name.equals(other.name))
             return false;
-        if (type == null) {
-            if (other.type != null)
-                return false;
-        } else if (!type.getName().equals(other.type.getName()))
+        if (type != other.type)
             return false;
         return true;
     }

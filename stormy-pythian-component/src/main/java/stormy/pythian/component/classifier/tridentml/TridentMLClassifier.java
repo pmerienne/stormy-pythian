@@ -16,6 +16,8 @@
 package stormy.pythian.component.classifier.tridentml;
 
 import java.util.List;
+import stormy.pythian.model.instance.Feature;
+import stormy.pythian.model.instance.Instance;
 import com.github.pmerienne.trident.ml.classification.Classifier;
 
 @SuppressWarnings("serial")
@@ -24,34 +26,31 @@ public abstract class TridentMLClassifier<L> extends stormy.pythian.component.cl
     protected Classifier<L> classifier;
 
     @Override
-    protected void update(L label, List<Object> rawFeatures) {
-        double[] features = toFeatureArray(rawFeatures);
-        this.classifier.update(label, features);
+    protected void update(Instance instance) {
+        double[] features = extractDoubleFeatures(instance);
+        this.classifier.update(getLabel(instance), features);
     }
 
     @Override
-    protected L classify(List<Object> rawFeatures) {
-        double[] features = toFeatureArray(rawFeatures);
+    protected void classify(Instance instance) {
+        double[] features = extractDoubleFeatures(instance);
         L prediction = this.classifier.classify(features);
-        return prediction;
+        this.setLabel(instance, prediction);
     }
 
-    private double[] toFeatureArray(List<Object> rawFeatures) {
-        double[] features = new double[rawFeatures.size()];
+    private double[] extractDoubleFeatures(Instance instance) {
+        double[] features = new double[instance.size()];
 
+        List<Feature<?>> rawFeatures = instance.getFeatures();
         for (int i = 0; i < rawFeatures.size(); i++) {
-            Object rawFeature = rawFeatures.get(i);
-            if (rawFeature instanceof Number) {
-                features[i] = ((Number) rawFeature).doubleValue();
-            } else {
-                try {
-                    features[i] = Double.parseDouble(rawFeature.toString());
-                } catch (Exception e) {
-                    features[i] = 0.0;
-                }
-            }
+            features[i] = rawFeatures.get(i).decimalValue();
         }
 
         return features;
     }
+
+    protected abstract void setLabel(Instance instance, L label);
+
+    protected abstract L getLabel(Instance instance);
+
 }

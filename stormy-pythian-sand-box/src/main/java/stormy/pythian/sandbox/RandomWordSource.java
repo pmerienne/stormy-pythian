@@ -17,6 +17,7 @@ package stormy.pythian.sandbox;
 
 import static org.apache.commons.lang.RandomStringUtils.randomAlphabetic;
 import static stormy.pythian.model.annotation.ComponentType.STREAM_SOURCE;
+import static stormy.pythian.model.instance.FeatureType.TEXT;
 import storm.trident.Stream;
 import storm.trident.TridentTopology;
 import storm.trident.testing.FixedBatchSpout;
@@ -28,6 +29,7 @@ import stormy.pythian.model.annotation.Topology;
 import stormy.pythian.model.component.Component;
 import stormy.pythian.model.instance.Instance;
 import stormy.pythian.model.instance.NamedFeaturesMapper;
+import stormy.pythian.model.instance.TextFeature;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Values;
 
@@ -41,7 +43,7 @@ public class RandomWordSource implements Component {
     @OutputStream(name = "out")
     private Stream out;
 
-    @NameMapper(stream = "out", expectedFeatures = { @ExpectedFeature(name = WORD_FEATURE, type = String.class) })
+    @NameMapper(stream = "out", expectedFeatures = { @ExpectedFeature(name = WORD_FEATURE, type = TEXT) })
     private NamedFeaturesMapper mapper;
 
     @Topology
@@ -65,7 +67,7 @@ public class RandomWordSource implements Component {
 
     private Values createValues(String word) {
         Instance instance = Instance.create(mapper);
-        instance.setFeature(WORD_FEATURE, word);
+        instance.setFeature(WORD_FEATURE, new TextFeature(word));
         return new Values(instance);
     }
 

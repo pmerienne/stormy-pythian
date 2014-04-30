@@ -4,12 +4,12 @@ import java.io.Serializable;
 
 public interface AggregableStatistic<T> extends Serializable {
 
-    T init(Number feature);
+    T init(Double feature);
 
     T combine(T val1, T val2);
 
     T zero();
 
-    Object toFeature(T value);
+    Double toFeature(T value);
 
 }

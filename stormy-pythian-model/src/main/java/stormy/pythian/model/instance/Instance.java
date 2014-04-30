@@ -36,8 +36,8 @@ public class Instance implements Serializable {
     private transient ListedFeaturesMapper outputListedFeaturesMapper;
     private transient NamedFeaturesMapper outputNamedFeaturesMapper;
 
-    Object label;
-    Map<String, Object> features;
+    Feature<?> label;
+    Map<String, Feature<?>> features;
 
     public Instance() {
         this.label = null;
@@ -52,49 +52,47 @@ public class Instance implements Serializable {
         return this.label != null;
     }
 
-    public Object getLabel() {
+    public Feature<?> getLabel() {
         return this.label;
     }
 
-    public void setLabel(Object label) {
+    public void setLabel(Feature<?> label) {
         this.label = label;
     }
 
-    @SuppressWarnings("unchecked")
-    public <T> T getFeature(String featureName) {
+    public Feature<?> getFeature(String featureName) {
         checkNotNull(featureName, "Feature name is mandatory");
         checkNotNull(inputNamedFeaturesMapper, "Cannot get feature : no input named features mapper");
 
         String realFeatureName = inputNamedFeaturesMapper.getFeatureName(featureName);
-        return (T) features.get(realFeatureName);
+        return features.get(realFeatureName);
     }
 
-    @SuppressWarnings("unchecked")
-    public <T> List<T> getFeatures() {
+    public List<Feature<?>> getFeatures() {
         checkNotNull(inputListedFeaturesMapper, "Cannot get features : no input listed features mapper");
-        List<T> features = new ArrayList<>(inputListedFeaturesMapper.size());
+        List<Feature<?>> features = new ArrayList<>(inputListedFeaturesMapper.size());
 
         List<String> selectedFeatureNames = inputListedFeaturesMapper.getSelectedFeatures();
         for (String selectedFeatureName : selectedFeatureNames) {
-            features.add((T) this.features.get(selectedFeatureName));
+            features.add(this.features.get(selectedFeatureName));
         }
 
         return features;
     }
 
-    public <T> void setFeature(String featureName, T feature) {
+    public void setFeature(String featureName, Feature<?> feature) {
         checkNotNull(outputNamedFeaturesMapper, "Cannot set feature : no output named features mapper");
         String realFeatureName = outputNamedFeaturesMapper.getFeatureName(featureName);
         features.put(realFeatureName, feature);
     }
 
-    public <T> void setFeatures(Map<String, T> features) {
+    public void setFeatures(Map<String, Feature<?>> features) {
         for (String featureName : features.keySet()) {
             setFeature(featureName, features.get(featureName));
         }
     }
 
-    public <T> void addFeatures(List<T> newFeatures) {
+    public void addFeatures(List<Feature<?>> newFeatures) {
         checkNotNull(outputListedFeaturesMapper, "Cannot set features : no output listed features mapper");
         Preconditions.checkArgument(
                 outputListedFeaturesMapper.size() == newFeatures.size(),
@@ -106,15 +104,13 @@ public class Instance implements Serializable {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public <T> void process(FeatureProcessor<T> processor) {
+    public <T> void process(FeatureProcessor processor) {
         checkNotNull(inputListedFeaturesMapper, "Cannot process features : no intput listed features mapper");
         List<String> selectedFeatureNames = inputListedFeaturesMapper.getSelectedFeatures();
 
         for (String featureName : selectedFeatureNames) {
-            T feature = (T) this.features.get(featureName);
+            Feature<?> feature = this.features.get(featureName);
             this.features.put(featureName, processor.process(feature));
-
         }
     }
 
@@ -229,7 +225,7 @@ public class Instance implements Serializable {
         return "Instance [label=" + label + ", features=" + features + "]";
     }
 
-    public static interface FeatureProcessor<T> {
-        T process(T feature);
+    public static interface FeatureProcessor {
+        Feature<?> process(Feature<?> feature);
     }
 }

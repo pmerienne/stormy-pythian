@@ -18,6 +18,8 @@ package stormy.pythian.core.description;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static stormy.pythian.model.instance.FeatureType.DECIMAL;
+import static stormy.pythian.model.instance.FeatureType.INTEGER;
 import java.util.List;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,11 +39,11 @@ public class FeatureDescriptionFactoryTest {
         // Given
         ExpectedFeature doubleFeature = mock(ExpectedFeature.class);
         when(doubleFeature.name()).thenReturn("double");
-        when(doubleFeature.type()).thenReturn(Double.class);
+        when(doubleFeature.type()).thenReturn(DECIMAL);
 
         ExpectedFeature integerFeature = mock(ExpectedFeature.class);
         when(integerFeature.name()).thenReturn("integer");
-        when(integerFeature.type()).thenReturn(Integer.class);
+        when(integerFeature.type()).thenReturn(INTEGER);
 
         NameMapper inputStream = mock(NameMapper.class);
         when(inputStream.expectedFeatures()).thenReturn(new ExpectedFeature[] { doubleFeature, integerFeature });
@@ -50,7 +52,7 @@ public class FeatureDescriptionFactoryTest {
         List<FeatureDescription> descriptors = factory.createDescriptions(inputStream);
 
         // Then
-        assertThat(descriptors).containsOnly(new FeatureDescription("double", Double.class), new FeatureDescription("integer", Integer.class));
+        assertThat(descriptors).containsOnly(new FeatureDescription("double", DECIMAL), new FeatureDescription("integer", INTEGER));
     }
 
 }

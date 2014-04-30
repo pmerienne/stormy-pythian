@@ -22,7 +22,7 @@ public class AggregableMean implements AggregableStatistic<MeanState> {
     private static final long serialVersionUID = 845845674309635484L;
 
     @Override
-    public MeanState init(Number feature) {
+    public MeanState init(Double feature) {
         return new MeanState(feature.doubleValue(), 1L);
     }
 
@@ -37,7 +37,7 @@ public class AggregableMean implements AggregableStatistic<MeanState> {
     }
 
     @Override
-    public Object toFeature(MeanState value) {
+    public Double toFeature(MeanState value) {
         return value.getMean();
     }
 

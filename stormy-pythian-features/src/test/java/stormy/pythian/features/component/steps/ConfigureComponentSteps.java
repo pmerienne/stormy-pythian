@@ -1,19 +1,20 @@
 package stormy.pythian.features.component.steps;
 
 import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
-import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.fest.assertions.Assertions.assertThat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.commons.lang.StringUtils;
-import org.joda.time.DateTime;
 import stormy.pythian.core.configuration.PropertyConfiguration;
 import stormy.pythian.features.component.support.TestedComponent;
 import stormy.pythian.model.component.PythianState;
+import stormy.pythian.model.instance.Feature;
+import stormy.pythian.model.instance.FeatureType;
 import stormy.pythian.model.instance.Instance;
 import stormy.pythian.model.instance.InstanceTestBuilder;
+import stormy.pythian.model.instance.TextFeature;
 import cucumber.api.DataTable;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -105,7 +106,7 @@ public class ConfigureComponentSteps {
             String type = rawLine.get(1);
             String rawValue = rawLine.get(2);
 
-            Object value = TypeConverter.from(type).convert(type, rawValue);
+            Object value = PropertyTypeConverter.from(type).convert(type, rawValue);
             configurations.add(new PropertyConfiguration(name, value));
         }
 
@@ -115,14 +116,15 @@ public class ConfigureComponentSteps {
     private List<Instance> toInstances(DataTable dataTable) {
         List<Instance> instances = new ArrayList<>();
 
-        int labelColumn = -1;
         List<String> topCells = dataTable.topCells();
-        Map<Integer, TypeConverter> converters = new HashMap<>();
+        Map<Integer, FeatureType> types = new HashMap<>();
         Map<Integer, String> names = new HashMap<>();
+
+        int labelColumn = -1;
         int i = 0;
         for (String topCell : topCells) {
             String[] strings = topCell.split(":");
-            converters.put(i, TypeConverter.from(strings[1]));
+            types.put(i, FeatureType.from(strings[1]));
             if (equalsIgnoreCase("label", strings[0])) {
                 labelColumn = i;
             } else {
@@ -135,7 +137,9 @@ public class ConfigureComponentSteps {
         for (List<String> row : rows) {
             InstanceTestBuilder builder = InstanceTestBuilder.instance();
             for (int column = 0; column < row.size(); column++) {
-                Object feature = converters.get(column).convert(row.get(column));
+                String value = row.get(column);
+                TextFeature rawFeature = new TextFeature(isNotBlank(value) ? value : null);
+                Feature<?> feature = rawFeature.to(types.get(column));
                 if (column == labelColumn) {
                     builder.label(feature);
                 } else {
@@ -148,74 +152,4 @@ public class ConfigureComponentSteps {
         return instances;
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    private static enum TypeConverter {
-        STRING {
-            @Override
-            public Object convert(String type, String value) {
-                return value;
-            }
-        },
-        DOUBLE {
-            @Override
-            public Object convert(String type, String value) {
-                return isBlank(value) ? null : Double.valueOf(value);
-            }
-        },
-        INTEGER {
-            @Override
-            public Object convert(String type, String value) {
-                return isBlank(value) ? null : Integer.valueOf(value);
-            }
-        },
-        LONG {
-            @Override
-            public Object convert(String type, String value) {
-                return isBlank(value) ? null : Long.valueOf(value);
-            }
-        },
-        BOOLEAN {
-            @Override
-            public Object convert(String type, String value) {
-                return isBlank(value) ? null : Boolean.valueOf(value);
-            }
-        },
-        DATE {
-            @Override
-            public Object convert(String type, String value) {
-                return DateTime.parse(value).toDate();
-            }
-        },
-        ENUM {
-            @Override
-            public Object convert(String type, String value) {
-                String enumName = type.split(":")[1];
-                try {
-                    Class enumType = Class.forName(enumName);
-                    return Enum.valueOf(enumType, value);
-                } catch (ClassNotFoundException e) {
-                    throw new IllegalArgumentException("No enum found for name " + enumName);
-                }
-            }
-        };
-
-        public abstract Object convert(String type, String value);
-
-        public Object convert(String value) {
-            return convert(null, value);
-        }
-
-        public static TypeConverter from(String type) {
-            if (StringUtils.startsWithIgnoreCase(type, ENUM.name() + ":")) {
-                return ENUM;
-            }
-
-            for (TypeConverter converter : TypeConverter.values()) {
-                if (StringUtils.equalsIgnoreCase(converter.name(), type)) {
-                    return converter;
-                }
-            }
-            throw new IllegalArgumentException("No type converter found for " + type);
-        }
-    }
 }

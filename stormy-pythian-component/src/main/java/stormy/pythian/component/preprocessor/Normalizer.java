@@ -18,6 +18,8 @@ package stormy.pythian.component.preprocessor;
 import static java.lang.Math.sqrt;
 import java.util.List;
 import stormy.pythian.model.annotation.Documentation;
+import stormy.pythian.model.instance.DecimalFeature;
+import stormy.pythian.model.instance.Feature;
 import stormy.pythian.model.instance.Instance;
 import stormy.pythian.model.instance.Instance.FeatureProcessor;
 
@@ -27,18 +29,18 @@ public class Normalizer extends PreProcessor {
 
     @Override
     public Instance process(Instance instance) {
-        List<Double> features = instance.getFeatures();
+        List<Feature<?>> features = instance.getFeatures();
 
         double magnitude = 0;
-        for (Double feature : features) {
-            magnitude += feature * feature;
+        for (Feature<?> feature : features) {
+            magnitude += feature.decimalValue() * feature.decimalValue();
         }
-        
+
         final double realMagnitude = sqrt(magnitude);
-        instance.process(new FeatureProcessor<Double>() {
+        instance.process(new FeatureProcessor() {
             @Override
-            public Double process(Double feature) {
-                return feature / realMagnitude;
+            public Feature<?> process(Feature<?> feature) {
+                return new DecimalFeature(feature.decimalValue() / realMagnitude);
             }
         });
 
