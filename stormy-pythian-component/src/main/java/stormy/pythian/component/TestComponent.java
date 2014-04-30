@@ -17,6 +17,10 @@ package stormy.pythian.component;
 
 import static org.apache.commons.lang.RandomStringUtils.randomAlphabetic;
 import static stormy.pythian.model.annotation.ComponentType.NO_TYPE;
+import static stormy.pythian.model.instance.FeatureType.DATE;
+import static stormy.pythian.model.instance.FeatureType.DECIMAL;
+import static stormy.pythian.model.instance.FeatureType.INTEGER;
+import static stormy.pythian.model.instance.FeatureType.TEXT;
 import static stormy.pythian.model.instance.Instance.NEW_INSTANCE_FIELD;
 import java.util.ArrayList;
 import java.util.Date;
@@ -38,7 +42,10 @@ import stormy.pythian.model.annotation.Property;
 import stormy.pythian.model.annotation.State;
 import stormy.pythian.model.annotation.Topology;
 import stormy.pythian.model.component.Component;
+import stormy.pythian.model.instance.DateFeature;
+import stormy.pythian.model.instance.Feature;
 import stormy.pythian.model.instance.Instance;
+import stormy.pythian.model.instance.IntegerFeature;
 import stormy.pythian.model.instance.ListedFeaturesMapper;
 import stormy.pythian.model.instance.NamedFeaturesMapper;
 import backtype.storm.spout.SpoutOutputCollector;
@@ -57,9 +64,9 @@ public class TestComponent implements Component {
     private Stream input1;
 
     @NameMapper(stream = "Input 1", expectedFeatures = {
-            @ExpectedFeature(name = "Double", type = Double.class),
-            @ExpectedFeature(name = "Integer", type = Integer.class),
-            @ExpectedFeature(name = "String", type = String.class),
+            @ExpectedFeature(name = "Double", type = DECIMAL),
+            @ExpectedFeature(name = "Integer", type = INTEGER),
+            @ExpectedFeature(name = "String", type = TEXT),
     })
     private NamedFeaturesMapper intput1Mapper;
 
@@ -72,13 +79,13 @@ public class TestComponent implements Component {
     @OutputStream(name = "Output 1", from = "Input 1")
     private Stream output1;
 
-    @NameMapper(stream = "Output 1", expectedFeatures = { @ExpectedFeature(name = "Date", type = Date.class) })
+    @NameMapper(stream = "Output 1", expectedFeatures = { @ExpectedFeature(name = "Date", type = DATE) })
     private NamedFeaturesMapper output1Mapper;
 
     @OutputStream(name = "Output 2", from = "Input 2")
     private Stream output2;
 
-    @NameMapper(stream = "Output 2", expectedFeatures = { @ExpectedFeature(name = "Feature count", type = Integer.class) })
+    @NameMapper(stream = "Output 2", expectedFeatures = { @ExpectedFeature(name = "Feature count", type = INTEGER) })
     private NamedFeaturesMapper output2Mapper;
 
     @OutputStream(name = "Output 3")
@@ -120,7 +127,7 @@ public class TestComponent implements Component {
             @Override
             public void execute(TridentTuple tuple, TridentCollector collector) {
                 Instance instance = Instance.get(tuple, (NamedFeaturesMapper) null, output1Mapper);
-                instance.setFeature("Date", new Date());
+                instance.setFeature("Date", new DateFeature(new Date()));
                 collector.emit(new Values(instance));
             }
         }, new Fields(NEW_INSTANCE_FIELD));
@@ -129,7 +136,7 @@ public class TestComponent implements Component {
             @Override
             public void execute(TridentTuple tuple, TridentCollector collector) {
                 Instance instance = Instance.get(tuple, (NamedFeaturesMapper) null, output2Mapper);
-                instance.setFeature("Feature count", output2Mapper.size());
+                instance.setFeature("Feature count", new IntegerFeature((long) instance.size()));
                 collector.emit(new Values(instance));
             }
         }, new Fields(NEW_INSTANCE_FIELD));
@@ -151,9 +158,9 @@ public class TestComponent implements Component {
             @Override
             public void nextTuple() {
                 Utils.sleep(200);
-                List<Integer> features = new ArrayList<>();
+                List<Feature<?>> features = new ArrayList<>();
                 for (int i = 0; i < output2Mapper.size(); i++) {
-                    features.add(i);
+                    features.add(new IntegerFeature((long) i));
                 }
 
                 Instance newInstance = Instance.create(output3Mapper);

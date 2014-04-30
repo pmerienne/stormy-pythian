@@ -18,25 +18,36 @@ package stormy.pythian.component.classifier.tridentml;
 import static stormy.pythian.model.annotation.ComponentType.LEARNER;
 import stormy.pythian.model.annotation.Documentation;
 import stormy.pythian.model.annotation.Property;
-
+import stormy.pythian.model.instance.BooleanFeature;
+import stormy.pythian.model.instance.Instance;
 import com.github.pmerienne.trident.ml.classification.PerceptronClassifier;
 
 @SuppressWarnings("serial")
 @Documentation(name = "Perceptron classifier", description = "Perceptron classifier from trident-ml", type = LEARNER)
 public class TridentMLPerceptronClassifier extends TridentMLClassifier<Boolean> {
 
-	@Property(name = "Bias")
-	private Double bias = 0.0;
+    @Property(name = "Bias")
+    private Double bias = 0.0;
 
-	@Property(name = "Threshold")
-	private Double threshold = 0.5;
+    @Property(name = "Threshold")
+    private Double threshold = 0.5;
 
-	@Property(name = "Learning rate")
-	private Double learningRate = 0.1;
+    @Property(name = "Learning rate")
+    private Double learningRate = 0.1;
 
-	@Override
-	public void initClassifier() {
-		this.classifier = new PerceptronClassifier(bias, threshold, learningRate);
-	}
+    @Override
+    public void initClassifier() {
+        this.classifier = new PerceptronClassifier(bias, threshold, learningRate);
+    }
+
+    @Override
+    protected Boolean getLabel(Instance instance) {
+        return instance.getLabel().booleanValue();
+    }
+
+    @Override
+    protected void setLabel(Instance instance, Boolean label) {
+        instance.setLabel(new BooleanFeature(label));
+    }
 
 }

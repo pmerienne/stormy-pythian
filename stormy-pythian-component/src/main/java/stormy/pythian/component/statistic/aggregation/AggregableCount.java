@@ -20,7 +20,7 @@ public class AggregableCount implements AggregableStatistic<Long> {
     private static final long serialVersionUID = 845845674309635484L;
 
     @Override
-    public Long init(Number feature) {
+    public Long init(Double feature) {
         return 1L;
     }
 
@@ -35,8 +35,8 @@ public class AggregableCount implements AggregableStatistic<Long> {
     }
 
     @Override
-    public Object toFeature(Long value) {
-        return value;
+    public Double toFeature(Long value) {
+        return value == null ? null : value.doubleValue();
     }
 
 }

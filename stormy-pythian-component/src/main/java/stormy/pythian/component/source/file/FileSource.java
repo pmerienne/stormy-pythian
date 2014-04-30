@@ -16,6 +16,7 @@
 package stormy.pythian.component.source.file;
 
 import static stormy.pythian.model.annotation.ComponentType.STREAM_SOURCE;
+import static stormy.pythian.model.instance.FeatureType.TEXT;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.text.DecimalFormat;
@@ -30,6 +31,7 @@ import stormy.pythian.model.annotation.NameMapper;
 import stormy.pythian.model.annotation.Property;
 import stormy.pythian.model.instance.Instance;
 import stormy.pythian.model.instance.NamedFeaturesMapper;
+import stormy.pythian.model.instance.TextFeature;
 
 @SuppressWarnings("serial")
 @Documentation(name = "File source", description = "Read and parse a given file", type = STREAM_SOURCE)
@@ -39,7 +41,7 @@ public class FileSource extends NamedFeaturesSource {
 
     public static final String LINE_FEATURE = "file line";
 
-    @NameMapper(stream = "output", expectedFeatures = { @ExpectedFeature(name = LINE_FEATURE, type = String.class) })
+    @NameMapper(stream = "output", expectedFeatures = { @ExpectedFeature(name = LINE_FEATURE, type = TEXT) })
     private NamedFeaturesMapper mapper;
 
     @Property(name = "File", description = "The full path of the file to read", mandatory = true)
@@ -60,7 +62,7 @@ public class FileSource extends NamedFeaturesSource {
             while (instances.size() < maxBatchSize && (line = file.readLine()) != null) {
                 try {
                     Instance instance = Instance.create(mapper);
-                    instance.setFeature(LINE_FEATURE, line);
+                    instance.setFeature(LINE_FEATURE, new TextFeature(line));
                     instances.add(instance);
                 } catch (Exception ex) {
                     LOGGER.warn(ex.getMessage() + " : Instance skipped '" + line + "'");

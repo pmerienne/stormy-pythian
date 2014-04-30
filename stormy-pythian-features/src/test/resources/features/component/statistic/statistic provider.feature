@@ -19,7 +19,7 @@ Scenario: Compute mean grouped by field
 		| Name				|	String										|	test-grouped-mean	|
 	When the component is deployed
 	And I emit to the input "in":
-		|	username:STRING	|	call duration:INTEGER	|
+		|	username:TEXT	|	call duration:INTEGER	|
 		|	pierre			|	10						|
 		|	pierre			|	20						|
 		|	jean			|	20						|
@@ -27,7 +27,7 @@ Scenario: Compute mean grouped by field
 		|	jean			|	40						|
 		|	julie			|	20						|
     Then the output "out" should have emit only:
-		|	username:STRING	|	call duration:INTEGER	|	call duration mean:DOUBLE	|
+		|	username:TEXT	|	call duration:INTEGER	|	call duration mean:DECIMAL	|
 		|	pierre			|	10						|	15.0						|
 		|	pierre			|	20						|	15.0						|
 		|	jean			|	20						|	30.0						|
@@ -61,7 +61,7 @@ Scenario: Compute mean on time window
 		|	2014-04-05T15:00	|	20						|
 		|	2014-04-05T23:00	|	0						|
     Then the output "out" should have emit only:
-		|	call date:DATE		|	call duration:INTEGER	|	last day call's duration mean:DOUBLE	|
+		|	call date:DATE		|	call duration:INTEGER	|	last day call's duration mean:DECIMAL	|
 		|	2014-04-04T10:00	|	10						|	10.0									|
 		|	2014-04-04T18:00	|	30						|	20.0									|
 		|	2014-04-04T20:00	|	20						|	20.0									|
@@ -88,7 +88,7 @@ Scenario: Compute mean grouped by field on time window
 		| Name				|	String										|	test-mean-grouped-by-on-time-window	|
 	When the component is deployed
 	And I emit to the input "in":
-		|	username:STRING	|	call date:DATE		|	call duration:INTEGER	|
+		|	username:TEXT	|	call date:DATE		|	call duration:INTEGER	|
 		|	pierre			|	2014-04-04T10:00	|	10						|
 		|	julie			|	2014-04-04T18:00	|	30						|
 		|	julie			|	2014-04-04T20:00	|	20						|
@@ -96,7 +96,7 @@ Scenario: Compute mean grouped by field on time window
 		|	julie			|	2014-04-05T15:00	|	10						|
 		|	martin			|	2014-04-05T23:00	|	0						|
     Then the output "out" should have emit only:
-		|	username:STRING	|	call date:DATE		|	call duration:INTEGER	|	last day call's duration mean:DOUBLE	|
+		|	username:TEXT	|	call date:DATE		|	call duration:INTEGER	|	last day call's duration mean:DECIMAL	|
 		|	pierre			|	2014-04-04T10:00	|	10						|	10.0									|
 		|	julie			|	2014-04-04T18:00	|	30						|	30.0									|
 		|	julie			|	2014-04-04T20:00	|	20						|	25.0									|

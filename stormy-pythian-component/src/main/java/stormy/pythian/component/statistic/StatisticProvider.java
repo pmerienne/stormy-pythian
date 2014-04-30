@@ -1,6 +1,8 @@
 package stormy.pythian.component.statistic;
 
 import static stormy.pythian.model.annotation.ComponentType.ANALYTICS;
+import static stormy.pythian.model.instance.FeatureType.DATE;
+import static stormy.pythian.model.instance.FeatureType.DECIMAL;
 import static stormy.pythian.model.instance.Instance.INSTANCE_FIELD;
 import static stormy.pythian.model.instance.Instance.NEW_INSTANCE_FIELD;
 import java.util.Date;
@@ -26,6 +28,7 @@ import stormy.pythian.model.annotation.OutputStream;
 import stormy.pythian.model.annotation.Property;
 import stormy.pythian.model.annotation.State;
 import stormy.pythian.model.component.Component;
+import stormy.pythian.model.instance.DecimalFeature;
 import stormy.pythian.model.instance.Instance;
 import stormy.pythian.model.instance.NamedFeaturesMapper;
 import backtype.storm.tuple.Fields;
@@ -56,12 +59,12 @@ public class StatisticProvider implements Component {
 
     @NameMapper(stream = "in", expectedFeatures = {
             @ExpectedFeature(name = GROUP_BY_FEATURE),
-            @ExpectedFeature(name = DATE_FEATURE, type = Date.class),
-            @ExpectedFeature(name = PROCESSED_FEATURE, type = Number.class)
+            @ExpectedFeature(name = DATE_FEATURE, type = DATE),
+            @ExpectedFeature(name = PROCESSED_FEATURE, type = DECIMAL)
     })
     private NamedFeaturesMapper inputMapper;
 
-    @NameMapper(stream = "out", expectedFeatures = { @ExpectedFeature(name = RESULT_FEATURE, type = Double.class) })
+    @NameMapper(stream = "out", expectedFeatures = { @ExpectedFeature(name = RESULT_FEATURE, type = DECIMAL) })
     private NamedFeaturesMapper outputMapper;
 
     @State(name = "Statistics' state")
@@ -259,10 +262,10 @@ public class StatisticProvider implements Component {
         @Override
         public void execute(TridentTuple tuple, TridentCollector collector) {
             T statistic = (T) tuple.getValueByField(STATISTIC_FIELD);
-            Object feature = aggregableStatistic.toFeature(statistic);
+            Double feature = aggregableStatistic.toFeature(statistic);
 
             Instance instance = Instance.get(tuple, inputMapper, outputMapper);
-            instance.setFeature(RESULT_FEATURE, feature);
+            instance.setFeature(RESULT_FEATURE, new DecimalFeature(feature));
 
             collector.emit(new Values(instance));
         }
@@ -283,7 +286,7 @@ public class StatisticProvider implements Component {
         @Override
         public T init(TridentTuple tuple) {
             Instance instance = Instance.get(tuple, inputMapper);
-            Number feature = instance.getFeature(PROCESSED_FEATURE);
+            Double feature = instance.getFeature(PROCESSED_FEATURE).decimalValue();
 
             if (feature != null) {
                 T statistic = aggregableStatistic.init(feature);

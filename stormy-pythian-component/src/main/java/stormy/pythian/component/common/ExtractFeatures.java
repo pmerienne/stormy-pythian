@@ -21,6 +21,7 @@ import java.util.List;
 import storm.trident.operation.BaseFunction;
 import storm.trident.operation.TridentCollector;
 import storm.trident.tuple.TridentTuple;
+import stormy.pythian.model.instance.Feature;
 import stormy.pythian.model.instance.Instance;
 import stormy.pythian.model.instance.ListedFeaturesMapper;
 import stormy.pythian.model.instance.NamedFeaturesMapper;
@@ -58,13 +59,16 @@ public class ExtractFeatures extends BaseFunction {
 
         if (listedFeaturesMapper != null) {
             Instance instance = Instance.get(tuple, listedFeaturesMapper);
-            features = instance.getFeatures();
+            features = new ArrayList<>(instance.size());
+            for (Feature<?> feature : instance.getFeatures()) {
+                features.add(feature.getValue());
+            }
         } else if (namedFeaturesMapper != null) {
             Instance instance = Instance.get(tuple, namedFeaturesMapper);
 
             features = new ArrayList<>(featureNames.length);
             for (String featureName : featureNames) {
-                features.add(instance.getFeature(featureName));
+                features.add(instance.getFeature(featureName).getValue());
             }
         }
 

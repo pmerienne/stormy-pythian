@@ -24,6 +24,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static stormy.pythian.model.annotation.MappingType.LISTED;
 import static stormy.pythian.model.annotation.MappingType.NAMED;
+import static stormy.pythian.model.instance.FeatureType.ANY;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -178,7 +179,7 @@ public class ComponentFactoryTest {
         // Given
         Map<String, String> mappings = new HashMap<>();
         mappings.put("inside", "outside");
-        OutputStreamDescription outputStreamDescription = new OutputStreamDescription("out1", "", NAMED, asList(new FeatureDescription("outside", Object.class)));
+        OutputStreamDescription outputStreamDescription = new OutputStreamDescription("out1", "", NAMED, asList(new FeatureDescription("outside", ANY)));
 
         ComponentConfiguration configuration = new ComponentConfiguration(randomAlphabetic(6), new ComponentDescription(TestComponent.class));
         configuration.add(new OutputStreamConfiguration(outputStreamDescription, mappings));

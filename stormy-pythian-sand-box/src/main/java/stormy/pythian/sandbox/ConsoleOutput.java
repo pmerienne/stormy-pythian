@@ -24,6 +24,7 @@ import stormy.pythian.model.annotation.Documentation;
 import stormy.pythian.model.annotation.InputStream;
 import stormy.pythian.model.annotation.ListMapper;
 import stormy.pythian.model.component.Component;
+import stormy.pythian.model.instance.Feature;
 import stormy.pythian.model.instance.Instance;
 import stormy.pythian.model.instance.ListedFeaturesMapper;
 import backtype.storm.tuple.Fields;
@@ -57,7 +58,7 @@ public class ConsoleOutput implements Component {
         public boolean isKeep(TridentTuple tuple) {
             Instance instance = Instance.get(tuple, mappings);
 
-            List<Object> selectedFeatures = instance.getFeatures();
+            List<Feature<?>> selectedFeatures = instance.getFeatures();
             System.out.println("Features : " + selectedFeatures);
 
             return true;

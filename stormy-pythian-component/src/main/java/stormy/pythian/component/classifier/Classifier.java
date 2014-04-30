@@ -64,9 +64,9 @@ public abstract class Classifier<L> implements Component {
     @Property(name = "Classifier name", mandatory = true)
     private String classifierName;
 
-    protected abstract void update(L label, List<Object> features);
+    protected abstract void update(Instance instance);
 
-    protected abstract L classify(List<Object> features);
+    protected abstract void classify(Instance instance);
 
     protected abstract void initClassifier();
 
@@ -90,7 +90,6 @@ public abstract class Classifier<L> implements Component {
         }
 
         @Override
-        @SuppressWarnings("unchecked")
         public void updateState(MapState<Classifier<L>> state, List<TridentTuple> tuples, TridentCollector collector) {
             // Get model
             List<Classifier<L>> classifiers = state.multiGet(KeysUtil.toKeys(this.classifierName));
@@ -107,9 +106,7 @@ public abstract class Classifier<L> implements Component {
             // Update model
             for (TridentTuple tuple : tuples) {
                 Instance instance = Instance.get(tuple, mapper);
-                List<Object> features = instance.getFeatures();
-                L label = (L) instance.getLabel();
-                classifier.update(label, features);
+                classifier.update(instance);
             }
 
             // Save model
@@ -142,10 +139,7 @@ public abstract class Classifier<L> implements Component {
 
                     for (TridentTuple tuple : tuples) {
                         Instance instance = Instance.get(tuple, mapper);
-                        List<Object> features = instance.getFeatures();
-
-                        L label = classifier.classify(features);
-                        instance.setLabel(label);
+                        classifier.classify(instance);
                         instances.add(instance);
                     }
                 }

@@ -15,9 +15,9 @@ Scenario: Stream csv file
 	And the component has the output "output" listed features: Name, Birthdate, Gender
 	When the component is deployed
     Then the component's output "output" should have emit only:
-    	|	Name:STRING	|	Birthdate:STRING	|	Gender:STRING	|
-    	| 	Julie		|	1981				|	Female			|
-    	| 	Pierre		|	1987				|	Male			|
+    	|	Name:TEXT	|	Birthdate:TEXT	|	Gender:TEXT	|
+    	| 	Julie		|	1981			|	Female		|
+    	| 	Pierre		|	1987			|	Male		|
 
 Scenario: Csv source supports new lines
 	Given a file "/tmp/data.csv" containing:
@@ -36,6 +36,6 @@ Scenario: Csv source supports new lines
 		"""
     And I wait 1 second
     Then the component's output "output" should have emit only:
-    	|	Name:STRING	|	Birthdate:STRING	|	Gender:STRING	|
+    	|	Name:TEXT	|	Birthdate:TEXT		|	Gender:TEXT	|
     	| 	Julie		|	1981				|	Female			|
     	| 	Pierre		|	1987				|	Male			|

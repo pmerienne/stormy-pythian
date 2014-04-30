@@ -19,7 +19,7 @@ Scenario: Learn NAND function
 		| Name				|	String										|	test-classifier	|
 	When the component is deployed
 	And I emit to the input "update":
-		|	label:BOOLEAN	|	i0:DOUBLE	|	i1:DOUBLE	|	i2:DOUBLE	|
+		|	label:BOOLEAN	|	i0:DECIMAL	|	i1:DECIMAL	|	i2:DECIMAL	|
 		|	false			|	1.0			|	1.0			|	1.0			|
 		|	true			|	1.0			|	-1.0		|	1.0			|
 		|	true			|	1.0			|	1.0			|	-1.0		|
@@ -33,13 +33,13 @@ Scenario: Learn NAND function
 		|	true			|	1.0			|	1.0			|	-1.0		|
 		|	true			|	1.0			|	-1.0		|	-1.0		|
 	And I emit to the input "query":
-		|	i0:DOUBLE	|	i1:DOUBLE	|	i2:DOUBLE	|
+		|	i0:DECIMAL	|	i1:DECIMAL	|	i2:DECIMAL	|
 		|	1.0			|	1.0			|	1.0			|
 		|	1.0			|	-1.0		|	1.0			|
 		|	1.0			|	1.0			|	-1.0		|
 		|	1.0			|	-1.0		|	-1.0		|
     Then the output "prediction" should have emit only:
-		|	label:BOOLEAN	|	i0:DOUBLE	|	i1:DOUBLE	|	i2:DOUBLE	|
+		|	label:BOOLEAN	|	i0:DECIMAL	|	i1:DECIMAL	|	i2:DECIMAL	|
 		|	false			|	1.0			|	1.0			|	1.0			|
 		|	true			|	1.0			|	-1.0		|	1.0			|
 		|	true			|	1.0			|	1.0			|	-1.0		|

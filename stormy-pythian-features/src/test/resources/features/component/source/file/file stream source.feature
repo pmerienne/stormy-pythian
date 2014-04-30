@@ -17,7 +17,7 @@ Scenario: Stream text file
 	When the component is deployed
     And I wait 2 seconds
     Then the component's output "output" should have emit only:
-    	|	line:STRING															|
+    	|	line:TEXT															|
     	| 	Lorem ipsum dolor sit amet, consectetur adipisicing elit			|
     	| 	sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.	|
     	
@@ -39,6 +39,6 @@ Scenario: File source supports new lines
 		"""
     And I wait 1 second
     Then the component's output "output" should have emit only:
-    	|	line:STRING															|
+    	|	line:TEXT															|
     	| 	Lorem ipsum dolor sit amet, consectetur adipisicing elit			|
     	| 	sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.	|

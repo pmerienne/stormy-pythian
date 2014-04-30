@@ -8,12 +8,12 @@ public class InstanceTestBuilder {
         return new InstanceTestBuilder();
     }
 
-    public InstanceTestBuilder label(Object label) {
+    public InstanceTestBuilder label(Feature<?> label) {
         instance.label = label;
         return this;
     }
 
-    public InstanceTestBuilder with(String name, Object feature) {
+    public InstanceTestBuilder with(String name, Feature<?> feature) {
         instance.features.put(name, feature);
         return this;
     }
