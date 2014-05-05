@@ -53,9 +53,8 @@ app.controller('EditComponentCtrl', function($scope, $modalInstance, component, 
 			newFeatures = outputStream.selectedFeatures;
 		} else if(outputStream.description.type == 'NAMED') {
 			newFeatures = Object.keys(outputStream.mappings).map(function(key){return outputStream.mappings[key];});
-		}
-		if(newFeatures == null) {
-			return [];
+		} else if(outputStream.description.type == 'NONE') {
+			newFeatures = [];
 		}
 		
 		if(outputStream.description.from != null) {

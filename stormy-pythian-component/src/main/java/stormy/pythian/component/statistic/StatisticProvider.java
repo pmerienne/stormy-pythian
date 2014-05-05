@@ -70,10 +70,10 @@ public class StatisticProvider implements Component {
     @State(name = "Statistics' state")
     private StateFactory stateFactory;
 
-    @Property(name = "Window length (in ms)")
+    @Property(name = "Window length (in ms)", mandatory = false)
     private Long windowLengthMs;
 
-    @Property(name = "Slot precision (in ms)")
+    @Property(name = "Slot precision (in ms)", mandatory = false)
     private Long slotLengthMs;
 
     @Property(name = "Operation")

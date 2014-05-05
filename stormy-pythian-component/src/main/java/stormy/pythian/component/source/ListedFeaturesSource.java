@@ -32,15 +32,12 @@ public abstract class ListedFeaturesSource implements Component {
     @Property(name = "Max batch size")
     protected Integer maxBatchSize = 1000;
 
-    @Property(name = "Max task parallelism")
-    protected Integer maxTaskParallelism = 1;
-
     @Topology
     private transient TridentTopology topology;
 
     @Override
     public void init() {
-        PythianBatchSpout spout = new PythianBatchSpout(this, maxTaskParallelism);
+        PythianBatchSpout spout = new PythianBatchSpout(this);
         out = topology.newStream(this.getClass() + "-spout-" + randomAlphabetic(5), spout);
     }
 
@@ -53,11 +50,9 @@ public abstract class ListedFeaturesSource implements Component {
     private static class PythianBatchSpout implements IBatchSpout {
 
         private final ListedFeaturesSource streamSource;
-        private final int maxTaskParallelism;
 
-        public PythianBatchSpout(ListedFeaturesSource streamSource, int maxTaskParallelism) {
+        public PythianBatchSpout(ListedFeaturesSource streamSource) {
             this.streamSource = streamSource;
-            this.maxTaskParallelism = maxTaskParallelism;
         }
 
         @Override
@@ -73,7 +68,7 @@ public abstract class ListedFeaturesSource implements Component {
         @Override
         public Map getComponentConfiguration() {
             Config conf = new Config();
-            conf.setMaxTaskParallelism(maxTaskParallelism);
+            conf.setMaxTaskParallelism(1);
             return conf;
         }
 

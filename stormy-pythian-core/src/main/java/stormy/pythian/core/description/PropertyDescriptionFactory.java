@@ -37,11 +37,11 @@ public class PropertyDescriptionFactory {
         for (Field propertyField : propertyFields) {
             Property property = propertyField.getAnnotation(Property.class);
             PropertyDescription propertyDescription = new PropertyDescription(property.name(), property.description(), property.mandatory(), fromType(propertyField.getType()));
-            if(PropertyType.ENUM.equals(propertyDescription.getType())) {
-            	List<String> enumValues = retrieveEnumValues(propertyField);
-            	propertyDescription.setAcceptedValues(enumValues);
+            if (PropertyType.ENUM.equals(propertyDescription.getType())) {
+                List<String> enumValues = retrieveEnumValues(propertyField);
+                propertyDescription.setAcceptedValues(enumValues);
             }
-            
+
             propertyDescriptions.add(propertyDescription);
         }
 
@@ -49,13 +49,13 @@ public class PropertyDescriptionFactory {
     }
 
     private List<String> retrieveEnumValues(Field field) {
-    	Object[] enumConstants = field.getType().getEnumConstants();
-    	
-    	List<String> enumValues = new ArrayList<>(enumConstants.length);
-    	for(Object enumConstant : enumConstants) {
-    		enumValues.add(enumConstant.toString());
-    	}
-    	
-    	return enumValues;
+        Object[] enumConstants = field.getType().getEnumConstants();
+
+        List<String> enumValues = new ArrayList<>(enumConstants.length);
+        for (Object enumConstant : enumConstants) {
+            enumValues.add(enumConstant.toString());
+        }
+
+        return enumValues;
     }
 }
