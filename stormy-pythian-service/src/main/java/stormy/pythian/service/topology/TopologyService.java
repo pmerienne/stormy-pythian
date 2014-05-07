@@ -48,5 +48,5 @@ public class TopologyService {
         checkNotNull(topologyId, "topology's id is mandatory");
         return repository.findById(topologyId);
     }
-
+    
 }

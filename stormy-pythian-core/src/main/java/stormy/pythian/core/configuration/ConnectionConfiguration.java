@@ -15,6 +15,8 @@
  */
 package stormy.pythian.core.configuration;
 
+import com.google.common.base.Predicate;
+
 public class ConnectionConfiguration {
 
     private final ConnectionPoint from;
@@ -36,6 +38,10 @@ public class ConnectionConfiguration {
 
     public boolean isFrom(String componentId) {
         return this.from.hasId(componentId);
+    }
+
+    public boolean isTo(String componentId) {
+        return this.to.id.equals(componentId);
     }
 
     public boolean isTo(String componentId, String streamName) {
@@ -64,6 +70,24 @@ public class ConnectionConfiguration {
 
     public String retrieveToComponent() {
         return to.id;
+    }
+
+    public static Predicate<ConnectionConfiguration> connectedTo(final ComponentConfiguration component) {
+        return new Predicate<ConnectionConfiguration>() {
+            @Override
+            public boolean apply(ConnectionConfiguration connection) {
+                return connection.isTo(component.getId());
+            }
+        };
+    }
+
+    public static Predicate<ConnectionConfiguration> connectedTo(final ComponentConfiguration component, final String inputStreamName) {
+        return new Predicate<ConnectionConfiguration>() {
+            @Override
+            public boolean apply(ConnectionConfiguration connection) {
+                return connection.isTo(component.getId(), inputStreamName);
+            }
+        };
     }
 
     @Override
@@ -173,6 +197,5 @@ public class ConnectionConfiguration {
         }
 
     }
-
 
 }

@@ -212,7 +212,13 @@ public class ReflectionHelper {
             Set<Field> propertyFields = getAllFields(obj.getClass(), withProperty(property.getName()));
             if (propertyFields != null && !propertyFields.isEmpty()) {
                 Field propertyField = propertyFields.iterator().next();
-                FieldUtils.writeField(propertyField, obj, property.getValue(), true);
+
+                if (propertyField.getType().isEnum()) {
+                    Object enumValue = getEnumValue(propertyField.getType(), property.getValue().toString());
+                    FieldUtils.writeField(propertyField, obj, enumValue, true);
+                } else {
+                    FieldUtils.writeField(propertyField, obj, property.getValue(), true);
+                }
             }
         } catch (Exception e) {
             throw new IllegalArgumentException("Unable to set property " + property, e);
@@ -289,5 +295,13 @@ public class ReflectionHelper {
                 return input.getAnnotation(ListMapper.class).stream().equals(stream);
             }
         };
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public static Object getEnumValue(Class<?> clazz, String name) {
+        if (clazz == null || name == null || name.isEmpty()) {
+            return null;
+        }
+        return Enum.valueOf((Class<Enum>) clazz, name);
     }
 }

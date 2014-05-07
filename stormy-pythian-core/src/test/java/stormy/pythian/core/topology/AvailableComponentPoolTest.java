@@ -16,11 +16,12 @@
 package stormy.pythian.core.topology;
 
 import static java.util.Arrays.asList;
-import static java.util.UUID.randomUUID;
 import static org.apache.commons.lang.RandomStringUtils.randomAlphabetic;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.fest.assertions.MapAssert.entry;
 import static org.mockito.Mockito.mock;
+import static stormy.pythian.core.description.InputStreamDescriptionTestBuilder.inputStreamDescription;
+import static stormy.pythian.core.description.OutputStreamDescriptionTestBuilder.outputStreamDescription;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -40,10 +41,8 @@ public class AvailableComponentPoolTest {
     @Test
     public void should_retrieve_available_component() {
         // Given
-        ComponentDescription descriptor = new ComponentDescription(TestComponent.class);
-        ComponentConfiguration configuration = new ComponentConfiguration(randomUUID().toString(), descriptor);
-
-        List<ComponentConfiguration> configurations = Arrays.asList(configuration);
+        ComponentConfiguration configuration = createComponentConfiguration();
+        List<ComponentConfiguration> configurations = asList(configuration);
 
         AvailableComponentPool pool = new AvailableComponentPool(configurations, new ArrayList<ConnectionConfiguration>());
 
@@ -57,10 +56,7 @@ public class AvailableComponentPoolTest {
     @Test
     public void should_know_when_empty() {
         // Given
-        ComponentDescription descriptor = new ComponentDescription(TestComponent.class);
-        ComponentConfiguration configuration = new ComponentConfiguration(randomUUID().toString(), descriptor);
-
-        List<ComponentConfiguration> configurations = Arrays.asList(configuration);
+        List<ComponentConfiguration> configurations = asList(createComponentConfiguration());
 
         AvailableComponentPool pool = new AvailableComponentPool(configurations, new ArrayList<ConnectionConfiguration>());
 
@@ -78,12 +74,10 @@ public class AvailableComponentPoolTest {
     @Test
     public void should_not_retrieve_not_available_component() {
         // Given
-        ComponentDescription descriptor = new ComponentDescription(TestComponentWithInputStreams.class);
-        ComponentConfiguration configuration = new ComponentConfiguration(randomUUID().toString(), descriptor);
-
-        List<ComponentConfiguration> configurations = Arrays.asList(configuration);
-
-        AvailableComponentPool pool = new AvailableComponentPool(configurations, new ArrayList<ConnectionConfiguration>());
+        ComponentConfiguration configuration = createComponentConfigurationWithInputStreams();
+        ConnectionConfiguration connection1 = new ConnectionConfiguration("", "", configuration.getId(), "in1");
+        ConnectionConfiguration connection2 = new ConnectionConfiguration("", "", configuration.getId(), "in2");
+        AvailableComponentPool pool = new AvailableComponentPool(asList(configuration), asList(connection1, connection2));
 
         // When
         ComponentConfiguration actualComponent = pool.getAvailableComponent();
@@ -95,8 +89,8 @@ public class AvailableComponentPoolTest {
     @Test
     public void should_register_builded_component() {
         // Given
-        ComponentConfiguration componentWithOutputStream = createConfiguration(TestComponentWithOuputStream.class);
-        ComponentConfiguration componentWithInputStreams = createConfiguration(TestComponentWithInputStreams.class);
+        ComponentConfiguration componentWithOutputStream = createComponentConfigurationWithOutputStream();
+        ComponentConfiguration componentWithInputStreams = createComponentConfigurationWithInputStreams();
 
         List<ComponentConfiguration> configurations = Arrays.asList(componentWithInputStreams, componentWithOutputStream);
 
@@ -129,11 +123,11 @@ public class AvailableComponentPoolTest {
     @Test
     public void should_find_available_input_streams() {
         // Given
-        ComponentConfiguration streamSourceConfiguration = createConfiguration(TestComponentWithOnlyOutput.class);
-        TestComponentWithOnlyOutput streamSource = new TestComponentWithOnlyOutput();
+        ComponentConfiguration streamSourceConfiguration = createComponentConfigurationWithOutputStream();
+        TestComponentWithOuputStream streamSource = new TestComponentWithOuputStream();
         streamSource.out = mock(Stream.class);
 
-        ComponentConfiguration componentConfiguration = createConfiguration(TestComponentWithInputStreams.class);
+        ComponentConfiguration componentConfiguration = createComponentConfigurationWithInputStreams();
         List<ComponentConfiguration> configurations = asList(componentConfiguration);
 
         List<ConnectionConfiguration> connections = new ArrayList<ConnectionConfiguration>();
@@ -150,11 +144,25 @@ public class AvailableComponentPoolTest {
         assertThat(actualInputStreams).includes(entry("in1", streamSource.out), entry("in2", streamSource.out));
     }
 
-    private ComponentConfiguration createConfiguration(Class<? extends Component> clazz) {
-        ComponentDescription descriptor = new ComponentDescription(clazz);
-        ComponentConfiguration component = new ComponentConfiguration(randomAlphabetic(6), descriptor);
+    private ComponentConfiguration createComponentConfigurationWithInputStreams() {
+        ComponentDescription descriptor = new ComponentDescription(TestComponentWithInputStreams.class);
+        descriptor.add(inputStreamDescription().name("in1").build());
+        descriptor.add(inputStreamDescription().name("in2").build());
 
-        return component;
+        return new ComponentConfiguration(randomAlphabetic(6), descriptor);
+    }
+
+    private ComponentConfiguration createComponentConfigurationWithOutputStream() {
+        ComponentDescription descriptor = new ComponentDescription(TestComponentWithOuputStream.class);
+        descriptor.add(outputStreamDescription().name("out").build());
+
+        ComponentConfiguration configuration = new ComponentConfiguration(randomAlphabetic(6), descriptor);
+        return configuration;
+    }
+
+    private ComponentConfiguration createComponentConfiguration() {
+        ComponentDescription descriptor = new ComponentDescription(TestComponent.class);
+        return new ComponentConfiguration(randomAlphabetic(6), descriptor);
     }
 
     public static class TestComponent implements Component {
@@ -189,14 +197,4 @@ public class AvailableComponentPoolTest {
         }
     }
 
-    public static class TestComponentWithOnlyOutput implements Component {
-
-        @OutputStream(from = "", name = "out")
-        public Stream out;
-
-        @Override
-        public void init() {
-
-        }
-    }
 }

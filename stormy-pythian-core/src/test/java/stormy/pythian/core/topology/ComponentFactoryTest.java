@@ -24,6 +24,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static stormy.pythian.model.annotation.MappingType.LISTED;
 import static stormy.pythian.model.annotation.MappingType.NAMED;
+import static stormy.pythian.model.annotation.PropertyType.BOOLEAN;
 import static stormy.pythian.model.instance.FeatureType.ANY;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -46,6 +47,7 @@ import stormy.pythian.core.description.ComponentDescription;
 import stormy.pythian.core.description.FeatureDescription;
 import stormy.pythian.core.description.InputStreamDescription;
 import stormy.pythian.core.description.OutputStreamDescription;
+import stormy.pythian.core.description.PropertyDescription;
 import stormy.pythian.model.annotation.Configuration;
 import stormy.pythian.model.annotation.InputStream;
 import stormy.pythian.model.annotation.ListMapper;
@@ -91,7 +93,7 @@ public class ComponentFactoryTest {
     public void should_set_properties() {
         // Given
         ComponentConfiguration configuration = new ComponentConfiguration(randomAlphabetic(6), new ComponentDescription(TestComponent.class));
-        configuration.add(new PropertyConfiguration("distributed", true));
+        configuration.add(new PropertyConfiguration("distributed", true, new PropertyDescription("distributed", "", false, BOOLEAN)));
 
         // When
         Component component = factory.createComponent(configuration, new HashMap<String, StateFactory>(), new HashMap<String, Stream>());

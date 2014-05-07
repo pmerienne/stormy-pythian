@@ -24,11 +24,18 @@ public class InputStreamDescription {
     private String name;
     private MappingType type;
     private List<FeatureDescription> expectedFeatures = new ArrayList<>();
+    private boolean mandatory = true;
 
     public InputStreamDescription() {
         this.name = null;
         this.type = null;
         this.expectedFeatures = null;
+    }
+
+    public InputStreamDescription(String name, MappingType type) {
+        this.name = name;
+        this.type = type;
+        this.expectedFeatures = new ArrayList<>();
     }
 
     public InputStreamDescription(String name, MappingType type, List<FeatureDescription> expectedFeatures) {
@@ -37,10 +44,11 @@ public class InputStreamDescription {
         this.expectedFeatures = expectedFeatures;
     }
 
-    public InputStreamDescription(String name, MappingType type) {
+    public InputStreamDescription(String name, MappingType type, List<FeatureDescription> expectedFeatures, boolean mandatory) {
         this.name = name;
         this.type = type;
-        this.expectedFeatures = new ArrayList<>();
+        this.expectedFeatures = expectedFeatures;
+        this.mandatory = mandatory;
     }
 
     public String getName() {
@@ -67,11 +75,20 @@ public class InputStreamDescription {
         this.expectedFeatures = expectedFeatures;
     }
 
+    public boolean isMandatory() {
+        return mandatory;
+    }
+
+    public void setMandatory(boolean mandatory) {
+        this.mandatory = mandatory;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((expectedFeatures == null) ? 0 : expectedFeatures.hashCode());
+        result = prime * result + (mandatory ? 1231 : 1237);
         result = prime * result + ((name == null) ? 0 : name.hashCode());
         result = prime * result + ((type == null) ? 0 : type.hashCode());
         return result;
@@ -91,6 +108,8 @@ public class InputStreamDescription {
                 return false;
         } else if (!expectedFeatures.equals(other.expectedFeatures))
             return false;
+        if (mandatory != other.mandatory)
+            return false;
         if (name == null) {
             if (other.name != null)
                 return false;
@@ -103,7 +122,7 @@ public class InputStreamDescription {
 
     @Override
     public String toString() {
-        return "InputStreamDescription [name=" + name + ", mappingType=" + type + ", expectedFeatures=" + expectedFeatures + "]";
+        return "InputStreamDescription [name=" + name + ", type=" + type + ", expectedFeatures=" + expectedFeatures + ", mandatory=" + mandatory + "]";
     }
 
 }

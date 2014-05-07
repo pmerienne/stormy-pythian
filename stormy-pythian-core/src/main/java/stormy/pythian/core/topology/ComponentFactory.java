@@ -99,7 +99,7 @@ public class ComponentFactory {
                     setFeaturesMapper(component, streamName, new NamedFeaturesMapper(isConfiguration.getMappings()));
                     break;
                 default:
-                    throw new IllegalStateException("Unsupported mapping type : " + isConfiguration.retrieveMappingType());
+                    break;
             }
         }
 
@@ -114,7 +114,7 @@ public class ComponentFactory {
                     setFeaturesMapper(component, streamName, new NamedFeaturesMapper(osConfiguration.getMappings()));
                     break;
                 default:
-                    throw new IllegalStateException("Unsupported mapping type : " + osConfiguration.retrieveMappingType());
+                    break;
             }
         }
     }

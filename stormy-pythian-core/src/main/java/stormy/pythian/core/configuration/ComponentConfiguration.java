@@ -16,144 +16,168 @@
 package stormy.pythian.core.configuration;
 
 import static com.google.common.collect.Iterables.tryFind;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import stormy.pythian.core.description.ComponentDescription;
 import stormy.pythian.model.component.Component;
-
 import com.google.common.base.Predicate;
 
-public class ComponentConfiguration {
+public class ComponentConfiguration implements Validable {
 
-	private String id;
-	private String name;
+    private String id;
+    private String name;
 
-	private ComponentDescription description;
+    private ComponentDescription description;
 
-	private List<PropertyConfiguration> properties = new ArrayList<>();
-	private List<InputStreamConfiguration> inputStreams = new ArrayList<>();
-	private List<OutputStreamConfiguration> outputStreams = new ArrayList<>();
-	private List<PythianStateConfiguration> states = new ArrayList<>();
+    private List<PropertyConfiguration> properties = new ArrayList<>();
+    private List<InputStreamConfiguration> inputStreams = new ArrayList<>();
+    private List<OutputStreamConfiguration> outputStreams = new ArrayList<>();
+    private List<PythianStateConfiguration> states = new ArrayList<>();
 
-	private int x = 0;
-	private int y = 0;
+    private int x = 0;
+    private int y = 0;
 
-	public ComponentConfiguration() {
-	}
+    public ComponentConfiguration() {
+    }
 
-	public ComponentConfiguration(String id) {
-		this.id = id;
-	}
+    public ComponentConfiguration(String id) {
+        this.id = id;
+    }
 
-	public ComponentConfiguration(String id, ComponentDescription description) {
-		this.id = id;
-		this.description = description;
-	}
+    public ComponentConfiguration(String id, ComponentDescription description) {
+        this.id = id;
+        this.description = description;
+    }
 
-	public String getId() {
-		return id;
-	}
+    @Override
+    public ValidationResult validate() {
+        ValidationResult result = new ValidationResult(name);
 
-	public void setId(String id) {
-		this.id = id;
-	}
+        for (PropertyConfiguration property : properties) {
+            result.include(property.validate());
+        }
 
-	public String getName() {
-		return name;
-	}
+        for (PythianStateConfiguration state : states) {
+            result.include(state.validate());
+        }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+        return result;
+    }
 
-	public int getX() {
-		return x;
-	}
+    public List<String> retrieveMandatoryInputStreams() {
+        return description.retrieveMandatoryInputStreams();
+    }
 
-	public void setX(int x) {
-		this.x = x;
-	}
+    public String getId() {
+        return id;
+    }
 
-	public int getY() {
-		return y;
-	}
+    public void setId(String id) {
+        this.id = id;
+    }
 
-	public void setY(int y) {
-		this.y = y;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public String retrieveName() {
-		return description.getName();
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public ComponentDescription getDescription() {
-		return description;
-	}
+    public int getX() {
+        return x;
+    }
 
-	public void setDescription(ComponentDescription description) {
-		this.description = description;
-	}
+    public void setX(int x) {
+        this.x = x;
+    }
 
-	public void setProperties(List<PropertyConfiguration> properties) {
-		this.properties = properties;
-	}
+    public int getY() {
+        return y;
+    }
 
-	public List<PythianStateConfiguration> getStates() {
-		return states;
-	}
+    public void setY(int y) {
+        this.y = y;
+    }
 
-	public void setStates(List<PythianStateConfiguration> states) {
-		this.states = states;
-	}
+    public String retrieveName() {
+        return description.getName();
+    }
 
-	public List<InputStreamConfiguration> getInputStreams() {
-		return inputStreams;
-	}
+    public ComponentDescription getDescription() {
+        return description;
+    }
 
-	public void setInputStreams(List<InputStreamConfiguration> inputStreams) {
-		this.inputStreams = inputStreams;
-	}
+    public void setDescription(ComponentDescription description) {
+        this.description = description;
+    }
 
-	public List<OutputStreamConfiguration> getOutputStreams() {
-		return outputStreams;
-	}
+    public void setProperties(List<PropertyConfiguration> properties) {
+        this.properties = properties;
+    }
 
-	public List<PropertyConfiguration> getProperties() {
-		return properties;
-	}
+    public List<PythianStateConfiguration> getStates() {
+        return states;
+    }
 
-	public void setOutputStreams(List<OutputStreamConfiguration> outputStreams) {
-		this.outputStreams = outputStreams;
-	}
+    public void setStates(List<PythianStateConfiguration> states) {
+        this.states = states;
+    }
 
-	public void add(PropertyConfiguration property) {
-		this.properties.add(property);
-	}
+    public List<InputStreamConfiguration> getInputStreams() {
+        return inputStreams;
+    }
 
-	public void add(InputStreamConfiguration inputStream) {
-		this.inputStreams.add(inputStream);
-	}
+    public void setInputStreams(List<InputStreamConfiguration> inputStreams) {
+        this.inputStreams = inputStreams;
+    }
 
-	public void add(OutputStreamConfiguration outputStream) {
-		this.outputStreams.add(outputStream);
-	}
+    public List<OutputStreamConfiguration> getOutputStreams() {
+        return outputStreams;
+    }
 
-	public void add(PythianStateConfiguration stateFactoryConfiguration) {
-		this.states.add(stateFactoryConfiguration);
-	}
+    public List<PropertyConfiguration> getProperties() {
+        return properties;
+    }
 
-	public OutputStreamConfiguration findOutputStreamByName(final String name) {
-		return tryFind(outputStreams, new Predicate<OutputStreamConfiguration>() {
-			public boolean apply(OutputStreamConfiguration candidate) {
-				return name.equals(candidate.retrieveStreamName());
-			}
-		}).orNull();
-	}
+    public void setOutputStreams(List<OutputStreamConfiguration> outputStreams) {
+        this.outputStreams = outputStreams;
+    }
 
-	public Class<? extends Component> retrieveImplementationClass() {
-		return description.getClazz();
-	}
+    public void add(PropertyConfiguration property) {
+        this.properties.add(property);
+    }
+
+    public void add(InputStreamConfiguration inputStream) {
+        this.inputStreams.add(inputStream);
+    }
+
+    public void add(OutputStreamConfiguration outputStream) {
+        this.outputStreams.add(outputStream);
+    }
+
+    public void add(PythianStateConfiguration stateFactoryConfiguration) {
+        this.states.add(stateFactoryConfiguration);
+    }
+
+    public OutputStreamConfiguration findOutputStreamByName(final String name) {
+        return tryFind(outputStreams, new Predicate<OutputStreamConfiguration>() {
+            public boolean apply(OutputStreamConfiguration candidate) {
+                return name.equals(candidate.retrieveStreamName());
+            }
+        }).orNull();
+    }
+
+    public boolean containsInputStream(final String name) {
+        return tryFind(inputStreams, new Predicate<InputStreamConfiguration>() {
+            public boolean apply(InputStreamConfiguration candidate) {
+                return name.equals(candidate.retrieveStreamName());
+            }
+        }).orNull() != null;
+    }
+
+    public Class<? extends Component> retrieveImplementationClass() {
+        return description.getClazz();
+    }
 
 }

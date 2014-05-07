@@ -20,7 +20,7 @@ import java.util.List;
 import stormy.pythian.core.description.PythianStateDescription;
 import stormy.pythian.model.component.PythianState;
 
-public class PythianStateConfiguration {
+public class PythianStateConfiguration implements Validable {
 
     private String name;
 
@@ -34,6 +34,17 @@ public class PythianStateConfiguration {
         this.name = name;
         this.description = description;
         this.properties = properties;
+    }
+
+    @Override
+    public ValidationResult validate() {
+        ValidationResult result = new ValidationResult(name);
+
+        for (PropertyConfiguration property : properties) {
+            result.include(property.validate());
+        }
+
+        return result;
     }
 
     public String getName() {

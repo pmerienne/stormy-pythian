@@ -66,6 +66,14 @@ public class ComponentDescription {
         this.inputStreams.addAll(inputStreams);
     }
 
+    public void add(InputStreamDescription inputStream) {
+        this.inputStreams.add(inputStream);
+    }
+
+    public void add(OutputStreamDescription outputStream) {
+        this.outputStreams.add(outputStream);
+    }
+
     public void addOutputStreams(List<OutputStreamDescription> outputStreams) {
         this.outputStreams.addAll(outputStreams);
     }
@@ -80,6 +88,16 @@ public class ComponentDescription {
                 ensureInputStreamReference(outputStream.getFrom());
             }
         }
+    }
+
+    public List<String> retrieveMandatoryInputStreams() {
+        List<String> mandatoryInputStreams = new ArrayList<>();
+        for (InputStreamDescription inputStream : inputStreams) {
+            if (inputStream.isMandatory()) {
+                mandatoryInputStreams.add(inputStream.getName());
+            }
+        }
+        return mandatoryInputStreams;
     }
 
     public void ensureNoDuplicatedOutputStreams() {
@@ -293,8 +311,7 @@ public class ComponentDescription {
     @Override
     public String toString() {
         return "ComponentDescription [clazz=" + clazz + ", name=" + name + ", description=" + description + ", type=" + type + ", properties=" + properties + ", outputStreams="
-                + outputStreams
-                + ", inputStreams=" + inputStreams + ", states=" + states + "]";
+                + outputStreams + ", inputStreams=" + inputStreams + ", states=" + states + "]";
     }
 
 }

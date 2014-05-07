@@ -16,18 +16,15 @@
 package stormy.pythian.service.cluster;
 
 import static stormy.pythian.service.cluster.TopologyState.Status.fromStormStatus;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import stormy.pythian.core.configuration.PythianToplogyConfiguration;
+import stormy.pythian.core.configuration.ValidationResult;
 import stormy.pythian.core.topology.PythianTopology;
 import stormy.pythian.service.topology.TopologyRepository;
 import backtype.storm.Config;
@@ -38,77 +35,82 @@ import backtype.storm.generated.TopologySummary;
 @Service
 public class LocalCLusterService {
 
-	@Autowired
-	private TopologyRepository topologyRepository;
+    @Autowired
+    private TopologyRepository topologyRepository;
 
-	private LocalCluster cluster;
+    private LocalCluster cluster;
 
-	@PostConstruct
-	protected void initLocalCluster() {
-		cluster = new LocalCluster();
-	}
+    @PostConstruct
+    protected void initLocalCluster() {
+        cluster = new LocalCluster();
+    }
 
-	@PreDestroy
-	protected void shutdownLocalCluster() {
-		cluster.shutdown();
-	}
+    @PreDestroy
+    protected void shutdownLocalCluster() {
+        cluster.shutdown();
+    }
 
-	public void launch(String topologyId) throws TopologyLaunchException {
-		PythianToplogyConfiguration configuration = topologyRepository.findById(topologyId);
-		if (configuration == null) {
-			throw new TopologyLaunchException("No topology found with id " + topologyId);
-		}
+    public void launch(String topologyId) throws TopologyLaunchException {
+        PythianToplogyConfiguration configuration = topologyRepository.findById(topologyId);
+        if (configuration == null) {
+            throw new TopologyLaunchException("No topology found with id " + topologyId);
+        }
 
-		StormTopology stormTopology;
-		Config tridentConfig;
-		try {
-			PythianTopology pythianTopology = new PythianTopology();
-			pythianTopology.build(configuration);
-			stormTopology = pythianTopology.getStormTopology();
-			tridentConfig = pythianTopology.getTridentConfig();
-		} catch (Exception ex) {
-			throw new TopologyLaunchException("Topology could not be builded", ex);
-		}
+        ValidationResult validationResult = configuration.validate();
+        if (validationResult.hasErrors()) {
+            throw new TopologyLaunchException("Topology is not valid \n" + validationResult.print());
+        }
 
-		try {
-			cluster.submitTopology(topologyId, tridentConfig, stormTopology);
-		} catch (Exception ex) {
-			throw new TopologyLaunchException("Topology could not be launched", ex);
-		}
-	}
+        StormTopology stormTopology;
+        Config tridentConfig;
+        try {
+            PythianTopology pythianTopology = new PythianTopology();
+            pythianTopology.build(configuration);
+            stormTopology = pythianTopology.getStormTopology();
+            tridentConfig = pythianTopology.getTridentConfig();
+        } catch (Exception ex) {
+            throw new TopologyLaunchException("Topology could not be builded", ex);
+        }
 
-	public void kill(String topologyId) throws TopologyKillException {
-		try {
-			cluster.killTopology(topologyId);
-		} catch (Exception ex) {
-			throw new TopologyKillException("Topology could not be killed", ex);
-		}
-	}
+        try {
+            cluster.submitTopology(topologyId, tridentConfig, stormTopology);
+        } catch (Exception ex) {
+            throw new TopologyLaunchException("Topology could not be launched", ex);
+        }
+    }
 
-	public List<TopologyState> getTopologyStates() {
-		List<TopologySummary> summaries = cluster.getClusterInfo().get_topologies();
-		List<TopologyState> states = new ArrayList<>(summaries.size());
+    public void kill(String topologyId) throws TopologyKillException {
+        try {
+            cluster.killTopology(topologyId);
+        } catch (Exception ex) {
+            throw new TopologyKillException("Topology could not be killed", ex);
+        }
+    }
 
-		for (TopologySummary summary : summaries) {
-			PythianToplogyConfiguration topology = topologyRepository.findById(summary.get_name());
-			if (topology != null) {
-				states.add(new TopologyState(topology.getId(), topology.getName(), fromStormStatus(summary.get_status())));
-			}
-		}
+    public List<TopologyState> getTopologyStates() {
+        List<TopologySummary> summaries = cluster.getClusterInfo().get_topologies();
+        List<TopologyState> states = new ArrayList<>(summaries.size());
 
-		return states;
-	}
+        for (TopologySummary summary : summaries) {
+            PythianToplogyConfiguration topology = topologyRepository.findById(summary.get_name());
+            if (topology != null) {
+                states.add(new TopologyState(topology.getId(), topology.getName(), fromStormStatus(summary.get_status())));
+            }
+        }
 
-	public TopologyState getTopologyState(String topologyId) {
-		PythianToplogyConfiguration configuration = topologyRepository.findById(topologyId);
-		List<TopologySummary> summaries = cluster.getClusterInfo().get_topologies();
+        return states;
+    }
 
-		for (TopologySummary summary : summaries) {
-			if (StringUtils.equals(summary.get_name(), topologyId)) {
-				return new TopologyState(configuration.getId(), configuration.getName(), fromStormStatus(summary.get_status()));
-			}
-		}
+    public TopologyState getTopologyState(String topologyId) {
+        PythianToplogyConfiguration configuration = topologyRepository.findById(topologyId);
+        List<TopologySummary> summaries = cluster.getClusterInfo().get_topologies();
 
-		return new TopologyState(configuration.getId(), configuration.getName(), TopologyState.Status.UNDEPLOYED);
-	}
+        for (TopologySummary summary : summaries) {
+            if (StringUtils.equals(summary.get_name(), topologyId)) {
+                return new TopologyState(configuration.getId(), configuration.getName(), fromStormStatus(summary.get_status()));
+            }
+        }
+
+        return new TopologyState(configuration.getId(), configuration.getName(), TopologyState.Status.UNDEPLOYED);
+    }
 }
