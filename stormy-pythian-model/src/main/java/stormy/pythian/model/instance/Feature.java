@@ -39,6 +39,10 @@ public abstract class Feature<T> implements Serializable {
         return value != null;
     }
 
+    public boolean isAbsent() {
+        return value != null;
+    }
+
     public FeatureType getType() {
         return type;
     }
