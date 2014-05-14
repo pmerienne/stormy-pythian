@@ -17,7 +17,7 @@ package stormy.pythian.core.configuration;
 
 import stormy.pythian.core.description.PropertyDescription;
 
-public class PropertyConfiguration {
+public class PropertyConfiguration implements Validable {
 
     private PropertyDescription description;
 
@@ -28,6 +28,12 @@ public class PropertyConfiguration {
     }
 
     public PropertyConfiguration(String name, Object value) {
+        this.name = name;
+        this.value = value;
+    }
+
+    public PropertyConfiguration(String name, Object value, PropertyDescription description) {
+        this.description = description;
         this.name = name;
         this.value = value;
     }
@@ -54,6 +60,17 @@ public class PropertyConfiguration {
 
     public void setDescription(PropertyDescription description) {
         this.description = description;
+    }
+
+    @Override
+    public ValidationResult validate() {
+        ValidationResult result = new ValidationResult(name);
+
+        if (description.isMandatory() && value == null) {
+            result.add("Property is mandatory", description.getName());
+        }
+
+        return result;
     }
 
     @Override

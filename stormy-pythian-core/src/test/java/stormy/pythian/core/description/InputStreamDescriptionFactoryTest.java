@@ -16,6 +16,7 @@
 package stormy.pythian.core.description;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.when;
 import static stormy.pythian.model.annotation.MappingType.LISTED;
 import static stormy.pythian.model.annotation.MappingType.NAMED;
@@ -25,7 +26,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import storm.trident.Stream;
 import stormy.pythian.model.annotation.Documentation;
@@ -57,7 +57,7 @@ public class InputStreamDescriptionFactoryTest {
             @ListMapper(stream = "in1")
             private ListedFeaturesMapper in1Mapper;
 
-            @InputStream(name = "in2")
+            @InputStream(name = "in2", mandatory = false)
             private Stream in2;
 
             @NameMapper(stream = "in2", expectedFeatures = {})
@@ -70,8 +70,7 @@ public class InputStreamDescriptionFactoryTest {
 
         List<FeatureDescription> expectedFeatures = new ArrayList<>();
 
-        when(featureDescriptorFactory.createDescriptions(Mockito.isA(NameMapper.class))) //
-                .thenReturn(expectedFeatures);
+        when(featureDescriptorFactory.createDescriptions(isA(NameMapper.class))).thenReturn(expectedFeatures);
 
         // When
         List<InputStreamDescription> actualDescriptions = factory.createInputStreamDescriptions(TestComponent.class);
@@ -79,7 +78,7 @@ public class InputStreamDescriptionFactoryTest {
         // Then
         assertThat(actualDescriptions).containsOnly( //
                 new InputStreamDescription("in1", LISTED), //
-                new InputStreamDescription("in2", NAMED, expectedFeatures) //
+                new InputStreamDescription("in2", NAMED, expectedFeatures, false) //
                 );
     }
 
@@ -133,8 +132,7 @@ public class InputStreamDescriptionFactoryTest {
 
         List<FeatureDescription> expectedFeatures = new ArrayList<>();
 
-        when(featureDescriptorFactory.createDescriptions(Mockito.isA(NameMapper.class))) //
-                .thenReturn(expectedFeatures);
+        when(featureDescriptorFactory.createDescriptions(isA(NameMapper.class))).thenReturn(expectedFeatures);
 
         // When
         List<InputStreamDescription> actualDescriptions = factory.createInputStreamDescriptions(TestComponent.class);

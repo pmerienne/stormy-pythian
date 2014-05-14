@@ -15,9 +15,8 @@
  */
 package stormy.pythian.core.topology;
 
-import static com.google.common.collect.Iterables.transform;
-import static com.google.common.collect.Lists.newArrayList;
-import static stormy.pythian.core.utils.ReflectionHelper.getInputStreamNames;
+import static com.google.common.collect.FluentIterable.from;
+import static stormy.pythian.core.configuration.ConnectionConfiguration.connectedTo;
 import static stormy.pythian.core.utils.ReflectionHelper.getOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,15 +38,6 @@ public class AvailableComponentPool {
     private List<ConnectionConfiguration> connections = new ArrayList<>();
 
     private Multimap<String, AvailableStream> availableStreams = HashMultimap.create();
-
-    private Predicate<ComponentConfiguration> IS_AVAILABLE = new Predicate<ComponentConfiguration>() {
-        @Override
-        public boolean apply(ComponentConfiguration component) {
-            List<String> mandatoryInputStreams = getInputStreamNames(component.retrieveImplementationClass());
-            List<String> availableInputStreams = newArrayList(transform(availableStreams.get(component.getId()), EXTRACT_NAME));
-            return availableInputStreams.containsAll(mandatoryInputStreams);
-        }
-    };
 
     public AvailableComponentPool() {
     }
@@ -113,4 +103,19 @@ public class AvailableComponentPool {
         }
     };
 
+    private static Function<ConnectionConfiguration, String> EXTRACT_TO_STREAM_NAME = new Function<ConnectionConfiguration, String>() {
+        @Override
+        public String apply(ConnectionConfiguration connetion) {
+            return connetion.retrieveToStreamName();
+        }
+    };
+
+    private Predicate<ComponentConfiguration> IS_AVAILABLE = new Predicate<ComponentConfiguration>() {
+        @Override
+        public boolean apply(ComponentConfiguration component) {
+            List<String> connectedInputStreams = from(connections).filter(connectedTo(component)).transform(EXTRACT_TO_STREAM_NAME).toList();
+            List<String> availableInputStreams = from(availableStreams.get(component.getId())).transform(EXTRACT_NAME).toList();
+            return availableInputStreams.containsAll(connectedInputStreams);
+        }
+    };
 }

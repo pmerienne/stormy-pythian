@@ -24,7 +24,6 @@ app.controller('EditTopologyCtrl', function($scope, $location, $route, $routePar
 	});
 
 	$scope.editComponent = function(component) {
-		console.log(component);
 		var modalInstance = $modal.open({
 			templateUrl : 'views/component/edit-component-modal.html',
 			controller : 'EditComponentCtrl',

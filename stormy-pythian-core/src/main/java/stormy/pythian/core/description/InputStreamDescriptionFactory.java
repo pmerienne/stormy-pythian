@@ -63,9 +63,9 @@ public class InputStreamDescriptionFactory {
 
         if (nameMapper != null) {
             List<FeatureDescription> expectedFeatures = featureDescriptorFactory.createDescriptions(nameMapper);
-            return new InputStreamDescription(streamName, MappingType.NAMED, expectedFeatures);
+            return new InputStreamDescription(streamName, MappingType.NAMED, expectedFeatures, annotation.mandatory());
         } else if (listMapper != null) {
-            return new InputStreamDescription(streamName, LISTED, new ArrayList<FeatureDescription>());
+            return new InputStreamDescription(streamName, LISTED, new ArrayList<FeatureDescription>(), annotation.mandatory());
         } else {
             return new InputStreamDescription(streamName, MappingType.NONE);
         }

@@ -24,7 +24,7 @@
 			<tab>
 				<tab-heading id="input-mapping-tab-heading"><i class="fa fa-link fa-lg"></i> Input mapping </tab-heading>
 				
-				<form role="form" ng-repeat="inputStream in component.inputStreams">
+				<form role="form" ng-repeat="inputStream in component.inputStreams" ng-show="inputStream.description.type != 'NONE'">
 					<h3>{{inputStream.description.name}}</h3>
 					
 					<div ng-show="inputStream.description.type == 'NAMED'">
@@ -45,7 +45,7 @@
 			<tab>
 				<tab-heading id="output-mapping-tab-heading"><i class="fa fa-link fa-lg"></i> Output mapping </tab-heading>
 
-				<form role="form" ng-repeat="outputStream in component.outputStreams">
+				<form role="form" ng-repeat="outputStream in component.outputStreams" ng-show="outputStream.description.type != 'NONE'">
 					<h3>{{outputStream.description.name}}</h3>
 					
 					<div ng-show="outputStream.description.type == 'NAMED'">

@@ -17,6 +17,12 @@ package stormy.pythian.core.utils;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static stormy.pythian.core.utils.ReflectionHelperTest.Gender.MALE;
+import static stormy.pythian.model.annotation.PropertyType.BOOLEAN;
+import static stormy.pythian.model.annotation.PropertyType.ENUM;
+import static stormy.pythian.model.annotation.PropertyType.INTEGER;
+import static stormy.pythian.model.annotation.PropertyType.STRING;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +33,7 @@ import storm.trident.Stream;
 import storm.trident.TridentTopology;
 import storm.trident.state.StateFactory;
 import stormy.pythian.core.configuration.PropertyConfiguration;
+import stormy.pythian.core.description.PropertyDescription;
 import stormy.pythian.model.annotation.Configuration;
 import stormy.pythian.model.annotation.InputStream;
 import stormy.pythian.model.annotation.NameMapper;
@@ -78,8 +85,10 @@ public class ReflectionHelperTest {
         }
 
         TestObject test = new TestObject();
-        List<PropertyConfiguration> properties = Arrays.asList(new PropertyConfiguration("prop1", "hey"), new PropertyConfiguration("prop2", 3), new PropertyConfiguration("prop3",
-                true));
+        List<PropertyConfiguration> properties = Arrays.asList(
+                new PropertyConfiguration("prop1", "hey", new PropertyDescription("prop1", "", false, STRING)), 
+                new PropertyConfiguration("prop2", 3, new PropertyDescription("prop2", "", false, INTEGER)), 
+                new PropertyConfiguration("prop3", true, new PropertyDescription("prop3", "", false, BOOLEAN)));
 
         // When
         ReflectionHelper.setProperties(test, properties);
@@ -273,5 +282,30 @@ public class ReflectionHelperTest {
 
         // Then
         assertThat(component.stateFactory).isEqualTo(stateFactory);
+    }
+
+    @Test
+    public void should_set_enum_property() {
+        // Given
+        class Test {
+
+            @Property(name = "gender")
+            public Gender gender;
+
+        }
+
+        Test test = new Test();
+        List<PropertyConfiguration> properties = new ArrayList<>();
+        properties.add(new PropertyConfiguration("gender", "MALE", new PropertyDescription("gender", "", false, ENUM)));
+
+        // When
+        ReflectionHelper.setProperties(test, properties);
+
+        // Then
+        assertThat(test.gender).isEqualTo(MALE);
+    }
+
+    public static enum Gender {
+        MALE, FEMALE;
     }
 }
