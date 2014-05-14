@@ -68,7 +68,6 @@ public class ExtractFeatures extends BaseFunction {
 
             features = new ArrayList<>(featureNames.length);
             for (String featureName : featureNames) {
-                // instance.getFeature(featureName) can be null!
                 features.add(instance.getFeature(featureName).getValue());
             }
         }

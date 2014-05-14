@@ -65,7 +65,8 @@ public class Instance implements Serializable {
         checkNotNull(inputNamedFeaturesMapper, "Cannot get feature : no input named features mapper");
 
         String realFeatureName = inputNamedFeaturesMapper.getFeatureName(featureName);
-        return features.get(realFeatureName);
+        Feature<?> feature = features.get(realFeatureName);
+        return feature != null ? feature : new NullFeature();
     }
 
     public List<Feature<?>> getFeatures() {
@@ -74,7 +75,8 @@ public class Instance implements Serializable {
 
         List<String> selectedFeatureNames = inputListedFeaturesMapper.getSelectedFeatures();
         for (String selectedFeatureName : selectedFeatureNames) {
-            features.add(this.features.get(selectedFeatureName));
+            Feature<?> feature = this.features.get(selectedFeatureName);
+            features.add(feature != null ? feature : new NullFeature());
         }
 
         return features;
@@ -110,7 +112,7 @@ public class Instance implements Serializable {
 
         for (String featureName : selectedFeatureNames) {
             Feature<?> feature = this.features.get(featureName);
-            this.features.put(featureName, processor.process(feature));
+            this.features.put(featureName, processor.process(feature != null ? feature : new NullFeature()));
         }
     }
 
