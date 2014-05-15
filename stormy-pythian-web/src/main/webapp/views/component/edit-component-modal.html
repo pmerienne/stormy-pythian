@@ -35,8 +35,7 @@
 					</div>
 					
 					<div ng-show="inputStream.description.type == 'LISTED'">
-						<select class="form-control" multiple ng-model="inputStream.selectedFeatures" ng-required="true"
-								ng-options="value as value for value in retrieveAvailableFeatures(inputStream.description.name)">
+						<select id="{{inputStream.description.name.removeSpaces()}}-mapping" class="form-control" multiple ng-model="inputStream.selectedFeatures" ng-required="true" ng-options="value as value for value in retrieveAvailableFeatures(inputStream.description.name)">
 						</select>
 					</div>
 				</form>
@@ -51,17 +50,17 @@
 					<div ng-show="outputStream.description.type == 'NAMED'">
 						<div class="form-group" ng-repeat="(componentName, topologyName) in outputStream.mappings">
 							<label>{{componentName}}</label>
-							<input class="form-control" ng-model="outputStream.mappings[componentName]">
+							<input id="output-named-feature-{{outputStream.description.name.removeSpaces()}}-{{componentName.removeSpaces()}}" class="form-control" ng-model="outputStream.mappings[componentName]">
 						</div>
 					</div>
 					
 					<div ng-show="outputStream.description.type == 'LISTED'">
 						<div class="input-group form-group" ng-repeat="selectedFeature in outputStream.selectedFeatures track by $index">
-							<input class="form-control" ng-model="outputStream.selectedFeatures[$index]" type="text"/>
+							<input id="output-listed-feature-{{outputStream.description.name.removeSpaces()}}-{{$index}}" class="form-control" ng-model="outputStream.selectedFeatures[$index]" type="text"/>
 							<span class="input-group-addon btn" ng-click="outputStream.selectedFeatures.splice($index, 1)">x</span>
 						</div>
 
-					    <button class="btn btn-default" ng-click="outputStream.selectedFeatures.push('')"><i class="fa fa-plus"></i></button>
+					    <button id="add-output-feature-to-{{outputStream.description.name.removeSpaces()}}" class="btn btn-default" ng-click="outputStream.selectedFeatures.push('')"><i class="fa fa-plus"></i></button>
 					</div>
 				</form>
 			</tab>

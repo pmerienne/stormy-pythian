@@ -17,6 +17,8 @@ package stormy.pythian.features.web.support;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static stormy.pythian.features.web.support.Environment.BASE_HTML_PATH;
+import java.util.ArrayList;
+import java.util.List;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Keys;
@@ -27,6 +29,9 @@ import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.Select;
+import com.google.common.base.Function;
+import com.google.common.collect.FluentIterable;
+import com.google.common.collect.Iterables;
 
 public class WebConnector {
 
@@ -127,6 +132,22 @@ public class WebConnector {
         }
     }
 
+    public List<WebElement> retrieve_elements(By by) {
+        try {
+            return driver.findElements(by);
+        } catch (NoSuchElementException ex) {
+            return new ArrayList<>();
+        }
+    }
+
+    public WebElement retrieve_last(By by) {
+        try {
+            return Iterables.getLast(driver.findElements(by));
+        } catch (NoSuchElementException ex) {
+            return null;
+        }
+    }
+
     public boolean element_exists(String id) {
         return element_exists(By.id(id));
     }
@@ -149,6 +170,14 @@ public class WebConnector {
         WebElement selectElement = retrieve_element(by);
         new Select(selectElement).selectByVisibleText(value);
         wait_for_angular_requests_to_finish();
+    }
+
+    public List<String> get_available_options(WebElement select_element) {
+        return FluentIterable.from(new Select(select_element).getOptions()).transform(new Function<WebElement, String>() {
+            public String apply(WebElement input) {
+                return input.getText();
+            }
+        }).toList();
     }
 
     public String retrieve_selected(By by) {

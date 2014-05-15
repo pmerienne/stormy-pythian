@@ -34,7 +34,7 @@ public class Components {
         this.connector = connector;
     }
 
-    public void storeId(String name, String id) {
+    private void storeId(String name, String id) {
         this.components.put(name, id);
     }
 
@@ -87,6 +87,38 @@ public class Components {
                 connector.fill(By.xpath("//input[contains(@name,'" + propertyName + "')]"), property.value);
                 break;
         }
+    }
+
+    public void set_output_mappings(String component_name, String stream_name, List<String> new_features) {
+        connector.click(By.xpath("//*[contains(@class,'diagram-component-title') and contains(text(),'" + component_name + "')]"));
+        connector.click("output-mapping-tab-heading");
+
+        for (String new_feature : new_features) {
+            connector.click("add-output-feature-to-" + stream_name);
+
+            WebElement input = connector.retrieve_last(By.xpath("//*[starts-with(@id, 'output-listed-feature-" + stream_name.replaceAll(" ", "") + "-')]"));
+            connector.fill(input, new_feature);
+        }
+
+        connector.click("save-component");
+        connector.click("save-topology");
+    }
+
+    public void set_output_mapping(String component_name, String stream_name, String component_feature_name, String topology_feature_name) {
+        connector.click(By.xpath("//*[contains(@class,'diagram-component-title') and contains(text(),'" + component_name + "')]"));
+        connector.click("output-mapping-tab-heading");
+
+        connector.fill("output-named-feature-" + stream_name.replaceAll(" ", "") + "-" + component_feature_name.replaceAll(" ", ""), topology_feature_name);
+
+        connector.click("save-component");
+        connector.click("save-topology");
+    }
+
+    public List<String> get_available_listed_input_features(String component_name, String stream) {
+        connector.click(By.xpath("//*[contains(@class,'diagram-component-title') and contains(text(),'" + component_name + "')]"));
+        connector.click("input-mapping-tab-heading");
+        WebElement select_element = connector.retrieve_element(By.id(stream + "-mapping"));
+        return connector.get_available_options(select_element);
     }
 
     public String get_property_value(String componentName, Property.Type type, String propertyName) {

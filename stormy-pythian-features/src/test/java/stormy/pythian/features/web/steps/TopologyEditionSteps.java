@@ -72,6 +72,11 @@ public class TopologyEditionSteps {
         topologies.connect(component1Name, component1Stream, component2Name, component2Stream);
     }
 
+    @Given("^\"(.*?)\" \"(.*?)\" is connected to \"(.*?)\" \"(.*?)\"$")
+    public void is_connected_to(String component1Name, String component1Stream, String component2Name, String component2Stream) throws Throwable {
+        topologies.connect(component1Name, component1Stream, component2Name, component2Stream);
+    }
+
     @Then("^I should see a link between \"([^\"]*)\" \"([^\"]*)\" and \"([^\"]*)\" \"([^\"]*)\"$")
     public void i_should_see_a_link_between(String component1Name, String component1Stream, String component2Name, String component2Stream) throws Throwable {
         String sourceComponent = components.getId(component1Name);
@@ -142,6 +147,22 @@ public class TopologyEditionSteps {
             assertThat(actualValue).isEqualTo(property.value);
         }
         states.close();
+    }
+
+    @When("^I add the features (.+) to the listed output mapping \"(.*?)\" of \"(.*?)\"$")
+    public void i_add_the_features_to_the_listed_output_mapping_of(List<String> new_features, String stream_name, String component_name) throws Throwable {
+        components.set_output_mappings(component_name, stream_name, new_features);
+    }
+
+    @Then("^I should be proposed (.+) in the listed input mapping \"(.*?)\" of \"(.*?)\"$")
+    public void i_should_be_proposed_in_the_listed_output_mapping_of(List<String> features, String stream_name, String component_name) throws Throwable {
+        List<String> available_features = components.get_available_listed_input_features(component_name, stream_name);
+        assertThat(available_features).isEqualTo(features);
+    }
+
+    @When("^I set the \"(.*?)\" of the output mapping \"(.*?)\" of component \"(.*?)\" to \"(.*?)\"$")
+    public void i_set_the_of_the_output_mapping_of_component_to(String component_feature_name, String stream_name, String component_name, String topology_feature_name) throws Throwable {
+        components.set_output_mapping(component_name, stream_name, component_feature_name, topology_feature_name);
     }
 
 }
